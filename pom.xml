@@ -7,7 +7,13 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>LR1PG</name>
 	<description>An LR(1) parser generator.</description>
-    <inceptionYear>2014</inceptionYear>
+	<inceptionYear>2014</inceptionYear>
+	<scm>
+		<url>https://github.com/silnith-org/LR1PG</url>
+		<connection>scm:git:https://github.com/silnith-org/LR1PG.git</connection>
+		<developerConnection>scm:git:https://github.com/silnith-org/LR1PG.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
