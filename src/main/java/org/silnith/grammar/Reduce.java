@@ -4,8 +4,7 @@ public class Reduce<T> extends Action<T> {
     
     private final LookaheadItem<T> reduceItem;
     
-    public Reduce(final ItemSet<T> sourceState, final Symbol symbol,
-            final LookaheadItem<T> reduceItem) {
+    public Reduce(final ItemSet<T> sourceState, final Symbol symbol, final LookaheadItem<T> reduceItem) {
         super(sourceState, symbol);
         this.reduceItem = reduceItem;
     }

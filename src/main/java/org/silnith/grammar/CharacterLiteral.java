@@ -3,6 +3,7 @@ package org.silnith.grammar;
 import java.util.Collections;
 import java.util.Set;
 
+
 public class CharacterLiteral extends Terminal {
     
     private final char character;

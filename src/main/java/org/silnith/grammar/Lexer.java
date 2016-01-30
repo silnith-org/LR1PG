@@ -5,6 +5,7 @@ import java.io.Reader;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+
 public class Lexer implements Iterable<UnicodeTerminalSymbols> {
     
     private final Reader in;
@@ -22,8 +23,7 @@ public class Lexer implements Iterable<UnicodeTerminalSymbols> {
         return new UnicodeLexerIterator();
     }
     
-    private class UnicodeLexerIterator implements
-            Iterator<UnicodeTerminalSymbols> {
+    private class UnicodeLexerIterator implements Iterator<UnicodeTerminalSymbols> {
         
         private UnicodeLexerIterator() {
             super();
@@ -39,8 +39,7 @@ public class Lexer implements Iterable<UnicodeTerminalSymbols> {
                         return;
                     }
                     if (Character.isLowSurrogate((char) rr)) {
-                        currentCharacter = Character.toCodePoint((char) r,
-                                (char) rr);
+                        currentCharacter = Character.toCodePoint((char) r, (char) rr);
                     } else {
                         currentCharacter = r;
                     }
@@ -464,23 +463,17 @@ public class Lexer implements Iterable<UnicodeTerminalSymbols> {
             default: {
                 if (currentCharacter >= 0x80 && currentCharacter <= 0xD7FF) {
                     symbol = UnicodeTerminalSymbols.belowSurrogates;
-                } else if (currentCharacter >= 0xE000
-                        && currentCharacter <= 0xFFFD) {
+                } else if (currentCharacter >= 0xE000 && currentCharacter <= 0xFFFD) {
                     symbol = UnicodeTerminalSymbols.aboveSurrogates;
-                } else if (currentCharacter >= 0x10000
-                        && currentCharacter <= 0x1FFFF) {
+                } else if (currentCharacter >= 0x10000 && currentCharacter <= 0x1FFFF) {
                     symbol = UnicodeTerminalSymbols.supplementaryMultilingualPlane;
-                } else if (currentCharacter >= 0x20000
-                        && currentCharacter <= 0x2FFFF) {
+                } else if (currentCharacter >= 0x20000 && currentCharacter <= 0x2FFFF) {
                     symbol = UnicodeTerminalSymbols.supplementaryIdeographicPlane;
-                } else if (currentCharacter >= 0x30000
-                        && currentCharacter <= 0xDFFFF) {
+                } else if (currentCharacter >= 0x30000 && currentCharacter <= 0xDFFFF) {
                     symbol = UnicodeTerminalSymbols.supplementaryUnassigned;
-                } else if (currentCharacter >= 0xE0000
-                        && currentCharacter <= 0xEFFFF) {
+                } else if (currentCharacter >= 0xE0000 && currentCharacter <= 0xEFFFF) {
                     symbol = UnicodeTerminalSymbols.supplementarySpecialPurposePlane;
-                } else if (currentCharacter >= 0xF0000
-                        && currentCharacter <= 0x10FFFF) {
+                } else if (currentCharacter >= 0xF0000 && currentCharacter <= 0x10FFFF) {
                     symbol = UnicodeTerminalSymbols.supplementaryPrivateUsePlanes;
                 } else {
                     symbol = null;

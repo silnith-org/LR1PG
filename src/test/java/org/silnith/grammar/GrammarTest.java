@@ -12,12 +12,13 @@ import java.util.Set;
 
 import org.junit.Test;
 
+
 public class GrammarTest {
-    
+
 //    @Test
 //    public void testGetProductionRemainder() {
 //        final Grammar<Terminal> grammar = new Grammar<>();
-//        
+//
 //        final NonTerminal left = new NonTerminal("lhs");
 //        final NonTerminal a = new NonTerminal("a");
 //        final NonTerminal b = new NonTerminal("b");
@@ -25,11 +26,11 @@ public class GrammarTest {
 //        final Terminal x = new CharacterLiteral('x');
 //        final LookaheadItem<Terminal> item = new LookaheadItem<>(left,
 //                production, 2, x);
-//        
+//
 //        grammar.addProduction(a, x);
 //        grammar.addProduction(b, x);
 //        grammar.addProduction(left, a, b);
-//        
+//
 //        assertEquals(Collections.singletonList(x),
 //                grammar.getProductionRemainder(item));
 //    }
@@ -57,13 +58,11 @@ public class GrammarTest {
         grammar.addProduction(sp, null, s, eof);
         grammar.addProduction(s, null, s, semicolon, s);
         grammar.addProduction(s, null, id, assign, e);
-        grammar.addProduction(s, null, print, leftParenthesis, l,
-                rightParenthesis);
+        grammar.addProduction(s, null, print, leftParenthesis, l, rightParenthesis);
         grammar.addProduction(e, null, id);
         grammar.addProduction(e, null, num);
         grammar.addProduction(e, null, e, plusSign, e);
-        grammar.addProduction(e, null, leftParenthesis, s, comma, e,
-                rightParenthesis);
+        grammar.addProduction(e, null, leftParenthesis, s, comma, e, rightParenthesis);
         grammar.addProduction(l, null, e);
         grammar.addProduction(l, null, l, comma, e);
         
@@ -166,8 +165,7 @@ public class GrammarTest {
         
         grammar.compute();
         
-        final Set<NonTerminal> expectedNullable = new HashSet<>(Arrays.asList(
-                x, y));
+        final Set<NonTerminal> expectedNullable = new HashSet<>(Arrays.asList(x, y));
         assertEquals(expectedNullable, grammar.getNullableSet());
         
         final Map<GenericSymbol, Set<Terminal>> expectedFirst = new HashMap<>();
@@ -229,52 +227,33 @@ public class GrammarTest {
         
         grammar.compute();
         
-        final Set<NonTerminal> expectedNullable = new HashSet<>(Arrays.asList(
-                ep, tp));
+        final Set<NonTerminal> expectedNullable = new HashSet<>(Arrays.asList(ep, tp));
         assertEquals(expectedNullable, grammar.getNullableSet());
         final Map<GenericSymbol, Set<Terminal>> expectedFirst = new HashMap<>();
         expectedFirst.put(plusSign, Collections.<Terminal> singleton(plusSign));
-        expectedFirst.put(hyphenMinus,
-                Collections.<Terminal> singleton(hyphenMinus));
+        expectedFirst.put(hyphenMinus, Collections.<Terminal> singleton(hyphenMinus));
         expectedFirst.put(star, Collections.<Terminal> singleton(star));
         expectedFirst.put(solidus, Collections.<Terminal> singleton(solidus));
-        expectedFirst.put(leftParenthesis,
-                Collections.<Terminal> singleton(leftParenthesis));
-        expectedFirst.put(rightParenthesis,
-                Collections.<Terminal> singleton(rightParenthesis));
+        expectedFirst.put(leftParenthesis, Collections.<Terminal> singleton(leftParenthesis));
+        expectedFirst.put(rightParenthesis, Collections.<Terminal> singleton(rightParenthesis));
         expectedFirst.put(eof, Collections.<Terminal> singleton(eof));
         expectedFirst.put(id, Collections.<Terminal> singleton(id));
         expectedFirst.put(num, Collections.<Terminal> singleton(num));
-        expectedFirst.put(s,
-                new HashSet<>(Arrays.asList(leftParenthesis, id, num)));
-        expectedFirst.put(e,
-                new HashSet<>(Arrays.asList(leftParenthesis, id, num)));
-        expectedFirst.put(ep,
-                new HashSet<>(Arrays.asList(plusSign, hyphenMinus)));
-        expectedFirst.put(t,
-                new HashSet<>(Arrays.asList(leftParenthesis, id, num)));
+        expectedFirst.put(s, new HashSet<>(Arrays.asList(leftParenthesis, id, num)));
+        expectedFirst.put(e, new HashSet<>(Arrays.asList(leftParenthesis, id, num)));
+        expectedFirst.put(ep, new HashSet<>(Arrays.asList(plusSign, hyphenMinus)));
+        expectedFirst.put(t, new HashSet<>(Arrays.asList(leftParenthesis, id, num)));
         expectedFirst.put(tp, new HashSet<>(Arrays.asList(star, solidus)));
-        expectedFirst.put(f,
-                new HashSet<>(Arrays.asList(leftParenthesis, id, num)));
+        expectedFirst.put(f, new HashSet<>(Arrays.asList(leftParenthesis, id, num)));
         assertEquals(expectedFirst, grammar.getFirstSet());
         final Map<GenericSymbol, Set<Terminal>> expectedFollow = new HashMap<>();
         expectedFollow.put(s, Collections.<Terminal> emptySet());
-        expectedFollow.put(e,
-                new HashSet<>(Arrays.asList(rightParenthesis, eof)));
-        expectedFollow.put(ep,
-                new HashSet<>(Arrays.asList(rightParenthesis, eof)));
-        expectedFollow.put(
-                t,
-                new HashSet<>(Arrays.asList(rightParenthesis, plusSign,
-                        hyphenMinus, eof)));
-        expectedFollow.put(
-                tp,
-                new HashSet<>(Arrays.asList(rightParenthesis, plusSign,
-                        hyphenMinus, eof)));
-        expectedFollow.put(
-                f,
-                new HashSet<>(Arrays.asList(rightParenthesis, star, solidus,
-                        plusSign, hyphenMinus, eof)));
+        expectedFollow.put(e, new HashSet<>(Arrays.asList(rightParenthesis, eof)));
+        expectedFollow.put(ep, new HashSet<>(Arrays.asList(rightParenthesis, eof)));
+        expectedFollow.put(t, new HashSet<>(Arrays.asList(rightParenthesis, plusSign, hyphenMinus, eof)));
+        expectedFollow.put(tp, new HashSet<>(Arrays.asList(rightParenthesis, plusSign, hyphenMinus, eof)));
+        expectedFollow.put(f,
+                new HashSet<>(Arrays.asList(rightParenthesis, star, solidus, plusSign, hyphenMinus, eof)));
 //        assertEquals(expectedFollow, grammar.getFollowSet());
 //        assertEquals(expectedFollow.get(num), grammar.getFollowSet(num));
         assertEquals(expectedFollow.get(s), grammar.getFollowSet(s));
@@ -313,7 +292,7 @@ public class GrammarTest {
 //        for (final ItemSet state : parserStates) {
 //            System.out.println(state);
 //        }
-        
+
 //        final Set<ItemSet> expectedStates = new HashSet<>();
 //        final ItemSet expectedState1 = new ItemSet();
 //        expectedState1.add(new Item(sp, new Production(s, eof), 0));
@@ -354,7 +333,7 @@ public class GrammarTest {
 //        for (final ItemSet state : expectedStates) {
 //            System.out.println(state);
 //        }
-        
+
 //        assertEquals(expectedStates, parserStates);
     }
     
@@ -383,7 +362,7 @@ public class GrammarTest {
 //        for (final ItemSet state : parserStates) {
 //            System.out.println(state);
 //        }
-        
+
 //        final Set<ItemSet> expectedStates = new HashSet<>();
 //        final ItemSet expectedState1 = new ItemSet();
 //        expectedState1.add(new Item(s, new Production(e, eof), 0));
@@ -413,7 +392,7 @@ public class GrammarTest {
 //        for (final ItemSet state : expectedStates) {
 //            System.out.println(state);
 //        }
-        
+
 //        assertEquals(expectedStates, parserStates);
     }
     

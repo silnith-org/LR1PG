@@ -8,13 +8,14 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
+
 public class IntegerSetTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void testAddNegativeNumber() {
         final IntegerSet set = new IntegerSet();
         
-        set.add(-1);
+        set.add( -1);
     }
     
     @Test

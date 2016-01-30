@@ -4,8 +4,7 @@ public class Goto<T> extends Action<T> {
     
     private final ItemSet<T> destinationState;
     
-    public Goto(final ItemSet<T> sourceState, final Symbol symbol,
-            final ItemSet<T> destinationState) {
+    public Goto(final ItemSet<T> sourceState, final Symbol symbol, final ItemSet<T> destinationState) {
         super(sourceState, symbol);
         this.destinationState = destinationState;
     }

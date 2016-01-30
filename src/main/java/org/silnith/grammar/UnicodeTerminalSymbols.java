@@ -150,9 +150,8 @@ public enum UnicodeTerminalSymbols implements TerminalSymbol {
      */
     atSymbol('@'),
     /**
-     * U+0041 LATIN CAPITAL LETTER A (A)
-     * &ndash;
-     * U+0046 LATIN CAPITAL LETTER F (F)
+     * U+0041 LATIN CAPITAL LETTER A (A) &ndash; U+0046 LATIN CAPITAL LETTER F
+     * (F)
      */
 //	uppercaseHexDigit('A', 'F'),
     /**
@@ -260,8 +259,7 @@ public enum UnicodeTerminalSymbols implements TerminalSymbol {
      */
     capitalZ('Z'),
     /**
-     * &ndash;
-     * U+005A LATIN CAPITAL LETTER Z (Z)
+     * &ndash; U+005A LATIN CAPITAL LETTER Z (Z)
      */
 //	uppercaseASCII('G', 'Z'),
     /**
@@ -289,9 +287,7 @@ public enum UnicodeTerminalSymbols implements TerminalSymbol {
      */
     graveAccent('`'),
     /**
-     * U+0061 LATIN SMALL LETTER A (a)
-     * &ndash;
-     * U+0066 LATIN SMALL LETTER F (f)
+     * U+0061 LATIN SMALL LETTER A (a) &ndash; U+0066 LATIN SMALL LETTER F (f)
      */
 //	lowercaseHexDigit('a', 'f'),
     /**
@@ -399,8 +395,7 @@ public enum UnicodeTerminalSymbols implements TerminalSymbol {
      */
     smallZ('z'),
     /**
-     * &ndash;
-     * U+007A LATIN SMALL LETTER Z (z)
+     * &ndash; U+007A LATIN SMALL LETTER Z (z)
      */
 //	lowercaseASCII('g', 'z'),
     /**
@@ -425,15 +420,11 @@ public enum UnicodeTerminalSymbols implements TerminalSymbol {
     delete('\u007F'),
     // 80 = control
     /**
-     * U+0080
-     * &ndash;
-     * U+D7FF
+     * U+0080 &ndash; U+D7FF
      */
     belowSurrogates('\u0080', '\uD7FF'),
     /**
-     * U+E000
-     * &ndash;
-     * U+FFFD
+     * U+E000 &ndash; U+FFFD
      */
     aboveSurrogates('\uE000', '\uFFFD'),
     supplementaryMultilingualPlane(0x10000, 0x1FFFF),
@@ -444,6 +435,7 @@ public enum UnicodeTerminalSymbols implements TerminalSymbol {
     EOF("eof", (char) 0xFFFF);
     
     private final String name;
+    
     private final char character;
     
     private UnicodeTerminalSymbols(final String name, final char character) {

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 public class Parser<T extends TerminalSymbol> {
     
     private final Map<ItemSet<T>, String> parserStateNames;
@@ -27,14 +28,14 @@ public class Parser<T extends TerminalSymbol> {
     
     private final Deque<Object> dataStack;
     
-    public Parser(final Set<ItemSet<T>> parserStates, final Set<Edge<T>> edges,
-            final ItemSet<T> startState, final T endOfFileSymbol) {
+    public Parser(final Set<ItemSet<T>> parserStates, final Set<Edge<T>> edges, final ItemSet<T> startState,
+            final T endOfFileSymbol) {
         super();
         this.parserStateNames = new HashMap<>(parserStates.size());
         int i = 1;
         for (final ItemSet<T> state : parserStates) {
             this.parserStateNames.put(state, "state" + i);
-            i++;
+            i++ ;
         }
         this.edges = edges;
         this.startState = startState;
@@ -54,17 +55,13 @@ public class Parser<T extends TerminalSymbol> {
             final ItemSet<T> destinationState = edge.getFinalState();
             final Action<T> action;
             if (symbol.getType() == Symbol.Type.TERMINAL) {
-                final Shift<T> shiftAction = new Shift<>(parserState, symbol,
-                        destinationState);
+                final Shift<T> shiftAction = new Shift<>(parserState, symbol, destinationState);
                 action = shiftAction;
             } else if (symbol.getType() == Symbol.Type.NON_TERMINAL) {
-                final Goto<T> gotoAction = new Goto<>(parserState, symbol,
-                        destinationState);
+                final Goto<T> gotoAction = new Goto<>(parserState, symbol, destinationState);
                 action = gotoAction;
             } else {
-                throw new IllegalStateException(
-                        "Symbol is neither terminal nor non-terminal: "
-                                + symbol);
+                throw new IllegalStateException("Symbol is neither terminal nor non-terminal: " + symbol);
             }
             putAction(parserState, symbol, action);
         }
@@ -72,14 +69,12 @@ public class Parser<T extends TerminalSymbol> {
             for (final LookaheadItem<T> item : parserState.getItems()) {
                 if (item.isComplete()) {
                     for (final Symbol lookahead : item.getLookaheadSet()) {
-                        putAction(parserState, lookahead, new Reduce<>(
-                                parserState, lookahead, item));
+                        putAction(parserState, lookahead, new Reduce<>(parserState, lookahead, item));
                     }
                 } else {
                     final Symbol symbol = item.getNextSymbol();
                     if (symbol.equals(endOfFileSymbol)) {
-                        putAction(parserState, symbol, new Accept<>(
-                                parserState, symbol));
+                        putAction(parserState, symbol, new Accept<>(parserState, symbol));
                     }
                 }
             }
@@ -89,12 +84,10 @@ public class Parser<T extends TerminalSymbol> {
     
     private int conflictCount = 0;
     
-    protected void putAction(final ItemSet<T> parserState, final Symbol symbol,
-            final Action<T> action) {
-        final Action<T> previousAction = parsingTable.put(parserState, symbol,
-                action);
+    protected void putAction(final ItemSet<T> parserState, final Symbol symbol, final Action<T> action) {
+        final Action<T> previousAction = parsingTable.put(parserState, symbol, action);
         if (previousAction != null) {
-            System.out.println("Action conflict #" + conflictCount++);
+            System.out.println("Action conflict #" + conflictCount++ );
 //            System.out.println(parserState);
             parserState.printLong();
             System.out.println(symbol);
@@ -156,8 +149,8 @@ public class Parser<T extends TerminalSymbol> {
                 currentState.printLong();
                 System.out.print("Next symbol: ");
                 System.out.println(nextSymbol);
-                throw new IllegalStateException("No parse action for symbol: "
-                        + nextSymbol + " and state: " + getName(currentState));
+                throw new IllegalStateException(
+                        "No parse action for symbol: " + nextSymbol + " and state: " + getName(currentState));
             }
             switch (action.getType()) {
             case SHIFT: {
@@ -173,10 +166,8 @@ public class Parser<T extends TerminalSymbol> {
                 break;
             case REDUCE: {
                 final Reduce<T> reduceAction = (Reduce<T>) action;
-                final LookaheadItem<T> reduceItem = reduceAction
-                        .getReduceItem();
-                final NonTerminalSymbol leftHandSide = reduceItem
-                        .getLeftHandSide();
+                final LookaheadItem<T> reduceItem = reduceAction.getReduceItem();
+                final NonTerminalSymbol leftHandSide = reduceItem.getLeftHandSide();
                 final Production production = reduceItem.getRightHandSide();
                 final List<Object> data = new LinkedList<>();
                 for (@SuppressWarnings("unused")
@@ -186,12 +177,10 @@ public class Parser<T extends TerminalSymbol> {
                     final Object datum = dataStack.pop();
                     data.add(0, datum);
                 }
-                final ProductionHandler handler = production
-                        .getProductionHandler();
+                final ProductionHandler handler = production.getProductionHandler();
                 final Object newDatum;
                 if (handler == null) {
-                    newDatum = new Object() {
-                    };
+                    newDatum = new Object() {};
                 } else {
                     newDatum = handler.handleReduction(data);
                 }
@@ -206,8 +195,7 @@ public class Parser<T extends TerminalSymbol> {
 //                    System.out.print("Action: ");
 //                    System.out.println(entry.getValue().getClass());
 //                }
-                final Action<T> tempAction = parsingTable.get(currentState,
-                        leftHandSide);
+                final Action<T> tempAction = parsingTable.get(currentState, leftHandSide);
                 assert tempAction instanceof Goto;
                 final Goto<T> gotoAction = (Goto<T>) tempAction;
                 currentState = gotoAction.getDestinationState();
@@ -235,7 +223,7 @@ public class Parser<T extends TerminalSymbol> {
                 throw new IllegalStateException("Unknown action: " + action);
             } // break;
             }
-        } while (!done);
+        } while ( !done);
         return dataStack.getLast();
     }
     

@@ -3,6 +3,7 @@ package org.silnith.grammar;
 import java.util.HashSet;
 import java.util.Set;
 
+
 public class CharacterRange extends Terminal {
     
     private final char rangeStart;
@@ -23,7 +24,7 @@ public class CharacterRange extends Terminal {
     @Override
     public Set<Character> getFirstSet() {
         final HashSet<Character> set = new HashSet<>();
-        for (char c = rangeStart; c <= rangeEnd; c++) {
+        for (char c = rangeStart; c <= rangeEnd; c++ ) {
             set.add(c);
         }
         return set;
@@ -31,8 +32,7 @@ public class CharacterRange extends Terminal {
     
     @Override
     public int hashCode() {
-        return Character.valueOf(rangeStart).hashCode()
-                ^ Character.valueOf(rangeEnd).hashCode();
+        return Character.valueOf(rangeStart).hashCode() ^ Character.valueOf(rangeEnd).hashCode();
     }
     
     @Override
@@ -47,8 +47,7 @@ public class CharacterRange extends Terminal {
     
     @Override
     public String toString() {
-        return getName() + "[#" + (int) rangeStart + "-#" + (int) rangeEnd
-                + "]";
+        return getName() + "[#" + (int) rangeStart + "-#" + (int) rangeEnd + "]";
     }
     
 }

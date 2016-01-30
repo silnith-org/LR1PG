@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+
 public class NotCharacterLiteral extends Terminal {
     
     final Collection<Character> notCharacters;
@@ -55,10 +56,10 @@ public class NotCharacterLiteral extends Terminal {
         ALL_CHARACTERS.add((char) 0x9);
         ALL_CHARACTERS.add((char) 0xA);
         ALL_CHARACTERS.add((char) 0xD);
-        for (char ch = 0x20; ch < 0xD7FF; ch++) {
+        for (char ch = 0x20; ch < 0xD7FF; ch++ ) {
             ALL_CHARACTERS.add(ch);
         }
-        for (char ch = 0xE000; ch < 0xFFFD; ch++) {
+        for (char ch = 0xE000; ch < 0xFFFD; ch++ ) {
             ALL_CHARACTERS.add(ch);
         }
 //      #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]

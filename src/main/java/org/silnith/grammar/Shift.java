@@ -4,8 +4,7 @@ public class Shift<T> extends Action<T> {
     
     private final ItemSet<T> destinationState;
     
-    public Shift(final ItemSet<T> sourceState, final Symbol symbol,
-            final ItemSet<T> destinationState) {
+    public Shift(final ItemSet<T> sourceState, final Symbol symbol, final ItemSet<T> destinationState) {
         super(sourceState, symbol);
         this.destinationState = destinationState;
     }

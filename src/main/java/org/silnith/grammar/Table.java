@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 public class Table<R, C, V> {
     
     private final Map<R, Map<C, V>> values;

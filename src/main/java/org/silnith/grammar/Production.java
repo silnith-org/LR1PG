@@ -3,6 +3,7 @@ package org.silnith.grammar;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class Production {
     
     private final ProductionHandler productionHandler;
@@ -11,8 +12,7 @@ public class Production {
     
     private final int hashCode;
     
-    public Production(final ProductionHandler productionHandler,
-            final Symbol... symbols) {
+    public Production(final ProductionHandler productionHandler, final Symbol... symbols) {
         super();
         this.productionHandler = productionHandler;
         this.symbols = Arrays.asList(symbols);

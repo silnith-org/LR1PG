@@ -2,6 +2,7 @@ package org.silnith.grammar;
 
 import java.util.Set;
 
+
 public class ItemSet<T> {
     
     private final Set<LookaheadItem<T>> itemSet;

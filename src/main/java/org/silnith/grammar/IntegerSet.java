@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+
 public class IntegerSet extends AbstractSet<Integer> {
     
     private final List<Long> elements;
@@ -107,7 +108,7 @@ public class IntegerSet extends AbstractSet<Integer> {
             final int startSize = size();
             final IntegerSet other = (IntegerSet) c;
             final Iterator<Long> otherIter = other.elements.iterator();
-            for (int i = 0; i < elements.size() && otherIter.hasNext(); i++) {
+            for (int i = 0; i < elements.size() && otherIter.hasNext(); i++ ) {
                 final long otherWord = otherIter.next();
                 final Long previousValue = elements.get(i);
                 elements.set(i, previousValue | otherWord);
@@ -124,7 +125,7 @@ public class IntegerSet extends AbstractSet<Integer> {
             final int startSize = size();
             final IntegerSet other = (IntegerSet) c;
             final Iterator<Long> otherIter = other.elements.iterator();
-            for (int i = 0; i < elements.size() && otherIter.hasNext(); i++) {
+            for (int i = 0; i < elements.size() && otherIter.hasNext(); i++ ) {
                 final long otherWord = otherIter.next();
                 final Long previousValue = elements.get(i);
                 elements.set(i, previousValue & otherWord);
@@ -165,7 +166,7 @@ public class IntegerSet extends AbstractSet<Integer> {
             int arrayIndex;
             long bitMask;
             do {
-                nextNumber++;
+                nextNumber++ ;
                 arrayIndex = nextNumber >>> 6;
                 if (arrayIndex >= elements.size()) {
                     return false;
@@ -180,7 +181,7 @@ public class IntegerSet extends AbstractSet<Integer> {
             int arrayIndex;
             long bitMask;
             do {
-                number++;
+                number++ ;
                 arrayIndex = number >>> 6;
                 if (arrayIndex >= elements.size()) {
                     return false;
@@ -193,7 +194,7 @@ public class IntegerSet extends AbstractSet<Integer> {
         
         @Override
         public Integer next() {
-            if (!advance()) {
+            if ( !advance()) {
                 throw new NoSuchElementException();
             }
             return number;

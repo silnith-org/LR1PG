@@ -2,6 +2,7 @@ package org.silnith.grammar;
 
 import java.util.Set;
 
+
 public class LookaheadItem<T> {
     
     private final Item item;
@@ -61,8 +62,7 @@ public class LookaheadItem<T> {
             if (hashCode != other.hashCode) {
                 return false;
             }
-            return item.equals(other.item)
-                    && lookaheadSet.equals(other.lookaheadSet);
+            return item.equals(other.item) && lookaheadSet.equals(other.lookaheadSet);
         } else {
             return false;
         }
