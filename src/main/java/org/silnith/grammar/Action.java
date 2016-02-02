@@ -4,19 +4,19 @@ public abstract class Action<T> {
     
     public enum Type {
         /**
-         * @see {@link Shift}
+         * @see Shift
          */
         SHIFT,
         /**
-         * @see {@link Goto}
+         * @see Goto
          */
         GOTO,
         /**
-         * @see {@link Reduce}
+         * @see Reduce
          */
         REDUCE,
         /**
-         * @see {@link Accept}
+         * @see Accept
          */
         ACCEPT
     }

@@ -4,11 +4,11 @@ public interface Symbol {
     
     public enum Type {
         /**
-         * @see {@link TerminalSymbol}
+         * @see TerminalSymbol
          */
         TERMINAL,
         /**
-         * @see {@link NonTerminalSymbol}
+         * @see NonTerminalSymbol
          */
         NON_TERMINAL
     }

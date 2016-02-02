@@ -29,7 +29,7 @@ public class ParserTest {
         
         grammar.compute();
         
-        final Parser parser = grammar.createParser(s, eof);
+        final Parser<Terminal> parser = grammar.createParser(s, eof);
         
         final List<Terminal> input = Arrays.asList(star, x, eq, star, x);
         
