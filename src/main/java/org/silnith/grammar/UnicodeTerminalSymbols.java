@@ -42,7 +42,7 @@ public enum UnicodeTerminalSymbols implements TerminalSymbol {
      */
     percentSign('%'),
     /**
-     * U+0026 AMPERSAND (&)
+     * U+0026 AMPERSAND (&amp;)
      */
     ampersand('&'),
     /**
@@ -130,7 +130,7 @@ public enum UnicodeTerminalSymbols implements TerminalSymbol {
      */
     semicolon(';'),
     /**
-     * U+003C LESS-THAN SIGN (<)
+     * U+003C LESS-THAN SIGN (&lt;)
      */
     lessThanSign('<'),
     /**
@@ -138,7 +138,7 @@ public enum UnicodeTerminalSymbols implements TerminalSymbol {
      */
     equalsSign('='),
     /**
-     * U+003E GREATER-THAN SIGN (>)
+     * U+003E GREATER-THAN SIGN (&gt;)
      */
     greaterThanSign('>'),
     /**
