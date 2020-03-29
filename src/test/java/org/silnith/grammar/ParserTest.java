@@ -21,11 +21,11 @@ public class ParserTest {
         final NonTerminal v = new NonTerminal("V");
         final NonTerminal e = new NonTerminal("E");
         
-        grammar.addProduction(s, null, v, eq, e);
-        grammar.addProduction(s, null, e);
-        grammar.addProduction(e, null, v);
-        grammar.addProduction(v, null, x);
-        grammar.addProduction(v, null, star, e);
+        grammar.addProduction(s, new TestProductionHandler("S"), v, eq, e);
+        grammar.addProduction(s, new TestProductionHandler("S"), e);
+        grammar.addProduction(e, new TestProductionHandler("E"), v);
+        grammar.addProduction(v, new TestProductionHandler("V"), x);
+        grammar.addProduction(v, new TestProductionHandler("V"), star, e);
         
         grammar.compute();
         

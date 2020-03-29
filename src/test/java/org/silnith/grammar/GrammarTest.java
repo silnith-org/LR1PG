@@ -55,16 +55,16 @@ public class GrammarTest {
         final NonTerminal e = new NonTerminal("E");
         final NonTerminal l = new NonTerminal("L");
         
-        grammar.addProduction(sp, null, s, eof);
-        grammar.addProduction(s, null, s, semicolon, s);
-        grammar.addProduction(s, null, id, assign, e);
-        grammar.addProduction(s, null, print, leftParenthesis, l, rightParenthesis);
-        grammar.addProduction(e, null, id);
-        grammar.addProduction(e, null, num);
-        grammar.addProduction(e, null, e, plusSign, e);
-        grammar.addProduction(e, null, leftParenthesis, s, comma, e, rightParenthesis);
-        grammar.addProduction(l, null, e);
-        grammar.addProduction(l, null, l, comma, e);
+        grammar.addProduction(sp, new TestProductionHandler("S'"), s, eof);
+        grammar.addProduction(s, new TestProductionHandler("S"), s, semicolon, s);
+        grammar.addProduction(s, new TestProductionHandler("S"), id, assign, e);
+        grammar.addProduction(s, new TestProductionHandler("S"), print, leftParenthesis, l, rightParenthesis);
+        grammar.addProduction(e, new TestProductionHandler("E"), id);
+        grammar.addProduction(e, new TestProductionHandler("E"), num);
+        grammar.addProduction(e, new TestProductionHandler("E"), e, plusSign, e);
+        grammar.addProduction(e, new TestProductionHandler("E"), leftParenthesis, s, comma, e, rightParenthesis);
+        grammar.addProduction(l, new TestProductionHandler("L"), e);
+        grammar.addProduction(l, new TestProductionHandler("L"), l, comma, e);
         
         grammar.validate();
         
@@ -91,15 +91,15 @@ public class GrammarTest {
         final NonTerminal t = new NonTerminal("T");
         final NonTerminal f = new NonTerminal("F");
         
-        grammar.addProduction(e, null, e, plusSign, t);
-        grammar.addProduction(e, null, e, hyphenMinus, t);
-        grammar.addProduction(e, null, t);
-        grammar.addProduction(t, null, t, star, f);
-        grammar.addProduction(t, null, t, solidus, f);
-        grammar.addProduction(t, null, f);
-        grammar.addProduction(f, null, new Identifier("id"));
-        grammar.addProduction(f, null, new Identifier("num"));
-        grammar.addProduction(f, null, leftParenthesis, e, rightParenthesis);
+        grammar.addProduction(e, new TestProductionHandler("E"), e, plusSign, t);
+        grammar.addProduction(e, new TestProductionHandler("E"), e, hyphenMinus, t);
+        grammar.addProduction(e, new TestProductionHandler("E"), t);
+        grammar.addProduction(t, new TestProductionHandler("T"), t, star, f);
+        grammar.addProduction(t, new TestProductionHandler("T"), t, solidus, f);
+        grammar.addProduction(t, new TestProductionHandler("T"), f);
+        grammar.addProduction(f, new TestProductionHandler("F"), new Identifier("id"));
+        grammar.addProduction(f, new TestProductionHandler("F"), new Identifier("num"));
+        grammar.addProduction(f, new TestProductionHandler("F"), leftParenthesis, e, rightParenthesis);
         
         grammar.validate();
         
@@ -124,16 +124,16 @@ public class GrammarTest {
         final NonTerminal t = new NonTerminal("T");
         final NonTerminal f = new NonTerminal("F");
         
-        grammar.addProduction(s, null, e, new CharacterLiteral('$'));
-        grammar.addProduction(e, null, e, plusSign, t);
-        grammar.addProduction(e, null, e, hyphenMinus, t);
-        grammar.addProduction(e, null, t);
-        grammar.addProduction(t, null, t, star, f);
-        grammar.addProduction(t, null, t, solidus, f);
-        grammar.addProduction(t, null, f);
-        grammar.addProduction(f, null, new Identifier("id"));
-        grammar.addProduction(f, null, new Identifier("num"));
-        grammar.addProduction(f, null, leftParenthesis, e, rightParenthesis);
+        grammar.addProduction(s, new TestProductionHandler("S"), e, new CharacterLiteral('$'));
+        grammar.addProduction(e, new TestProductionHandler("E"), e, plusSign, t);
+        grammar.addProduction(e, new TestProductionHandler("E"), e, hyphenMinus, t);
+        grammar.addProduction(e, new TestProductionHandler("E"), t);
+        grammar.addProduction(t, new TestProductionHandler("T"), t, star, f);
+        grammar.addProduction(t, new TestProductionHandler("T"), t, solidus, f);
+        grammar.addProduction(t, new TestProductionHandler("T"), f);
+        grammar.addProduction(f, new TestProductionHandler("F"), new Identifier("id"));
+        grammar.addProduction(f, new TestProductionHandler("F"), new Identifier("num"));
+        grammar.addProduction(f, new TestProductionHandler("F"), leftParenthesis, e, rightParenthesis);
         
         grammar.validate();
         
@@ -154,12 +154,12 @@ public class GrammarTest {
         final NonTerminal y = new NonTerminal("Y");
         final NonTerminal x = new NonTerminal("X");
         
-        grammar.addProduction(z, null, d);
-        grammar.addProduction(z, null, x, y, z);
-        grammar.addProduction(y, null, new GenericSymbol[0]);
-        grammar.addProduction(y, null, c);
-        grammar.addProduction(x, null, y);
-        grammar.addProduction(x, null, a);
+        grammar.addProduction(z, new TestProductionHandler("Z"), d);
+        grammar.addProduction(z, new TestProductionHandler("Z"), x, y, z);
+        grammar.addProduction(y, new TestProductionHandler("Y"), new GenericSymbol[0]);
+        grammar.addProduction(y, new TestProductionHandler("Y"), c);
+        grammar.addProduction(x, new TestProductionHandler("X"), y);
+        grammar.addProduction(x, new TestProductionHandler("X"), a);
         
         grammar.validate();
         
@@ -210,18 +210,18 @@ public class GrammarTest {
         final NonTerminal tp = new NonTerminal("T'");
         final NonTerminal f = new NonTerminal("F");
         
-        grammar.addProduction(s, null, e, eof);
-        grammar.addProduction(e, null, t, ep);
-        grammar.addProduction(ep, null, plusSign, t, ep);
-        grammar.addProduction(ep, null, hyphenMinus, t, ep);
-        grammar.addProduction(ep, null, new GenericSymbol[0]);
-        grammar.addProduction(t, null, f, tp);
-        grammar.addProduction(tp, null, star, f, tp);
-        grammar.addProduction(tp, null, solidus, f, tp);
-        grammar.addProduction(tp, null, new GenericSymbol[0]);
-        grammar.addProduction(f, null, id);
-        grammar.addProduction(f, null, num);
-        grammar.addProduction(f, null, leftParenthesis, e, rightParenthesis);
+        grammar.addProduction(s, new TestProductionHandler("S"), e, eof);
+        grammar.addProduction(e, new TestProductionHandler("E"), t, ep);
+        grammar.addProduction(ep, new TestProductionHandler("E'"), plusSign, t, ep);
+        grammar.addProduction(ep, new TestProductionHandler("E'"), hyphenMinus, t, ep);
+        grammar.addProduction(ep, new TestProductionHandler("E'"), new GenericSymbol[0]);
+        grammar.addProduction(t, new TestProductionHandler("T"), f, tp);
+        grammar.addProduction(tp, new TestProductionHandler("T'"), star, f, tp);
+        grammar.addProduction(tp, new TestProductionHandler("T'"), solidus, f, tp);
+        grammar.addProduction(tp, new TestProductionHandler("T'"), new GenericSymbol[0]);
+        grammar.addProduction(f, new TestProductionHandler("F"), id);
+        grammar.addProduction(f, new TestProductionHandler("F"), num);
+        grammar.addProduction(f, new TestProductionHandler("F"), leftParenthesis, e, rightParenthesis);
         
         grammar.validate();
         
@@ -278,11 +278,11 @@ public class GrammarTest {
         final NonTerminal sp = new NonTerminal("S'");
         final NonTerminal l = new NonTerminal("L");
         
-        grammar.addProduction(sp, null, s, eof);
-        grammar.addProduction(s, null, leftParen, l, rightParen);
-        grammar.addProduction(s, null, x);
-        grammar.addProduction(l, null, s);
-        grammar.addProduction(l, null, l, comma, s);
+        grammar.addProduction(sp, new TestProductionHandler("S'"), s, eof);
+        grammar.addProduction(s, new TestProductionHandler("S"), leftParen, l, rightParen);
+        grammar.addProduction(s, new TestProductionHandler("S"), x);
+        grammar.addProduction(l, new TestProductionHandler("L"), s);
+        grammar.addProduction(l, new TestProductionHandler("L"), l, comma, s);
         
         grammar.validate();
         
@@ -349,10 +349,10 @@ public class GrammarTest {
         final NonTerminal e = new NonTerminal("E");
         final NonTerminal t = new NonTerminal("T");
         
-        grammar.addProduction(s, null, e, eof);
-        grammar.addProduction(e, null, t, plus, e);
-        grammar.addProduction(e, null, t);
-        grammar.addProduction(t, null, x);
+        grammar.addProduction(s, new TestProductionHandler("S"), e, eof);
+        grammar.addProduction(e, new TestProductionHandler("E"), t, plus, e);
+        grammar.addProduction(e, new TestProductionHandler("E"), t);
+        grammar.addProduction(t, new TestProductionHandler("T"), x);
         
         grammar.validate();
         
@@ -409,11 +409,11 @@ public class GrammarTest {
         final NonTerminal white_Kleene = new NonTerminal("white*");
         final NonTerminal end = new NonTerminal("end");
         
-        grammar.addProduction(s, null, end, white_Kleene, end);
-        grammar.addProduction(end, null, x);
-        grammar.addProduction(white_Kleene, null, new GenericSymbol[0]);
-        grammar.addProduction(white_Kleene, null, white_Kleene, white);
-        grammar.addProduction(white, null, space);
+        grammar.addProduction(s, new TestProductionHandler("s"), end, white_Kleene, end);
+        grammar.addProduction(end, new TestProductionHandler("end"), x);
+        grammar.addProduction(white_Kleene, new TestProductionHandler("white*"), new GenericSymbol[0]);
+        grammar.addProduction(white_Kleene, new TestProductionHandler("white*"), white_Kleene, white);
+        grammar.addProduction(white, new TestProductionHandler("white"), space);
         
         grammar.validate();
         
@@ -439,11 +439,11 @@ public class GrammarTest {
         final NonTerminal white_Kleene = new NonTerminal("white*");
         final NonTerminal end = new NonTerminal("end");
         
-        grammar.addProduction(s, null, end, white_Kleene, end);
-        grammar.addProduction(end, null, x);
-        grammar.addProduction(white_Kleene, null, new GenericSymbol[0]);
-        grammar.addProduction(white_Kleene, null, white, white_Kleene);
-        grammar.addProduction(white, null, space);
+        grammar.addProduction(s, new TestProductionHandler("s"), end, white_Kleene, end);
+        grammar.addProduction(end, new TestProductionHandler("end"), x);
+        grammar.addProduction(white_Kleene, new TestProductionHandler("white*"), new GenericSymbol[0]);
+        grammar.addProduction(white_Kleene, new TestProductionHandler("white*"), white, white_Kleene);
+        grammar.addProduction(white, new TestProductionHandler("white"), space);
         
         grammar.validate();
         
@@ -469,12 +469,12 @@ public class GrammarTest {
         final NonTerminal white_Plus = new NonTerminal("white+");
         final NonTerminal end = new NonTerminal("end");
         
-        grammar.addProduction(s, null, end, end);
-        grammar.addProduction(s, null, end, white_Plus, end);
-        grammar.addProduction(end, null, x);
-        grammar.addProduction(white_Plus, null, white);
-        grammar.addProduction(white_Plus, null, white, white_Plus);
-        grammar.addProduction(white, null, space);
+        grammar.addProduction(s, new TestProductionHandler("s"), end, end);
+        grammar.addProduction(s, new TestProductionHandler("s"), end, white_Plus, end);
+        grammar.addProduction(end, new TestProductionHandler("end"), x);
+        grammar.addProduction(white_Plus, new TestProductionHandler("white+"), white);
+        grammar.addProduction(white_Plus, new TestProductionHandler("white+"), white, white_Plus);
+        grammar.addProduction(white, new TestProductionHandler("white"), space);
         
         grammar.validate();
         

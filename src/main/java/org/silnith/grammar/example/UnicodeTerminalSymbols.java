@@ -1,5 +1,13 @@
-package org.silnith.grammar;
+package org.silnith.grammar.example;
 
+import org.silnith.grammar.TerminalSymbol;
+
+/**
+ * A type for terminal symbols composed of Unicode code points
+ * and code point ranges.
+ * <p>
+ * This does not include all Unicode characters, only the ASCII set.
+ */
 public enum UnicodeTerminalSymbols implements TerminalSymbol {
     /*
      * All the terminal symbols reachable from the original production

@@ -1,6 +1,6 @@
 package org.silnith.grammar;
 
-public class Edge<T> {
+public class Edge<T extends TerminalSymbol> {
     
     private final ItemSet<T> initialState;
     
@@ -12,6 +12,9 @@ public class Edge<T> {
     
     public Edge(final ItemSet<T> initialState, final Symbol symbol, final ItemSet<T> finalState) {
         super();
+        if (initialState == null || symbol == null || finalState == null) {
+        	throw new IllegalArgumentException();
+        }
         this.initialState = initialState;
         this.symbol = symbol;
         this.finalState = finalState;
@@ -42,8 +45,7 @@ public class Edge<T> {
             return true;
         }
         if (obj instanceof Edge) {
-            @SuppressWarnings("unchecked")
-            final Edge<?> other = (Edge<Object>) obj;
+            final Edge<?> other = (Edge<?>) obj;
             return initialState.equals(other.initialState) && symbol.equals(other.symbol)
                     && finalState.equals(other.finalState);
         } else {

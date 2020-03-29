@@ -1,4 +1,4 @@
-package org.silnith.grammar;
+package org.silnith.grammar.example;
 
 import java.io.IOException;
 import java.io.Reader;

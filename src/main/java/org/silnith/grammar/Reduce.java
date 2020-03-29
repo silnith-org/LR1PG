@@ -1,11 +1,19 @@
 package org.silnith.grammar;
 
-public class Reduce<T> extends Action<T> {
+/**
+ * The parser replaces some symbols on the top of the stack with a new symbol.
+ * 
+ * @param <T> the type of terminal symbols
+ */
+public class Reduce<T extends TerminalSymbol> extends Action<T> {
     
     private final LookaheadItem<T> reduceItem;
     
     public Reduce(final ItemSet<T> sourceState, final Symbol symbol, final LookaheadItem<T> reduceItem) {
         super(sourceState, symbol);
+        if (reduceItem == null) {
+        	throw new IllegalArgumentException();
+        }
         this.reduceItem = reduceItem;
     }
     

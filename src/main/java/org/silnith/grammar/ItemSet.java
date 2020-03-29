@@ -3,7 +3,13 @@ package org.silnith.grammar;
 import java.util.Set;
 
 
-public class ItemSet<T> {
+/**
+ * Represents a parser state.  This is a set of items, where each item is xxx
+ * coupled with a look-ahead set.
+ * 
+ * @param <T> the type of terminal symbols
+ */
+public class ItemSet<T extends TerminalSymbol> {
     
     private final Set<LookaheadItem<T>> itemSet;
     
@@ -11,6 +17,9 @@ public class ItemSet<T> {
     
     public ItemSet(final Set<LookaheadItem<T>> items) {
         super();
+        if (items == null) {
+        	throw new IllegalArgumentException();
+        }
         this.itemSet = items;
         this.hashCode = this.itemSet.hashCode();
     }
@@ -30,8 +39,7 @@ public class ItemSet<T> {
             return true;
         }
         if (obj instanceof ItemSet) {
-            @SuppressWarnings("unchecked")
-            final ItemSet<?> other = (ItemSet<Object>) obj;
+            final ItemSet<?> other = (ItemSet<?>) obj;
             if (hashCode != other.hashCode) {
                 return false;
             }

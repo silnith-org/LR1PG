@@ -10,8 +10,15 @@ import java.util.Map;
 import java.util.Set;
 
 
+/**
+ * A parser for the language defined by the grammar.  The generated parser is guaranteed to process any input stream
+ * of terminal symbols in {@code O(n)} time.
+ * 
+ * @param <T> the concrete type of terminal symbols
+ * @author <a href="mailto:silnith@gmail.com">Kent Rosenkoetter</a>
+ */
 public class Parser<T extends TerminalSymbol> {
-    
+	
     private final Map<ItemSet<T>, String> parserStateNames;
     
     private final Set<Edge<T>> edges;
@@ -20,17 +27,20 @@ public class Parser<T extends TerminalSymbol> {
     
     private final T endOfFileSymbol;
     
-    private final Table<ItemSet<T>, Symbol, Action<T>> parsingTable;
+    private final ParsingStateTable<ItemSet<T>, Symbol, Action<T>> parsingTable;
     
     private final Deque<Symbol> symbolStack;
     
     private final Deque<ItemSet<T>> stateStack;
     
-    private final Deque<Object> dataStack;
+    private final Deque<DataStackElement> dataStack;
     
     public Parser(final Set<ItemSet<T>> parserStates, final Set<Edge<T>> edges, final ItemSet<T> startState,
             final T endOfFileSymbol) {
         super();
+        if (parserStates == null || edges == null || startState == null || endOfFileSymbol == null) {
+        	throw new IllegalArgumentException();
+        }
         this.parserStateNames = new HashMap<>(parserStates.size());
         int i = 1;
         for (final ItemSet<T> state : parserStates) {
@@ -40,7 +50,7 @@ public class Parser<T extends TerminalSymbol> {
         this.edges = edges;
         this.startState = startState;
         this.endOfFileSymbol = endOfFileSymbol;
-        this.parsingTable = new Table<>();
+        this.parsingTable = new ParsingStateTable<>();
         this.symbolStack = new ArrayDeque<>();
         this.stateStack = new ArrayDeque<>();
         this.dataStack = new ArrayDeque<>();
@@ -84,15 +94,25 @@ public class Parser<T extends TerminalSymbol> {
     
     private int conflictCount = 0;
     
+    /**
+     * Adds an action to the parse table.
+     * 
+     * @param parserState the current parser state
+     * @param symbol the next symbol to be consumed
+     * @param action the parser action to take
+     */
     protected void putAction(final ItemSet<T> parserState, final Symbol symbol, final Action<T> action) {
         final Action<T> previousAction = parsingTable.put(parserState, symbol, action);
         if (previousAction != null) {
-            System.out.println("Action conflict #" + conflictCount++ );
+        	conflictCount++;
+            System.out.println("Action conflict #" + conflictCount);
 //            System.out.println(parserState);
             parserState.printLong();
             System.out.println(symbol);
             System.out.println(previousAction);
             System.out.println(action);
+            
+            throw new IllegalStateException("Conflict between actions " + action + " and " + previousAction);
         }
     }
     
@@ -100,11 +120,11 @@ public class Parser<T extends TerminalSymbol> {
         return parserStateNames.get(state);
     }
     
-    private Symbol currentSymbol;
+    private T currentSymbol;
     
-    private Symbol lookahead;
+    private T lookahead;
     
-    protected Symbol getNextSymbol(final Iterator<T> iterator) {
+    protected T getNextSymbol(final Iterator<T> iterator) {
         if (currentSymbol == null) {
             currentSymbol = iterator.next();
         } else {
@@ -122,10 +142,19 @@ public class Parser<T extends TerminalSymbol> {
         return lookahead;
     }
     
+    /**
+     * Parses a sequence of terminal symbols and returns an abstract syntax tree.  This runs in {@code O(n)} time.
+     * 
+     * @param iterator the input sequence of terminal symbols
+     * @return an abstract syntax tree as constructed by the various {@link ProductionHandler} implementations used in
+     *         the {@link Grammar}
+     */
     public Object parse(final Iterator<T> iterator) {
+    	currentSymbol = null;
+    	lookahead = null;
         ItemSet<T> currentState = startState;
         stateStack.push(currentState);
-        Symbol nextSymbol = getNextSymbol(iterator);
+        T nextSymbol = getNextSymbol(iterator);
 //        System.out.print("First symbol: ");
 //        System.out.println(nextSymbol);
         boolean done = false;
@@ -158,7 +187,7 @@ public class Parser<T extends TerminalSymbol> {
                 currentState = shiftAction.getDestinationState();
                 symbolStack.push(nextSymbol);
                 stateStack.push(currentState);
-                dataStack.push(nextSymbol);
+                dataStack.push(new DataStackElement(nextSymbol));
 //                System.out.print("Shifted terminal: ");
 //                System.out.println(nextSymbol);
                 nextSymbol = getNextSymbol(iterator);
@@ -169,21 +198,16 @@ public class Parser<T extends TerminalSymbol> {
                 final LookaheadItem<T> reduceItem = reduceAction.getReduceItem();
                 final NonTerminalSymbol leftHandSide = reduceItem.getLeftHandSide();
                 final Production production = reduceItem.getRightHandSide();
-                final List<Object> data = new LinkedList<>();
+                final List<DataStackElement> data = new LinkedList<>();
                 for (@SuppressWarnings("unused")
                 final Symbol symbol : production.getSymbols()) {
                     symbolStack.pop();
                     stateStack.pop();
-                    final Object datum = dataStack.pop();
+                    final DataStackElement datum = dataStack.pop();
                     data.add(0, datum);
                 }
                 final ProductionHandler handler = production.getProductionHandler();
-                final Object newDatum;
-                if (handler == null) {
-                    newDatum = new Object() {};
-                } else {
-                    newDatum = handler.handleReduction(data);
-                }
+                final DataStackElement newDatum = new DataStackElement(handler.handleReduction(data));
                 currentState = stateStack.peek();
 //                System.out.println(getName(currentState));
 //                currentState.printLong();
@@ -224,7 +248,7 @@ public class Parser<T extends TerminalSymbol> {
             } // break;
             }
         } while ( !done);
-        return dataStack.getLast();
+        return dataStack.getLast().getAbstractSyntaxTreeElement();
     }
     
 }

@@ -14,16 +14,29 @@ public class Production {
     
     public Production(final ProductionHandler productionHandler, final Symbol... symbols) {
         super();
+        if (productionHandler == null) {
+        	throw new IllegalArgumentException();
+        }
         this.productionHandler = productionHandler;
         this.symbols = Arrays.asList(symbols);
         this.hashCode = this.symbols.hashCode();
     }
     
+    /**
+     * Returns the handler responsible for manipulating the data stack whenever
+     * a reduction is performed using this production.
+     * 
+     * @return the production handler
+     */
     public ProductionHandler getProductionHandler() {
-        // TODO: include in hashCode() and equals()
         return productionHandler;
     }
     
+    /**
+     * Returns the right-hand side of the production.
+     * 
+     * @return the symbols in the right hand of the production
+     */
     public List<Symbol> getSymbols() {
         return symbols;
     }

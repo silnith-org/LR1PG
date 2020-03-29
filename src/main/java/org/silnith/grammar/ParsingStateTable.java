@@ -8,11 +8,18 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class Table<R, C, V> {
+/**
+ * The state table for a {@link Parser}.
+ * 
+ * @param <R> the first key, a parser state
+ * @param <C> the second key, a lookahead
+ * @param <V> the value, an action
+ */
+public class ParsingStateTable<R, C, V> {
     
     private final Map<R, Map<C, V>> values;
     
-    public Table() {
+    public ParsingStateTable() {
         super();
         this.values = new HashMap<>();
     }

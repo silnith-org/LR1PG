@@ -3,7 +3,7 @@ package org.silnith.grammar;
 import java.util.Set;
 
 
-public class LookaheadItem<T> {
+public class LookaheadItem<T extends TerminalSymbol> {
     
     private final Item item;
     
@@ -13,6 +13,9 @@ public class LookaheadItem<T> {
     
     public LookaheadItem(final Item item, final Set<T> lookaheadSet) {
         super();
+        if (item == null || lookaheadSet == null) {
+        	throw new IllegalArgumentException();
+        }
         this.item = item;
         this.lookaheadSet = lookaheadSet;
         this.hashCode = this.item.hashCode() ^ this.lookaheadSet.hashCode();
@@ -57,8 +60,7 @@ public class LookaheadItem<T> {
             return true;
         }
         if (obj instanceof LookaheadItem) {
-            @SuppressWarnings("unchecked")
-            final LookaheadItem<?> other = (LookaheadItem<Object>) obj;
+            final LookaheadItem<?> other = (LookaheadItem<?>) obj;
             if (hashCode != other.hashCode) {
                 return false;
             }

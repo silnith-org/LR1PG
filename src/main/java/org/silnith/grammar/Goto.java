@@ -1,11 +1,19 @@
 package org.silnith.grammar;
 
-public class Goto<T> extends Action<T> {
+/**
+ * The parser changes state without otherwise modifying the stack.
+ * 
+ * @param <T> the type of terminal symbols
+ */
+public class Goto<T extends TerminalSymbol> extends Action<T> {
     
     private final ItemSet<T> destinationState;
     
     public Goto(final ItemSet<T> sourceState, final Symbol symbol, final ItemSet<T> destinationState) {
         super(sourceState, symbol);
+        if (destinationState == null) {
+        	throw new IllegalArgumentException();
+        }
         this.destinationState = destinationState;
     }
     
