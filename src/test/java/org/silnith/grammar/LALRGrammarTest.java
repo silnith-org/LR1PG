@@ -40,28 +40,28 @@ public class LALRGrammarTest {
 	
 	@Test
 	public void testLALRGrammar1() {
-		final Object ast1 = parser.parse(Arrays.asList(Terminals.A, Terminals.E, Terminals.C).iterator());
+		final Object ast1 = parser.parse(new StaticLexer<>(Arrays.asList(Terminals.A, Terminals.E, Terminals.C)));
 		
 		Assert.assertEquals("S ::= [A] [E ::= [E]] [C]", ast1);
 	}
 	
 	@Test
 	public void testLALRGrammar2() {
-		final Object ast2 = parser.parse(Arrays.asList(Terminals.A, Terminals.E, Terminals.D).iterator());
+		final Object ast2 = parser.parse(new StaticLexer<>(Arrays.asList(Terminals.A, Terminals.E, Terminals.D)));
 		
 		Assert.assertEquals("S ::= [A] [F ::= [E]] [D]", ast2);
 	}
 	
 	@Test
 	public void testLALRGrammar3() {
-		final Object ast3 = parser.parse(Arrays.asList(Terminals.B, Terminals.E, Terminals.C).iterator());
+		final Object ast3 = parser.parse(new StaticLexer<>(Arrays.asList(Terminals.B, Terminals.E, Terminals.C)));
 		
 		Assert.assertEquals("S ::= [B] [F ::= [E]] [C]", ast3);
 	}
 	
 	@Test
 	public void testLALRGrammar4() {
-		final Object ast4 = parser.parse(Arrays.asList(Terminals.B, Terminals.E, Terminals.D).iterator());
+		final Object ast4 = parser.parse(new StaticLexer<>(Arrays.asList(Terminals.B, Terminals.E, Terminals.D)));
 		
 		Assert.assertEquals("S ::= [B] [E ::= [E]] [D]", ast4);
 	}

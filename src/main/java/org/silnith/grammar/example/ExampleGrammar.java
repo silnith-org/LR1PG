@@ -3,11 +3,13 @@ package org.silnith.grammar.example;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.silnith.grammar.DataStackElement;
 import org.silnith.grammar.Grammar;
+import org.silnith.grammar.Lexer;
 import org.silnith.grammar.NonTerminalSymbol;
 import org.silnith.grammar.Parser;
 import org.silnith.grammar.Production;
@@ -66,7 +68,14 @@ public class ExampleGrammar {
         
         final List<Terminals> input = Arrays.asList(Terminals.A, Terminals.B, Terminals.C, Terminals.EOF);
         
-        final Object abstractSyntaxTree = parser.parse(input.iterator());
+        final Object abstractSyntaxTree = parser.parse(new Lexer<Terminals>() {
+            
+            @Override
+            public Iterator<Terminals> iterator() {
+                return input.iterator();
+            }
+            
+        });
         
         System.out.println(abstractSyntaxTree);
     }

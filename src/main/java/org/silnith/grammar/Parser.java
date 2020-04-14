@@ -145,15 +145,16 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * Parses a sequence of terminal symbols and returns an abstract syntax tree.  This runs in {@code O(n)} time.
      * 
-     * @param iterator the input sequence of terminal symbols
+     * @param lexer the lexer that generates an input sequence of terminal symbols
      * @return an abstract syntax tree as constructed by the various {@link ProductionHandler} implementations used in
      *         the {@link Grammar}
      */
-    public Object parse(final Iterator<T> iterator) {
+    public Object parse(final Lexer<T> lexer) {
     	currentSymbol = null;
     	lookahead = null;
         ItemSet<T> currentState = startState;
         stateStack.push(currentState);
+        final Iterator<T> iterator = lexer.iterator();
         T nextSymbol = getNextSymbol(iterator);
 //        System.out.print("First symbol: ");
 //        System.out.println(nextSymbol);

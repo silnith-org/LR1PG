@@ -1,0 +1,15 @@
+package org.silnith.grammar.uri;
+
+public class RightBracket extends UriTerminal {
+
+    private static final RightBracket instance = new RightBracket();
+
+    public static RightBracket getInstance() {
+        return instance;
+    }
+
+    private RightBracket() {
+        super(']');
+    }
+
+}

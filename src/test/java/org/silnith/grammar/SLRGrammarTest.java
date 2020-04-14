@@ -37,30 +37,30 @@ public class SLRGrammarTest {
 
 	@Test
 	public void testSLRGrammar1() {
-		final Object ast1 = parser.parse(Arrays.asList(Terminals.D, Terminals.A).iterator());
+		final Object ast1 = parser.parse(new StaticLexer<>(Arrays.asList(Terminals.D, Terminals.A)));
 		
 		Assert.assertEquals("S ::= [A ::= [D]] [A]", ast1);
 	}
 
 	@Test
 	public void testSLRGrammar2() {
-		final Object ast2 = parser.parse(Arrays.asList(Terminals.B, Terminals.D, Terminals.A).iterator());
+		final Object ast2 = parser.parse(new StaticLexer<>(Arrays.asList(Terminals.B, Terminals.D, Terminals.A)));
 		
 		Assert.assertEquals("S ::= [B] [D] [A]", ast2);
 	}
 
 	@Test
 	public void testSLRGrammar3() {
-		final Object ast3 = parser.parse(Arrays.asList(Terminals.B, Terminals.D, Terminals.C).iterator());
+		final Object ast3 = parser.parse(new StaticLexer<>(Arrays.asList(Terminals.B, Terminals.D, Terminals.C)));
 		
 		Assert.assertEquals("S ::= [B] [A ::= [D]] [C]", ast3);
 	}
 
 	@Test
 	public void testSLRGrammarAll() {
-		final Object ast1 = parser.parse(Arrays.asList(Terminals.D, Terminals.A).iterator());
-		final Object ast2 = parser.parse(Arrays.asList(Terminals.B, Terminals.D, Terminals.A).iterator());
-		final Object ast3 = parser.parse(Arrays.asList(Terminals.B, Terminals.D, Terminals.C).iterator());
+		final Object ast1 = parser.parse(new StaticLexer<>(Arrays.asList(Terminals.D, Terminals.A)));
+		final Object ast2 = parser.parse(new StaticLexer<>(Arrays.asList(Terminals.B, Terminals.D, Terminals.A)));
+		final Object ast3 = parser.parse(new StaticLexer<>(Arrays.asList(Terminals.B, Terminals.D, Terminals.C)));
 	}
 
 }

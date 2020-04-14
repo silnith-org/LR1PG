@@ -33,7 +33,7 @@ public class ParserTest {
         
         final List<Terminal> input = Arrays.asList(star, x, eq, star, x);
         
-        parser.parse(input.iterator());
+        parser.parse(new StaticLexer<>(input));
         
 //        fail("Not yet implemented");
     }
