@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class Item {
     
-    private final NonTerminalSymbolMatch leftHandSide;
+    private final NonTerminalSymbol leftHandSide;
     
     private final Production rightHandSide;
     
@@ -18,7 +18,7 @@ public class Item {
     
     private final int hashCode;
     
-    public Item(final NonTerminalSymbolMatch leftHandSide, final Production rightHandSide, final int parserPosition) {
+    public Item(final NonTerminalSymbol leftHandSide, final Production rightHandSide, final int parserPosition) {
         super();
         if (leftHandSide == null || rightHandSide == null) {
         	throw new IllegalArgumentException();
@@ -45,11 +45,11 @@ public class Item {
      * 
      * @return the next symbol to be consumed
      */
-    public SymbolMatch getNextSymbol() {
+    public Symbol getNextSymbol() {
         return rightHandSide.getSymbols().get(parserPosition);
     }
     
-    public NonTerminalSymbolMatch getLeftHandSide() {
+    public NonTerminalSymbol getLeftHandSide() {
         return leftHandSide;
     }
     
@@ -85,9 +85,9 @@ public class Item {
     
     @Override
     public String toString() {
-        final List<SymbolMatch> symbols = rightHandSide.getSymbols();
-        final List<SymbolMatch> consumedSymbols = symbols.subList(0, parserPosition);
-        final List<SymbolMatch> unconsumedSymbols = symbols.subList(parserPosition, symbols.size());
+        final List<Symbol> symbols = rightHandSide.getSymbols();
+        final List<Symbol> consumedSymbols = symbols.subList(0, parserPosition);
+        final List<Symbol> unconsumedSymbols = symbols.subList(parserPosition, symbols.size());
         return "{" + leftHandSide + " -> " + consumedSymbols + " . " + unconsumedSymbols + "}";
     }
     

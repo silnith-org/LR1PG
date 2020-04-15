@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.silnith.grammar.DataStackElement;
 import org.silnith.grammar.Grammar;
-import org.silnith.grammar.NonTerminalSymbolMatch;
+import org.silnith.grammar.NonTerminalSymbol;
 import org.silnith.grammar.Parser;
 import org.silnith.grammar.Production;
 import org.silnith.grammar.ProductionHandler;
@@ -56,10 +56,10 @@ public class ExampleGrammar {
      */
     public static void main(final String[] args) {
         final Grammar<Terminals> grammar = new Grammar<>(new TerminalSetFactory(),
-        		new Grammar.DefaultMapFactory<NonTerminalSymbolMatch, Set<Production>>(),
-                new Grammar.DefaultSetFactory<NonTerminalSymbolMatch>());
+        		new Grammar.DefaultMapFactory<NonTerminalSymbol, Set<Production>>(),
+                new Grammar.DefaultSetFactory<NonTerminalSymbol>());
         
-        final NonTerminalSymbolMatch nonTerminal = grammar.getNonTerminalSymbol("S");
+        final NonTerminalSymbol nonTerminal = grammar.getNonTerminalSymbol("S");
         
 		grammar.addProduction(nonTerminal, new StringProductionHandler("S = A + B + C"), Terminals.A, Terminals.B, Terminals.C);
         

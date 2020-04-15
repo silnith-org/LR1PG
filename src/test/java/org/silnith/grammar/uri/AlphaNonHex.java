@@ -3,7 +3,7 @@ package org.silnith.grammar.uri;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.silnith.grammar.TerminalSymbolMatch;
+import org.silnith.grammar.TerminalSymbol;
 
 public class AlphaNonHex extends UriTerminal {
 
@@ -28,7 +28,7 @@ public class AlphaNonHex extends UriTerminal {
     }
 
     @Override
-    public TerminalSymbolMatch getMatch() {
+    public TerminalSymbol getSymbol() {
         return UriTerminalType.AlphaNonHex;
     }
 

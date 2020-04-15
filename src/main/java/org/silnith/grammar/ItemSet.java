@@ -7,7 +7,7 @@ import java.util.Set;
  * Represents a parser state.  This is a set of items, where each item is xxx
  * coupled with a look-ahead set.
  */
-public class ItemSet<T extends TerminalSymbolMatch> {
+public class ItemSet<T extends TerminalSymbol> {
     
     private final Set<LookaheadItem<T>> itemSet;
     

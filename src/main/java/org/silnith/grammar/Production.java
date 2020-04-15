@@ -4,15 +4,25 @@ import java.util.Arrays;
 import java.util.List;
 
 
+/**
+ * A sequence of symbols that can be reduced.  This contains only the symbols that can be reduced as well as the handler
+ * that performs the reduction.  This does not contain the type of non-terminal that will replace the symbols reduced.
+ */
 public class Production {
     
     private final ProductionHandler productionHandler;
     
-    private final List<SymbolMatch> symbols;
+    private final List<Symbol> symbols;
     
     private final int hashCode;
     
-    public Production(final ProductionHandler productionHandler, final SymbolMatch... symbols) {
+    /**
+     * Creates a new production.
+     * 
+     * @param productionHandler the production handler
+     * @param symbols the list of symbols
+     */
+    public Production(final ProductionHandler productionHandler, final Symbol... symbols) {
         super();
         if (productionHandler == null) {
         	throw new IllegalArgumentException();
@@ -37,7 +47,7 @@ public class Production {
      * 
      * @return the symbols in the right hand of the production
      */
-    public List<SymbolMatch> getSymbols() {
+    public List<Symbol> getSymbols() {
         return symbols;
     }
     

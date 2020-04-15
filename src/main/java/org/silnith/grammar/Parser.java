@@ -14,9 +14,10 @@ import java.util.Set;
  * A parser for the language defined by the grammar.  The generated parser is guaranteed to process any input stream
  * of terminal symbols in {@code O(n)} time.
  * 
+ * @param <T> the concrete type of identifiers for terminal symbols
  * @author <a href="mailto:silnith@gmail.com">Kent Rosenkoetter</a>
  */
-public class Parser<T extends TerminalSymbolMatch> {
+public class Parser<T extends TerminalSymbol> {
 	
     private final Map<ItemSet<T>, String> parserStateNames;
     
@@ -26,9 +27,9 @@ public class Parser<T extends TerminalSymbolMatch> {
     
     private final T endOfFileSymbol;
     
-    private final ParsingStateTable<ItemSet<T>, SymbolMatch, Action<T>> parsingTable;
+    private final ParsingStateTable<ItemSet<T>, Symbol, Action<T>> parsingTable;
     
-    private final Deque<SymbolMatch> symbolMatchStack;
+    private final Deque<Symbol> symbolMatchStack;
     
     private final Deque<ItemSet<T>> stateStack;
     
@@ -60,13 +61,13 @@ public class Parser<T extends TerminalSymbolMatch> {
     public void calculateParseTable() {
         for (final Edge<T> edge : edges) {
             final ItemSet<T> parserState = edge.getInitialState();
-            final SymbolMatch symbol = edge.getSymbol();
+            final Symbol symbol = edge.getSymbol();
             final ItemSet<T> destinationState = edge.getFinalState();
             final Action<T> action;
-            if (symbol instanceof TerminalSymbolMatch) {
+            if (symbol instanceof TerminalSymbol) {
                 final Shift<T> shiftAction = new Shift<>(parserState, symbol, destinationState);
                 action = shiftAction;
-            } else if (symbol instanceof NonTerminalSymbolMatch) {
+            } else if (symbol instanceof NonTerminalSymbol) {
                 final Goto<T> gotoAction = new Goto<>(parserState, symbol, destinationState);
                 action = gotoAction;
             } else {
@@ -81,7 +82,7 @@ public class Parser<T extends TerminalSymbolMatch> {
                         putAction(parserState, lookahead, new Reduce<>(parserState, lookahead, item));
                     }
                 } else {
-                    final SymbolMatch symbol = item.getNextSymbol();
+                    final Symbol symbol = item.getNextSymbol();
                     if (symbol.equals(endOfFileSymbol)) {
                         putAction(parserState, symbol, new Accept<>(parserState, symbol));
                     }
@@ -100,7 +101,7 @@ public class Parser<T extends TerminalSymbolMatch> {
      * @param symbol the next symbol to be consumed
      * @param action the parser action to take
      */
-    protected void putAction(final ItemSet<T> parserState, final SymbolMatch symbol, final Action<T> action) {
+    protected void putAction(final ItemSet<T> parserState, final Symbol symbol, final Action<T> action) {
         final Action<T> previousAction = parsingTable.put(parserState, symbol, action);
         if (previousAction != null) {
         	conflictCount++;
@@ -119,11 +120,11 @@ public class Parser<T extends TerminalSymbolMatch> {
         return parserStateNames.get(state);
     }
     
-    private Terminal currentSymbol;
+    private Token<T> currentSymbol;
     
-    private Terminal lookahead;
+    private Token<T> lookahead;
     
-    protected Terminal getNextSymbol(final Iterator<Terminal> iterator) {
+    protected Token<T> getNextSymbol(final Iterator<Token<T>> iterator) {
         if (currentSymbol == null) {
             currentSymbol = iterator.next();
         } else {
@@ -132,10 +133,10 @@ public class Parser<T extends TerminalSymbolMatch> {
         if (iterator.hasNext()) {
             lookahead = iterator.next();
         } else {
-            lookahead = new Terminal() {
+            lookahead = new Token<T>() {
                 
                 @Override
-                public T getMatch() {
+                public T getSymbol() {
                     return endOfFileSymbol;
                 }
                 
@@ -144,7 +145,7 @@ public class Parser<T extends TerminalSymbolMatch> {
         return currentSymbol;
     }
     
-    protected Terminal getLookahead() {
+    protected Token<T> getLookahead() {
         return lookahead;
     }
     
@@ -155,16 +156,16 @@ public class Parser<T extends TerminalSymbolMatch> {
      * @return an abstract syntax tree as constructed by the various {@link ProductionHandler} implementations used in
      *         the {@link Grammar}
      */
-    public Object parse(final Lexer lexer) {
+    public Object parse(final Lexer<T> lexer) {
     	currentSymbol = null;
     	lookahead = null;
         ItemSet<T> currentState = startState;
         stateStack.push(currentState);
-        final Iterator<Terminal> iterator = lexer.iterator();
-        Terminal nextSymbol = getNextSymbol(iterator);
+        final Iterator<Token<T>> iterator = lexer.iterator();
+        Token<T> nextSymbol = getNextSymbol(iterator);
         boolean done = false;
         do {
-            final Action<T> action = parsingTable.get(currentState, nextSymbol.getMatch());
+            final Action<T> action = parsingTable.get(currentState, nextSymbol.getSymbol());
             if (action == null) {
                 currentState.printLong();
                 System.out.print("Next symbol: ");
@@ -176,7 +177,7 @@ public class Parser<T extends TerminalSymbolMatch> {
             case SHIFT: {
                 final Shift<T> shiftAction = (Shift<T>) action;
                 currentState = shiftAction.getDestinationState();
-                symbolMatchStack.push(nextSymbol.getMatch());
+                symbolMatchStack.push(nextSymbol.getSymbol());
                 stateStack.push(currentState);
                 dataStack.push(new DataStackElement(nextSymbol));
                 nextSymbol = getNextSymbol(iterator);
@@ -185,11 +186,11 @@ public class Parser<T extends TerminalSymbolMatch> {
             case REDUCE: {
                 final Reduce<T> reduceAction = (Reduce<T>) action;
                 final LookaheadItem<T> reduceItem = reduceAction.getReduceItem();
-                final NonTerminalSymbolMatch leftHandSide = reduceItem.getLeftHandSide();
+                final NonTerminalSymbol leftHandSide = reduceItem.getLeftHandSide();
                 final Production production = reduceItem.getRightHandSide();
                 final List<DataStackElement> data = new LinkedList<>();
                 for (@SuppressWarnings("unused")
-                final SymbolMatch symbol : production.getSymbols()) {
+                final Symbol symbol : production.getSymbols()) {
                     symbolMatchStack.pop();
                     stateStack.pop();
                     final DataStackElement datum = dataStack.pop();

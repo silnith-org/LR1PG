@@ -33,7 +33,7 @@ import org.silnith.grammar.uri.Underscore;
 import org.silnith.grammar.uri.UriTerminal;
 import org.silnith.grammar.uri.UriTerminalType;
 
-public class UriLexer implements Lexer {
+public class UriLexer implements Lexer<UriTerminalType> {
 
     private static class EndOfFile extends UriTerminal {
 
@@ -42,7 +42,7 @@ public class UriLexer implements Lexer {
         }
 
         @Override
-        public TerminalSymbolMatch getMatch() {
+        public TerminalSymbol getSymbol() {
             return UriTerminalType.EndOfFile;
         }
 
@@ -168,7 +168,7 @@ public class UriLexer implements Lexer {
         }
     }
 
-    private final List<Terminal> terminals;
+    private final List<Token<UriTerminalType>> terminals;
 
     public UriLexer(final String string) {
         super();            
@@ -180,7 +180,7 @@ public class UriLexer implements Lexer {
     }
 
     @Override
-    public Iterator<Terminal> iterator() {
+    public Iterator<Token<UriTerminalType>> iterator() {
         return terminals.iterator();
     }
     

@@ -16,9 +16,9 @@ public class LALRGrammarTest {
 	public void setUp() {
         final Grammar<Terminals> grammar = new Grammar<Terminals>();
         
-        final NonTerminalSymbolMatch nonTerminalS = grammar.getNonTerminalSymbol("S");
-        final NonTerminalSymbolMatch nonTerminalE = grammar.getNonTerminalSymbol("E");
-        final NonTerminalSymbolMatch nonTerminalF = grammar.getNonTerminalSymbol("F");
+        final NonTerminalSymbol nonTerminalS = grammar.getNonTerminalSymbol("S");
+        final NonTerminalSymbol nonTerminalE = grammar.getNonTerminalSymbol("E");
+        final NonTerminalSymbol nonTerminalF = grammar.getNonTerminalSymbol("F");
 
 		grammar.addProduction(nonTerminalS, new TestProductionHandler("S"), Terminals.A, nonTerminalE, Terminals.C);
 		grammar.addProduction(nonTerminalS, new TestProductionHandler("S"), Terminals.A, nonTerminalF, Terminals.D);
@@ -34,28 +34,28 @@ public class LALRGrammarTest {
 	
 	@Test
 	public void testLALRGrammar1() {
-		final Object ast1 = parser.parse(new StaticLexer(Terminals.A, Terminals.E, Terminals.C));
+		final Object ast1 = parser.parse(new StaticLexer<>(Terminals.A, Terminals.E, Terminals.C));
 		
 		Assert.assertEquals("S ::= [A] [E ::= [E]] [C]", ast1);
 	}
 	
 	@Test
 	public void testLALRGrammar2() {
-		final Object ast2 = parser.parse(new StaticLexer(Terminals.A, Terminals.E, Terminals.D));
+		final Object ast2 = parser.parse(new StaticLexer<>(Terminals.A, Terminals.E, Terminals.D));
 		
 		Assert.assertEquals("S ::= [A] [F ::= [E]] [D]", ast2);
 	}
 	
 	@Test
 	public void testLALRGrammar3() {
-		final Object ast3 = parser.parse(new StaticLexer(Terminals.B, Terminals.E, Terminals.C));
+		final Object ast3 = parser.parse(new StaticLexer<>(Terminals.B, Terminals.E, Terminals.C));
 		
 		Assert.assertEquals("S ::= [B] [F ::= [E]] [C]", ast3);
 	}
 	
 	@Test
 	public void testLALRGrammar4() {
-		final Object ast4 = parser.parse(new StaticLexer(Terminals.B, Terminals.E, Terminals.D));
+		final Object ast4 = parser.parse(new StaticLexer<>(Terminals.B, Terminals.E, Terminals.D));
 		
 		Assert.assertEquals("S ::= [B] [E ::= [E]] [D]", ast4);
 	}

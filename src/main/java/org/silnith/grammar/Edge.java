@@ -1,16 +1,16 @@
 package org.silnith.grammar;
 
-public class Edge<T extends TerminalSymbolMatch> {
+public class Edge<T extends TerminalSymbol> {
     
     private final ItemSet<T> initialState;
     
-    private final SymbolMatch symbol;
+    private final Symbol symbol;
     
     private final ItemSet<T> finalState;
     
     private final int hashCode;
     
-    public Edge(final ItemSet<T> initialState, final SymbolMatch symbol, final ItemSet<T> finalState) {
+    public Edge(final ItemSet<T> initialState, final Symbol symbol, final ItemSet<T> finalState) {
         super();
         if (initialState == null || symbol == null || finalState == null) {
         	throw new IllegalArgumentException();
@@ -25,7 +25,7 @@ public class Edge<T extends TerminalSymbolMatch> {
         return initialState;
     }
     
-    public SymbolMatch getSymbol() {
+    public Symbol getSymbol() {
         return symbol;
     }
     

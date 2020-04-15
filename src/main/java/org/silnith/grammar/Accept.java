@@ -5,7 +5,7 @@ package org.silnith.grammar;
  * 
  * @param <T> the type of terminal symbols
  */
-public class Accept<T extends TerminalSymbolMatch> extends Action<T> {
+public class Accept<T extends TerminalSymbol> extends Action<T> {
     
     /**
      * Creates a new "accept" action.
@@ -13,7 +13,7 @@ public class Accept<T extends TerminalSymbolMatch> extends Action<T> {
      * @param sourceState the source state to accept
      * @param symbol the next symbol to consume.  This should be whatever the end-of-file symbol is.
      */
-    public Accept(final ItemSet<T> sourceState, final SymbolMatch symbol) {
+    public Accept(final ItemSet<T> sourceState, final Symbol symbol) {
         super(sourceState, symbol);
     }
     

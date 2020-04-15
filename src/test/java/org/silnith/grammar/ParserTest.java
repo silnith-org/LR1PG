@@ -9,14 +9,14 @@ public class ParserTest {
     public void testParse() {
         final Grammar<CharacterLiteral> grammar = new Grammar<>();
         
-        final TerminalSymbolMatch eq = new CharacterLiteral("=", '=');
-        final TerminalSymbolMatch x = new CharacterLiteral("x", 'x');
-        final TerminalSymbolMatch star = new CharacterLiteral("*", '*');
+        final CharacterLiteral eq = new CharacterLiteral("=", '=');
+        final CharacterLiteral x = new CharacterLiteral("x", 'x');
+        final CharacterLiteral star = new CharacterLiteral("*", '*');
         final CharacterLiteral eof = new CharacterLiteral("$", '$');
         
-        final NonTerminalSymbolMatch s = grammar.getNonTerminalSymbol("S");
-        final NonTerminalSymbolMatch v = grammar.getNonTerminalSymbol("V");
-        final NonTerminalSymbolMatch e = grammar.getNonTerminalSymbol("E");
+        final NonTerminalSymbol s = grammar.getNonTerminalSymbol("S");
+        final NonTerminalSymbol v = grammar.getNonTerminalSymbol("V");
+        final NonTerminalSymbol e = grammar.getNonTerminalSymbol("E");
         
         grammar.addProduction(s, new TestProductionHandler("S"), v, eq, e);
         grammar.addProduction(s, new TestProductionHandler("S"), e);
@@ -28,7 +28,7 @@ public class ParserTest {
         
         final Parser<CharacterLiteral> parser = grammar.createParser(s, eof);
         
-        parser.parse(new StaticLexer(star, x, eq, star, x));
+        parser.parse(new StaticLexer<>(star, x, eq, star, x));
         
 //        fail("Not yet implemented");
     }

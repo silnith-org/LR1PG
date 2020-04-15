@@ -1,8 +1,8 @@
 package org.silnith.grammar.uri;
 
-import org.silnith.grammar.Terminal;
+import org.silnith.grammar.Token;
 
-public abstract class UriTerminal implements Terminal {
+public abstract class UriTerminal implements Token {
     
     private final char character;
 

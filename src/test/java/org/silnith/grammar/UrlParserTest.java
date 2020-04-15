@@ -45,14 +45,14 @@ public class UrlParserTest {
 
     private Parser<UriTerminalType> parser;
     private Grammar<UriTerminalType> grammar;
-    private NonTerminalSymbolMatch uriReference;
-    private NonTerminalSymbolMatch relativeRef;
-    private NonTerminalSymbolMatch uri;
-    private NonTerminalSymbolMatch pctEncoded;
-    private NonTerminalSymbolMatch host;
-    private NonTerminalSymbolMatch port;
-    private NonTerminalSymbolMatch userinfo;
-    private NonTerminalSymbolMatch authority;
+    private NonTerminalSymbol uriReference;
+    private NonTerminalSymbol relativeRef;
+    private NonTerminalSymbol uri;
+    private NonTerminalSymbol pctEncoded;
+    private NonTerminalSymbol host;
+    private NonTerminalSymbol port;
+    private NonTerminalSymbol userinfo;
+    private NonTerminalSymbol authority;
 
     @Test
     @Ignore
@@ -76,70 +76,70 @@ public class UrlParserTest {
 //        final NonTerminalSymbol unreserved = grammar.getNonTerminalSymbol("unreserved");
 
         uri = grammar.getNonTerminalSymbol("URI");
-        final NonTerminalSymbolMatch scheme = grammar.getNonTerminalSymbol("scheme");
-        final NonTerminalSymbolMatch hierPart = grammar.getNonTerminalSymbol("hier-part");
-        final NonTerminalSymbolMatch query = grammar.getNonTerminalSymbol("query");
-        final NonTerminalSymbolMatch fragment = grammar.getNonTerminalSymbol("fragment");
+        final NonTerminalSymbol scheme = grammar.getNonTerminalSymbol("scheme");
+        final NonTerminalSymbol hierPart = grammar.getNonTerminalSymbol("hier-part");
+        final NonTerminalSymbol query = grammar.getNonTerminalSymbol("query");
+        final NonTerminalSymbol fragment = grammar.getNonTerminalSymbol("fragment");
 
         authority = grammar.getNonTerminalSymbol("authority");
-        final NonTerminalSymbolMatch pathAbEmpty = grammar.getNonTerminalSymbol("path-abempty");
-        final NonTerminalSymbolMatch pathAbsolute = grammar.getNonTerminalSymbol("path-absolute");
-        final NonTerminalSymbolMatch pathRootless = grammar.getNonTerminalSymbol("path-rootless");
-        final NonTerminalSymbolMatch pathEmpty = grammar.getNonTerminalSymbol("path-empty");
+        final NonTerminalSymbol pathAbEmpty = grammar.getNonTerminalSymbol("path-abempty");
+        final NonTerminalSymbol pathAbsolute = grammar.getNonTerminalSymbol("path-absolute");
+        final NonTerminalSymbol pathRootless = grammar.getNonTerminalSymbol("path-rootless");
+        final NonTerminalSymbol pathEmpty = grammar.getNonTerminalSymbol("path-empty");
 
         userinfo = grammar.getNonTerminalSymbol("userinfo");
         host = grammar.getNonTerminalSymbol("host");
         port = grammar.getNonTerminalSymbol("port");
 
-        final NonTerminalSymbolMatch ipLiteral = grammar.getNonTerminalSymbol("IP-literal");
-        final NonTerminalSymbolMatch ipv4address = grammar.getNonTerminalSymbol("IPv4address");
-        final NonTerminalSymbolMatch regName = grammar.getNonTerminalSymbol("reg-name");
+        final NonTerminalSymbol ipLiteral = grammar.getNonTerminalSymbol("IP-literal");
+        final NonTerminalSymbol ipv4address = grammar.getNonTerminalSymbol("IPv4address");
+        final NonTerminalSymbol regName = grammar.getNonTerminalSymbol("reg-name");
         
-        final NonTerminalSymbolMatch ipv6address = grammar.getNonTerminalSymbol("IPv6address");
-        final NonTerminalSymbolMatch ipFuture = grammar.getNonTerminalSymbol("IPvFuture");
+        final NonTerminalSymbol ipv6address = grammar.getNonTerminalSymbol("IPv6address");
+        final NonTerminalSymbol ipFuture = grammar.getNonTerminalSymbol("IPvFuture");
 
-        final NonTerminalSymbolMatch ipFutureVersion = grammar.getNonTerminalSymbol("IPvFuture-version");
-        final NonTerminalSymbolMatch ipFutureContent = grammar.getNonTerminalSymbol("IPvFuture-content");
+        final NonTerminalSymbol ipFutureVersion = grammar.getNonTerminalSymbol("IPvFuture-version");
+        final NonTerminalSymbol ipFutureContent = grammar.getNonTerminalSymbol("IPvFuture-content");
 
-        final NonTerminalSymbolMatch decOctet = grammar.getNonTerminalSymbol("dec-octet");
+        final NonTerminalSymbol decOctet = grammar.getNonTerminalSymbol("dec-octet");
 
-        final NonTerminalSymbolMatch schemePrime = grammar.getNonTerminalSymbol("scheme'");
+        final NonTerminalSymbol schemePrime = grammar.getNonTerminalSymbol("scheme'");
         
-        final NonTerminalSymbolMatch userinfoPrime = grammar.getNonTerminalSymbol("userinfoPrime");
+        final NonTerminalSymbol userinfoPrime = grammar.getNonTerminalSymbol("userinfoPrime");
         
-        final NonTerminalSymbolMatch regNamePrime = grammar.getNonTerminalSymbol("reg-name-prime");
-        final NonTerminalSymbolMatch portPrime = grammar.getNonTerminalSymbol("port-prime");
+        final NonTerminalSymbol regNamePrime = grammar.getNonTerminalSymbol("reg-name-prime");
+        final NonTerminalSymbol portPrime = grammar.getNonTerminalSymbol("port-prime");
         
-        final NonTerminalSymbolMatch path = grammar.getNonTerminalSymbol("path");
-        final NonTerminalSymbolMatch pathNoScheme = grammar.getNonTerminalSymbol("path-noscheme");
-        final NonTerminalSymbolMatch segment = grammar.getNonTerminalSymbol("segment");
-        final NonTerminalSymbolMatch segmentNz = grammar.getNonTerminalSymbol("segment-nz");
-        final NonTerminalSymbolMatch segmentNzNc = grammar.getNonTerminalSymbol("segment-nz-nc");
+        final NonTerminalSymbol path = grammar.getNonTerminalSymbol("path");
+        final NonTerminalSymbol pathNoScheme = grammar.getNonTerminalSymbol("path-noscheme");
+        final NonTerminalSymbol segment = grammar.getNonTerminalSymbol("segment");
+        final NonTerminalSymbol segmentNz = grammar.getNonTerminalSymbol("segment-nz");
+        final NonTerminalSymbol segmentNzNc = grammar.getNonTerminalSymbol("segment-nz-nc");
         
-        final NonTerminalSymbolMatch segmentSequence = grammar.getNonTerminalSymbol("segment-sequence");
-        final NonTerminalSymbolMatch segmentSequenceElement = grammar.getNonTerminalSymbol("segment-sequence-element");
+        final NonTerminalSymbol segmentSequence = grammar.getNonTerminalSymbol("segment-sequence");
+        final NonTerminalSymbol segmentSequenceElement = grammar.getNonTerminalSymbol("segment-sequence-element");
         
-        final NonTerminalSymbolMatch segmentPrime = grammar.getNonTerminalSymbol("segment'");
+        final NonTerminalSymbol segmentPrime = grammar.getNonTerminalSymbol("segment'");
         
-        final NonTerminalSymbolMatch queryPrime = grammar.getNonTerminalSymbol("query'");
+        final NonTerminalSymbol queryPrime = grammar.getNonTerminalSymbol("query'");
         
-        final NonTerminalSymbolMatch fragmentPrime = grammar.getNonTerminalSymbol("fragment'");
+        final NonTerminalSymbol fragmentPrime = grammar.getNonTerminalSymbol("fragment'");
         
         uriReference = grammar.getNonTerminalSymbol("URI-reference");
         relativeRef = grammar.getNonTerminalSymbol("relative-ref");
-        final NonTerminalSymbolMatch relativePart = grammar.getNonTerminalSymbol("relative-part");
+        final NonTerminalSymbol relativePart = grammar.getNonTerminalSymbol("relative-part");
 
-        final NonTerminalSymbolMatch absoluteUri = grammar.getNonTerminalSymbol("absolute-URI");
+        final NonTerminalSymbol absoluteUri = grammar.getNonTerminalSymbol("absolute-URI");
         
         // gen-delims = ":" / "/" / "?" / "#" / "[" / "]" / "@"
-        final Collection<TerminalSymbolMatch> genDelims = new ArrayList<TerminalSymbolMatch>(7);
+        final Collection<TerminalSymbol> genDelims = new ArrayList<TerminalSymbol>(7);
         genDelims.addAll(Arrays.asList(Colon, ForwardSlash, QuestionMark, NumberSign, LeftBracket, RightBracket, AtSign));
 
         // sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
-        final Collection<TerminalSymbolMatch> subDelims = new ArrayList<TerminalSymbolMatch>(11);
+        final Collection<TerminalSymbol> subDelims = new ArrayList<TerminalSymbol>(11);
         subDelims.addAll(Arrays.asList(ExclamationMark, Dollar, Ampersand, Apostrophe, LeftParenthesis, RightParenthesis, Asterisk, Plus, Comma, Semicolon, Equals));
         
-        final Collection<TerminalSymbolMatch> unreservedSymbols = new ArrayList<>();
+        final Collection<TerminalSymbol> unreservedSymbols = new ArrayList<>();
         unreservedSymbols.add(Digit);
         unreservedSymbols.add(AlphaHex);
         unreservedSymbols.add(AlphaNonHex);
@@ -209,11 +209,11 @@ public class UrlParserTest {
 
         // query = *( pchar / "/" / "?" )
         // query = *( unreserved / pct-encoded / sub-delims / ":" / "@" / "/" / "?" )query
-        for (final TerminalSymbolMatch unreserved : unreservedSymbols) {
+        for (final TerminalSymbol unreserved : unreservedSymbols) {
             grammar.addProduction(query, new TestProductionHandler("query"), unreserved, query);
         }
         grammar.addProduction(query, new TestProductionHandler("query"), pctEncoded, query);
-        for (final TerminalSymbolMatch terminalSymbol : subDelims) {
+        for (final TerminalSymbol terminalSymbol : subDelims) {
             grammar.addProduction(query, new TestProductionHandler("query"), terminalSymbol, query);
         }
         grammar.addProduction(query, new TestProductionHandler("query"), Colon, query);
@@ -229,11 +229,11 @@ public class UrlParserTest {
         // fragment = *( pchar / "/" / "?" )
         // fragment = *( unreserved / pct-encoded / sub-delims / ":" / "@" / "/" / "?" )
         grammar.addProduction(fragment, new TestProductionHandler("fragment"));
-        for (final TerminalSymbolMatch unreserved : unreservedSymbols) {
+        for (final TerminalSymbol unreserved : unreservedSymbols) {
             grammar.addProduction(fragment, new TestProductionHandler("fragment"), unreserved, fragment);
         }
         grammar.addProduction(fragment, new TestProductionHandler("fragment"), pctEncoded, fragment);
-        for (final TerminalSymbolMatch terminalSymbol : subDelims) {
+        for (final TerminalSymbol terminalSymbol : subDelims) {
             grammar.addProduction(fragment, new TestProductionHandler("fragment"), terminalSymbol, fragment);
         }
         grammar.addProduction(fragment, new TestProductionHandler("fragment"), Colon, fragment);
@@ -242,11 +242,11 @@ public class UrlParserTest {
         grammar.addProduction(fragment, new TestProductionHandler("fragment"), QuestionMark, fragment);
         
         // userinfo = *( unreserved / pct-encoded / sub-delims / ":" )
-        for (final TerminalSymbolMatch unreserved : unreservedSymbols) {
+        for (final TerminalSymbol unreserved : unreservedSymbols) {
             grammar.addProduction(userinfo, new TestProductionHandler("userinfo"), unreserved, userinfo);
         }
         grammar.addProduction(userinfo, new TestProductionHandler("userinfo"), pctEncoded, userinfo);
-        for (final TerminalSymbolMatch subDelim : subDelims) {
+        for (final TerminalSymbol subDelim : subDelims) {
             grammar.addProduction(userinfo, new TestProductionHandler("userinfo"), subDelim, userinfo);
         }
         grammar.addProduction(userinfo, new TestProductionHandler("userinfo"), Colon, userinfo);
@@ -254,11 +254,11 @@ public class UrlParserTest {
 
         // TODO: ambiguous with IPv4address
         // reg-name = *( unreserved / pct-encoded / sub-delims )
-        for (final TerminalSymbolMatch unreserved : unreservedSymbols) {
+        for (final TerminalSymbol unreserved : unreservedSymbols) {
             grammar.addProduction(regName, new TestProductionHandler("reg-name"), unreserved, regName);
         }
         grammar.addProduction(regName, new TestProductionHandler("reg-name"), pctEncoded, regName);
-        for (final TerminalSymbolMatch subDelim : subDelims) {
+        for (final TerminalSymbol subDelim : subDelims) {
             grammar.addProduction(regName, new TestProductionHandler("reg-name"), subDelim, regName);
         }
         grammar.addProduction(regName, new TestProductionHandler("reg-name"));
@@ -279,13 +279,13 @@ public class UrlParserTest {
 //        grammar.addProduction(authority, new TestProductionHandler("authority"), userinfo, AtSign, host, Colon, port);
 
         // segment-nz-nc = 1*( unreserved / pct-encoded / sub-delims / "@" )
-        for (final SymbolMatch symbol : unreservedSymbols) {
+        for (final Symbol symbol : unreservedSymbols) {
             grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), symbol);
             grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), symbol, segmentNzNc);
         }
         grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), pctEncoded);
         grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), pctEncoded, segmentNzNc);
-        for (final TerminalSymbolMatch subDelim : subDelims) {
+        for (final TerminalSymbol subDelim : subDelims) {
             grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), subDelim);
             grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), subDelim, segmentNzNc);
         }
@@ -294,11 +294,11 @@ public class UrlParserTest {
 
         // segment-nz = 1*pchar
         // segment-nz = 1*( unreserved / pct-encoded / sub-delims / ":" / "@" )
-        for (final TerminalSymbolMatch symbol : unreservedSymbols) {
+        for (final TerminalSymbol symbol : unreservedSymbols) {
             grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), symbol, segmentNz);
         }
         grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), pctEncoded, segmentNz);
-        for (final TerminalSymbolMatch subDelim : subDelims) {
+        for (final TerminalSymbol subDelim : subDelims) {
             grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), subDelim, segmentNz);
         }
         grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), Colon);

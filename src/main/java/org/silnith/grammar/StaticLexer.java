@@ -4,18 +4,21 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class StaticLexer implements Lexer {
+/**
+ * A simple lexer that emits a pre-defined static list of tokens.
+ */
+public class StaticLexer<T extends TerminalSymbol> implements Lexer<T> {
     
-    public static class TerminalWrapper implements Terminal {
+    public static class TerminalWrapper<T extends TerminalSymbol> implements Token<T> {
 
-        private final TerminalSymbolMatch tsm;
+        private final T tsm;
 
-        public TerminalWrapper(TerminalSymbolMatch tsm) {
+        public TerminalWrapper(final T tsm) {
             this.tsm = tsm;
         }
 
         @Override
-        public TerminalSymbolMatch getMatch() {
+        public T getSymbol() {
             return tsm;
         }
 
@@ -26,18 +29,18 @@ public class StaticLexer implements Lexer {
 
     }
 
-    private final List<Terminal> iterable;
+    private final List<Token<T>> iterable;
 
-    public StaticLexer(final TerminalSymbolMatch... iterable) {
+    public StaticLexer(final T... iterable) {
         super();
-        this.iterable = new ArrayList<Terminal>();
-        for (final TerminalSymbolMatch tsm : iterable) {
-            this.iterable.add(new TerminalWrapper(tsm));
+        this.iterable = new ArrayList<>();
+        for (final T tsm : iterable) {
+            this.iterable.add(new TerminalWrapper<>(tsm));
         }
     }
 
     @Override
-    public Iterator<Terminal> iterator() {
+    public Iterator<Token<T>> iterator() {
         return iterable.iterator();
     }
     

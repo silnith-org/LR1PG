@@ -6,13 +6,13 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 
-public class Lexer implements Iterable<UnicodeTerminalSymbols> {
+public class UnicodeLexer implements Iterable<UnicodeTerminalSymbols> {
     
     private final Reader in;
     
     private int currentCharacter;
     
-    public Lexer(final Reader in) {
+    public UnicodeLexer(final Reader in) {
         super();
         this.in = in;
         this.currentCharacter = 0;

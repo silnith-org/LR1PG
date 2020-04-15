@@ -1,6 +1,6 @@
 package org.silnith.grammar;
 
-public class Identifier implements TerminalSymbolMatch {
+public class Identifier implements TerminalSymbol {
     
     private final String name;
     

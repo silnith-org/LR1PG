@@ -1,8 +1,8 @@
 package org.silnith.grammar.uri;
 
-import org.silnith.grammar.TerminalSymbolMatch;
+import org.silnith.grammar.TerminalSymbol;
 
-public enum UriTerminalType implements TerminalSymbolMatch {
+public enum UriTerminalType implements TerminalSymbol {
     AlphaHex,
     AlphaNonHex,
     Ampersand,
