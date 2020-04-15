@@ -43,17 +43,27 @@ import org.silnith.grammar.uri.UriTerminalType;
 
 public class UrlParserTest {
 
+    private static final String all = "%00abyz0189-._~:/?#[]@!$&'()*+,;=%ff";
+    private static final String unreserved = "abyz0189-._~";
+    private static final String genDelims = ":/?#[]@";
+    private static final String subDelims = "!$&'()*+,;=";
+    private static final String pchar = "abyz0189-._~:@!$&'()*+,;=";
+    private static final String nonPchar = "/?#[]";
+    
     private Parser<UriTerminalType> parser;
     private Grammar<UriTerminalType> grammar;
     private NonTerminalSymbol uriReference;
     private NonTerminalSymbol relativeRef;
     private NonTerminalSymbol uri;
     private NonTerminalSymbol pctEncoded;
+    private NonTerminalSymbol scheme;
+    private NonTerminalSymbol userinfo;
     private NonTerminalSymbol host;
     private NonTerminalSymbol port;
-    private NonTerminalSymbol userinfo;
     private NonTerminalSymbol authority;
-
+    private NonTerminalSymbol segment;
+    private NonTerminalSymbol query;
+    private NonTerminalSymbol fragment;
     @Test
     @Ignore
     public void testRegularExpression() {
@@ -76,10 +86,10 @@ public class UrlParserTest {
 //        final NonTerminalSymbol unreserved = grammar.getNonTerminalSymbol("unreserved");
 
         uri = grammar.getNonTerminalSymbol("URI");
-        final NonTerminalSymbol scheme = grammar.getNonTerminalSymbol("scheme");
+        scheme = grammar.getNonTerminalSymbol("scheme");
         final NonTerminalSymbol hierPart = grammar.getNonTerminalSymbol("hier-part");
-        final NonTerminalSymbol query = grammar.getNonTerminalSymbol("query");
-        final NonTerminalSymbol fragment = grammar.getNonTerminalSymbol("fragment");
+        query = grammar.getNonTerminalSymbol("query");
+        fragment = grammar.getNonTerminalSymbol("fragment");
 
         authority = grammar.getNonTerminalSymbol("authority");
         final NonTerminalSymbol pathAbEmpty = grammar.getNonTerminalSymbol("path-abempty");
@@ -112,7 +122,7 @@ public class UrlParserTest {
         
         final NonTerminalSymbol path = grammar.getNonTerminalSymbol("path");
         final NonTerminalSymbol pathNoScheme = grammar.getNonTerminalSymbol("path-noscheme");
-        final NonTerminalSymbol segment = grammar.getNonTerminalSymbol("segment");
+        segment = grammar.getNonTerminalSymbol("segment");
         final NonTerminalSymbol segmentNz = grammar.getNonTerminalSymbol("segment-nz");
         final NonTerminalSymbol segmentNzNc = grammar.getNonTerminalSymbol("segment-nz-nc");
         
@@ -208,7 +218,7 @@ public class UrlParserTest {
         // pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
 
         // query = *( pchar / "/" / "?" )
-        // query = *( unreserved / pct-encoded / sub-delims / ":" / "@" / "/" / "?" )query
+        // query = *( unreserved / pct-encoded / sub-delims / ":" / "@" / "/" / "?" )
         for (final UriTerminalType unreserved : unreservedSymbols) {
             grammar.addProduction(query, new TestProductionHandler("query"), unreserved, query);
         }
@@ -295,14 +305,18 @@ public class UrlParserTest {
         // segment-nz = 1*pchar
         // segment-nz = 1*( unreserved / pct-encoded / sub-delims / ":" / "@" )
         for (final UriTerminalType symbol : unreservedSymbols) {
+            grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), symbol);
             grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), symbol, segmentNz);
         }
+        grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), pctEncoded);
         grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), pctEncoded, segmentNz);
         for (final UriTerminalType subDelim : subDelims) {
+            grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), subDelim);
             grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), subDelim, segmentNz);
         }
         grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), Colon);
         grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), Colon, segmentNz);
+        grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), AtSign);
         grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), AtSign, segmentNz);
         
         // segment = *pchar
@@ -369,16 +383,58 @@ public class UrlParserTest {
             // pass
         }
     }
-    
+
+    @Test
+    public void testScheme() {
+        parser = grammar.createParser(scheme, EndOfFile);
+        Object ast;
+        
+        ast = parser.parse(new UriLexer("http"));
+        ast = parser.parse(new UriLexer("https"));
+        ast = parser.parse(new UriLexer("file"));
+        ast = parser.parse(new UriLexer("a"));
+        ast = parser.parse(new UriLexer("z0+-."));
+        
+        final String reservedCharacters = "_~:/?#[]@!$&'()*,;=";
+        for (final char c : reservedCharacters.toCharArray()) {
+            try {
+                final String s = "a" + String.valueOf(c);
+                parser.parse(new UriLexer(s));
+                Assert.fail(s);
+            } catch (final RuntimeException e) {
+                // pass
+            }
+        }
+        try {
+            parser.parse(new UriLexer(""));
+            Assert.fail();
+        } catch (final RuntimeException e) {
+            // pass
+        }
+        try {
+            parser.parse(new UriLexer("0"));
+            Assert.fail();
+        } catch (final RuntimeException e) {
+            // pass
+        }
+        try {
+            parser.parse(new UriLexer("%00"));
+            Assert.fail();
+        } catch (final RuntimeException e) {
+            // pass
+        }
+    }
+
     @Test
     public void testUserinfo() {
         parser = grammar.createParser(userinfo, EndOfFile);
+        Object ast;
         
-        parser.parse(new UriLexer(""));
-        parser.parse(new UriLexer("example"));
-        parser.parse(new UriLexer("example:com"));
-        parser.parse(new UriLexer("foo-bar:example:com"));
-        parser.parse(new UriLexer("%00abyz0189-._~:!$&'()*+,;=%ff"));
+        ast = parser.parse(new UriLexer(""));
+        ast = parser.parse(new UriLexer("example"));
+        ast = parser.parse(new UriLexer("example:com"));
+        ast = parser.parse(new UriLexer("foo-bar:example:com"));
+        ast = parser.parse(new UriLexer("%00abyz0189-._~:!$&'()*+,;=%ff"));
         
         final String reservedCharacters = "/?#[]@";
         for (final char c : reservedCharacters.toCharArray()) {
@@ -391,17 +447,18 @@ public class UrlParserTest {
             }
         }
     }
-    
+
     @Test
     public void testHost() {
         parser = grammar.createParser(host, EndOfFile);
+        Object ast;
         
-        parser.parse(new UriLexer(""));
-        parser.parse(new UriLexer("example"));
-        parser.parse(new UriLexer("example.com"));
-        parser.parse(new UriLexer("foo-bar.example.com"));
-        parser.parse(new UriLexer("foo-bar.example.com."));
-        parser.parse(new UriLexer("%00abyz0189-._~!$&'()*+,;=%ff"));
+        ast = parser.parse(new UriLexer(""));
+        ast = parser.parse(new UriLexer("example"));
+        ast = parser.parse(new UriLexer("example.com"));
+        ast = parser.parse(new UriLexer("foo-bar.example.com"));
+        ast = parser.parse(new UriLexer("foo-bar.example.com."));
+        ast = parser.parse(new UriLexer("%00abyz0189-._~!$&'()*+,;=%ff"));
         
         final String reservedCharacters = ":/?#[]@";
         for (final char c : reservedCharacters.toCharArray()) {
@@ -414,18 +471,99 @@ public class UrlParserTest {
             }
         }
     }
-    
+
     @Test
     public void testPort() {
         parser = grammar.createParser(port, EndOfFile);
+        Object ast;
         
-        parser.parse(new UriLexer(""));
-        parser.parse(new UriLexer("80"));
-        parser.parse(new UriLexer("65535"));
-        parser.parse(new UriLexer("65536"));
-        parser.parse(new UriLexer(Long.toString(Long.MAX_VALUE)));
+        ast = parser.parse(new UriLexer(""));
+        ast = parser.parse(new UriLexer("80"));
+        ast = parser.parse(new UriLexer("65535"));
+        ast = parser.parse(new UriLexer("65536"));
+        ast = parser.parse(new UriLexer(Long.toString(Long.MAX_VALUE)));
         
-        final String reservedCharacters = "-._~!$&'()*+,;=:/?#[]@%";
+        final String reservedCharacters = "-._~:/?#[]@!$&'()*+,;=%";
+        for (final char c : reservedCharacters.toCharArray()) {
+            try {
+                final String s = String.valueOf(c);
+                parser.parse(new UriLexer(s));
+                Assert.fail(s);
+            } catch (final RuntimeException e) {
+                // pass
+            }
+        }
+        try {
+            parser.parse(new UriLexer("%00"));
+            Assert.fail();
+        } catch (final RuntimeException e) {
+            // pass
+        }
+    }
+
+    @Test
+    public void testAuthority() {
+        parser = grammar.createParser(authority, EndOfFile);
+        Object ast;
+
+        ast = parser.parse(new UriLexer(""));
+        ast = parser.parse(new UriLexer("example"));
+        ast = parser.parse(new UriLexer("example.com"));
+        ast = parser.parse(new UriLexer("foo-bar.example.com"));
+        ast = parser.parse(new UriLexer("foo-bar.example.com."));
+        ast = parser.parse(new UriLexer("%00abyz0189-._~!$&'()*+,;=%ff"));
+
+        ast = parser.parse(new UriLexer(":80"));
+        ast = parser.parse(new UriLexer("example:80"));
+        ast = parser.parse(new UriLexer("example.com:80"));
+        ast = parser.parse(new UriLexer("foo-bar.example.com:80"));
+        ast = parser.parse(new UriLexer("foo-bar.example.com.:80"));
+        ast = parser.parse(new UriLexer("%00abyz0189-._~!$&'()*+,;=%ff:80"));
+
+//        ast = parser.parse(new UriLexer("foo:bar@"));
+//        ast = parser.parse(new UriLexer("foo:bar@example"));
+//        ast = parser.parse(new UriLexer("foo:bar@example.com"));
+//        ast = parser.parse(new UriLexer("foo:bar@foo-bar.example.com"));
+//        ast = parser.parse(new UriLexer("foo:bar@foo-bar.example.com."));
+//        ast = parser.parse(new UriLexer("foo:bar@%00abyz0189-._~!$&'()*+,;=%ff"));
+//
+//        ast = parser.parse(new UriLexer("foo:bar@:80"));
+//        ast = parser.parse(new UriLexer("foo:bar@example:80"));
+//        ast = parser.parse(new UriLexer("foo:bar@example.com:80"));
+//        ast = parser.parse(new UriLexer("foo:bar@foo-bar.example.com:80"));
+//        ast = parser.parse(new UriLexer("foo:bar@foo-bar.example.com.:80"));
+//        ast = parser.parse(new UriLexer("foo:bar@%00abyz0189-._~!$&'()*+,;=%ff:80"));
+    }
+    
+    @Test
+    public void testSegment() {
+        parser = grammar.createParser(segment, EndOfFile);
+        Object ast;
+        
+        ast = parser.parse(new UriLexer(""));
+        ast = parser.parse(new UriLexer("%00abyz0189-._~:@!$&'()*+,;=%ff"));
+        
+        final String reservedCharacters = "/?#[]";
+        for (final char c : reservedCharacters.toCharArray()) {
+            try {
+                final String s = String.valueOf(c);
+                parser.parse(new UriLexer(s));
+                Assert.fail(s);
+            } catch (final RuntimeException e) {
+                // pass
+            }
+        }
+    }
+
+    @Test
+    public void testQuery() {
+        parser = grammar.createParser(query, EndOfFile);
+        Object ast;
+        
+        ast = parser.parse(new UriLexer(""));
+        ast = parser.parse(new UriLexer("%00abyz0189-._~:/?@!$&'()*+,;=%ff"));
+        
+        final String reservedCharacters = "#[]";
         for (final char c : reservedCharacters.toCharArray()) {
             try {
                 final String s = String.valueOf(c);
@@ -438,66 +576,55 @@ public class UrlParserTest {
     }
     
     @Test
-    public void testAuthority() {
-        parser = grammar.createParser(authority, EndOfFile);
+    public void testFragment() {
+        parser = grammar.createParser(fragment, EndOfFile);
+        Object ast;
         
-        parser.parse(new UriLexer(""));
-        parser.parse(new UriLexer("example"));
-        parser.parse(new UriLexer("example.com"));
-        parser.parse(new UriLexer("foo-bar.example.com"));
-        parser.parse(new UriLexer("foo-bar.example.com."));
-        parser.parse(new UriLexer("%00abyz0189-._~!$&'()*+,;=%ff"));
-        
-        parser.parse(new UriLexer(":80"));
-        parser.parse(new UriLexer("example:80"));
-        parser.parse(new UriLexer("example.com:80"));
-        parser.parse(new UriLexer("foo-bar.example.com:80"));
-        parser.parse(new UriLexer("foo-bar.example.com.:80"));
-        parser.parse(new UriLexer("%00abyz0189-._~!$&'()*+,;=%ff:80"));
-        
-//        parser.parse(new UriLexer("foo:bar@"));
-//        parser.parse(new UriLexer("foo:bar@example"));
-//        parser.parse(new UriLexer("foo:bar@example.com"));
-//        parser.parse(new UriLexer("foo:bar@foo-bar.example.com"));
-//        parser.parse(new UriLexer("foo:bar@foo-bar.example.com."));
-//        parser.parse(new UriLexer("foo:bar@%00abyz0189-._~!$&'()*+,;=%ff"));
-//        
-//        parser.parse(new UriLexer("foo:bar@:80"));
-//        parser.parse(new UriLexer("foo:bar@example:80"));
-//        parser.parse(new UriLexer("foo:bar@example.com:80"));
-//        parser.parse(new UriLexer("foo:bar@foo-bar.example.com:80"));
-//        parser.parse(new UriLexer("foo:bar@foo-bar.example.com.:80"));
-//        parser.parse(new UriLexer("foo:bar@%00abyz0189-._~!$&'()*+,;=%ff:80"));
+        ast = parser.parse(new UriLexer(""));
+        ast = parser.parse(new UriLexer("%00abyz0189-._~:/?@!$&'()*+,;=%ff"));
+
+        final String reservedCharacters = "#[]";
+        for (final char c : reservedCharacters.toCharArray()) {
+            try {
+                final String s = String.valueOf(c);
+                parser.parse(new UriLexer(s));
+                Assert.fail(s);
+            } catch (final RuntimeException e) {
+                // pass
+            }
+        }
     }
 
     @Test
     @Ignore
     public void testRelativeRef() {
         parser = grammar.createParser(relativeRef, EndOfFile);
+        Object ast;
         
-        parser.parse(new UriLexer("//foo.bar.com"));
-        parser.parse(new UriLexer("//foo.bar.com?abc"));
-        parser.parse(new UriLexer("//foo.bar.com#abc"));
-        parser.parse(new UriLexer("//foo.bar.com?abc#abc"));
+        ast = parser.parse(new UriLexer("//foo.bar.com"));
+        ast = parser.parse(new UriLexer("//foo.bar.com?abc"));
+        ast = parser.parse(new UriLexer("//foo.bar.com#abc"));
+        ast = parser.parse(new UriLexer("//foo.bar.com?abc#abc"));
         
-        parser.parse(new UriLexer("//foo.bar.com/bar/baz"));
-        parser.parse(new UriLexer("//foo.bar.com/bar/baz?abc"));
-        parser.parse(new UriLexer("//foo.bar.com/bar/baz#abc"));
+        ast = parser.parse(new UriLexer("//foo.bar.com/bar/baz"));
+        ast = parser.parse(new UriLexer("//foo.bar.com/bar/baz?abc"));
+        ast = parser.parse(new UriLexer("//foo.bar.com/bar/baz#abc"));
     }
     
     @Test
     @Ignore
     public void testURI() {
         parser = grammar.createParser(uri, EndOfFile);
+        Object ast;
         
-        parser.parse(new UriLexer("https://foo.bar.com"));
-        parser.parse(new UriLexer("https://foo.bar.com?abc"));
-        parser.parse(new UriLexer("https://foo.bar.com#abc"));
-        parser.parse(new UriLexer("https://foo.bar.com?abc#abc"));
+        ast = parser.parse(new UriLexer("https://foo.bar.com"));
+        ast = parser.parse(new UriLexer("https://foo.bar.com?abc"));
+        ast = parser.parse(new UriLexer("https://foo.bar.com#abc"));
+        ast = parser.parse(new UriLexer("https://foo.bar.com?abc#abc"));
         
-        parser.parse(new UriLexer("https://foo.bar.com/bar/baz"));
-        parser.parse(new UriLexer("https://foo.bar.com/bar/baz?abc"));
-        parser.parse(new UriLexer("https://foo.bar.com/bar/baz#abc"));
+        ast = parser.parse(new UriLexer("https://foo.bar.com/bar/baz"));
+        ast = parser.parse(new UriLexer("https://foo.bar.com/bar/baz?abc"));
+        ast = parser.parse(new UriLexer("https://foo.bar.com/bar/baz#abc"));
     }
 
 }

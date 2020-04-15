@@ -157,6 +157,9 @@ public class Parser<T extends TerminalSymbol> {
      *         the {@link Grammar}
      */
     public Object parse(final Lexer<T> lexer) {
+        symbolMatchStack.clear();
+        stateStack.clear();
+        dataStack.clear();
     	currentSymbol = null;
     	lookahead = null;
         ItemSet<T> currentState = startState;
