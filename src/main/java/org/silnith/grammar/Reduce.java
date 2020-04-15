@@ -5,7 +5,7 @@ package org.silnith.grammar;
  * 
  * @param <T> the type of terminal symbols
  */
-public class Reduce<T extends TerminalSymbolMatch> extends Action {
+public class Reduce<T extends TerminalSymbolMatch> extends Action<T> {
     
     private final LookaheadItem<T> reduceItem;
     

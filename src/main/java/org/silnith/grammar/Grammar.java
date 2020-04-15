@@ -642,7 +642,7 @@ public class Grammar<T extends TerminalSymbolMatch> {
     }
     
     /**
-     * A parallelized version of {@link #createParser(NonTerminalSymbol, TerminalSymbol)}.
+     * A parallelized version of {@link #createParser}.
      * 
      * @param startSymbol the initial non-terminal symbol that the parser will attempt to produce
      *         from the input stream of terminal symbols

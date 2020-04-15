@@ -5,7 +5,7 @@ package org.silnith.grammar;
  * 
  * @param <T> the type of terminal symbols
  */
-public class Shift<T extends TerminalSymbolMatch> extends Action {
+public class Shift<T extends TerminalSymbolMatch> extends Action<T> {
     
     private final ItemSet<T> destinationState;
     

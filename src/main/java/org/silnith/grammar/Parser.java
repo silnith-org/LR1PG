@@ -26,7 +26,7 @@ public class Parser<T extends TerminalSymbolMatch> {
     
     private final T endOfFileSymbol;
     
-    private final ParsingStateTable<ItemSet<T>, SymbolMatch, Action> parsingTable;
+    private final ParsingStateTable<ItemSet<T>, SymbolMatch, Action<T>> parsingTable;
     
     private final Deque<SymbolMatch> symbolMatchStack;
     
@@ -62,7 +62,7 @@ public class Parser<T extends TerminalSymbolMatch> {
             final ItemSet<T> parserState = edge.getInitialState();
             final SymbolMatch symbol = edge.getSymbol();
             final ItemSet<T> destinationState = edge.getFinalState();
-            final Action action;
+            final Action<T> action;
             if (symbol instanceof TerminalSymbolMatch) {
                 final Shift<T> shiftAction = new Shift<>(parserState, symbol, destinationState);
                 action = shiftAction;
@@ -83,7 +83,7 @@ public class Parser<T extends TerminalSymbolMatch> {
                 } else {
                     final SymbolMatch symbol = item.getNextSymbol();
                     if (symbol.equals(endOfFileSymbol)) {
-                        putAction(parserState, symbol, new Accept(parserState, symbol));
+                        putAction(parserState, symbol, new Accept<>(parserState, symbol));
                     }
                 }
             }
@@ -100,8 +100,8 @@ public class Parser<T extends TerminalSymbolMatch> {
      * @param symbol the next symbol to be consumed
      * @param action the parser action to take
      */
-    protected void putAction(final ItemSet<T> parserState, final SymbolMatch symbol, final Action action) {
-        final Action previousAction = parsingTable.put(parserState, symbol, action);
+    protected void putAction(final ItemSet<T> parserState, final SymbolMatch symbol, final Action<T> action) {
+        final Action<T> previousAction = parsingTable.put(parserState, symbol, action);
         if (previousAction != null) {
         	conflictCount++;
             System.out.println("Action conflict #" + conflictCount);
@@ -164,7 +164,7 @@ public class Parser<T extends TerminalSymbolMatch> {
         Terminal nextSymbol = getNextSymbol(iterator);
         boolean done = false;
         do {
-            final Action action = parsingTable.get(currentState, nextSymbol.getMatch());
+            final Action<T> action = parsingTable.get(currentState, nextSymbol.getMatch());
             if (action == null) {
                 currentState.printLong();
                 System.out.print("Next symbol: ");
@@ -198,7 +198,7 @@ public class Parser<T extends TerminalSymbolMatch> {
                 final ProductionHandler handler = production.getProductionHandler();
                 final DataStackElement newDatum = new DataStackElement(handler.handleReduction(data));
                 currentState = stateStack.peek();
-                final Action tempAction = parsingTable.get(currentState, leftHandSide);
+                final Action<T> tempAction = parsingTable.get(currentState, leftHandSide);
                 assert tempAction instanceof Goto;
                 final Goto<T> gotoAction = (Goto<T>) tempAction;
                 currentState = gotoAction.getDestinationState();

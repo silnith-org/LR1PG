@@ -45,7 +45,7 @@ public class Edge<T extends TerminalSymbolMatch> {
             return true;
         }
         if (obj instanceof Edge) {
-            final Edge other = (Edge) obj;
+            final Edge<?> other = (Edge<?>) obj;
             return initialState.equals(other.initialState) && symbol.equals(other.symbol)
                     && finalState.equals(other.finalState);
         } else {

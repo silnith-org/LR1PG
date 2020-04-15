@@ -60,7 +60,7 @@ public class LookaheadItem<T extends TerminalSymbolMatch> {
             return true;
         }
         if (obj instanceof LookaheadItem) {
-            final LookaheadItem other = (LookaheadItem) obj;
+            final LookaheadItem<?> other = (LookaheadItem<?>) obj;
             if (hashCode != other.hashCode) {
                 return false;
             }
