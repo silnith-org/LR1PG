@@ -1,7 +1,5 @@
 package org.silnith.grammar.uri;
 
-import org.silnith.grammar.TerminalSymbol;
-
 public class Ampersand extends UriTerminal {
 
     private static final Ampersand instance = new Ampersand();
@@ -15,7 +13,7 @@ public class Ampersand extends UriTerminal {
     }
 
     @Override
-    public TerminalSymbol getSymbol() {
+    public UriTerminalType getSymbol() {
         return UriTerminalType.Ampersand;
     }
 

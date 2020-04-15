@@ -223,7 +223,9 @@ public class Parser<T extends TerminalSymbol> {
             } // break;
             }
         } while ( !done);
-        return dataStack.getLast().getAbstractSyntaxTreeElement();
+        symbolMatchStack.pop();
+        stateStack.pop();
+        return dataStack.pop().getAbstractSyntaxTreeElement();
     }
     
 }

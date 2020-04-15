@@ -2,7 +2,7 @@ package org.silnith.grammar.uri;
 
 import org.silnith.grammar.Token;
 
-public abstract class UriTerminal implements Token {
+public abstract class UriTerminal implements Token<UriTerminalType> {
     
     private final char character;
 

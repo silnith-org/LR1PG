@@ -42,7 +42,7 @@ public class UriLexer implements Lexer<UriTerminalType> {
         }
 
         @Override
-        public TerminalSymbol getSymbol() {
+        public UriTerminalType getSymbol() {
             return UriTerminalType.EndOfFile;
         }
 

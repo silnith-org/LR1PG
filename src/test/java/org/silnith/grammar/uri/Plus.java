@@ -1,7 +1,5 @@
 package org.silnith.grammar.uri;
 
-import org.silnith.grammar.TerminalSymbol;
-
 public class Plus extends UriTerminal {
 
     private static final Plus instance = new Plus();
@@ -15,7 +13,7 @@ public class Plus extends UriTerminal {
     }
 
     @Override
-    public TerminalSymbol getSymbol() {
+    public UriTerminalType getSymbol() {
         return UriTerminalType.Plus;
     }
 

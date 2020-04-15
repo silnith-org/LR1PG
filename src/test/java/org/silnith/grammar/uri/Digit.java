@@ -3,8 +3,6 @@ package org.silnith.grammar.uri;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.silnith.grammar.TerminalSymbol;
-
 public class Digit extends UriTerminal {
 
     private static final Map<Character, Digit> instances;
@@ -25,7 +23,7 @@ public class Digit extends UriTerminal {
     }
 
     @Override
-    public TerminalSymbol getSymbol() {
+    public UriTerminalType getSymbol() {
         return UriTerminalType.Digit;
     }
 

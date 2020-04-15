@@ -1,7 +1,5 @@
 package org.silnith.grammar.uri;
 
-import org.silnith.grammar.TerminalSymbol;
-
 public class AtSign extends UriTerminal {
 
     private static final AtSign instance = new AtSign();
@@ -15,7 +13,7 @@ public class AtSign extends UriTerminal {
     }
 
     @Override
-    public TerminalSymbol getSymbol() {
+    public UriTerminalType getSymbol() {
         return UriTerminalType.AtSign;
     }
 

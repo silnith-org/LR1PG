@@ -1,7 +1,5 @@
 package org.silnith.grammar.uri;
 
-import org.silnith.grammar.TerminalSymbol;
-
 public class LeftBracket extends UriTerminal {
 
     private static final LeftBracket instance = new LeftBracket();
@@ -15,7 +13,7 @@ public class LeftBracket extends UriTerminal {
     }
 
     @Override
-    public TerminalSymbol getSymbol() {
+    public UriTerminalType getSymbol() {
         return UriTerminalType.LeftBracket;
     }
 

@@ -132,14 +132,14 @@ public class UrlParserTest {
         final NonTerminalSymbol absoluteUri = grammar.getNonTerminalSymbol("absolute-URI");
         
         // gen-delims = ":" / "/" / "?" / "#" / "[" / "]" / "@"
-        final Collection<TerminalSymbol> genDelims = new ArrayList<TerminalSymbol>(7);
+        final Collection<UriTerminalType> genDelims = new ArrayList<>(7);
         genDelims.addAll(Arrays.asList(Colon, ForwardSlash, QuestionMark, NumberSign, LeftBracket, RightBracket, AtSign));
 
         // sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
-        final Collection<TerminalSymbol> subDelims = new ArrayList<TerminalSymbol>(11);
+        final Collection<UriTerminalType> subDelims = new ArrayList<>(11);
         subDelims.addAll(Arrays.asList(ExclamationMark, Dollar, Ampersand, Apostrophe, LeftParenthesis, RightParenthesis, Asterisk, Plus, Comma, Semicolon, Equals));
         
-        final Collection<TerminalSymbol> unreservedSymbols = new ArrayList<>();
+        final Collection<UriTerminalType> unreservedSymbols = new ArrayList<>(7);
         unreservedSymbols.add(Digit);
         unreservedSymbols.add(AlphaHex);
         unreservedSymbols.add(AlphaNonHex);
@@ -209,11 +209,11 @@ public class UrlParserTest {
 
         // query = *( pchar / "/" / "?" )
         // query = *( unreserved / pct-encoded / sub-delims / ":" / "@" / "/" / "?" )query
-        for (final TerminalSymbol unreserved : unreservedSymbols) {
+        for (final UriTerminalType unreserved : unreservedSymbols) {
             grammar.addProduction(query, new TestProductionHandler("query"), unreserved, query);
         }
         grammar.addProduction(query, new TestProductionHandler("query"), pctEncoded, query);
-        for (final TerminalSymbol terminalSymbol : subDelims) {
+        for (final UriTerminalType terminalSymbol : subDelims) {
             grammar.addProduction(query, new TestProductionHandler("query"), terminalSymbol, query);
         }
         grammar.addProduction(query, new TestProductionHandler("query"), Colon, query);
@@ -229,11 +229,11 @@ public class UrlParserTest {
         // fragment = *( pchar / "/" / "?" )
         // fragment = *( unreserved / pct-encoded / sub-delims / ":" / "@" / "/" / "?" )
         grammar.addProduction(fragment, new TestProductionHandler("fragment"));
-        for (final TerminalSymbol unreserved : unreservedSymbols) {
+        for (final UriTerminalType unreserved : unreservedSymbols) {
             grammar.addProduction(fragment, new TestProductionHandler("fragment"), unreserved, fragment);
         }
         grammar.addProduction(fragment, new TestProductionHandler("fragment"), pctEncoded, fragment);
-        for (final TerminalSymbol terminalSymbol : subDelims) {
+        for (final UriTerminalType terminalSymbol : subDelims) {
             grammar.addProduction(fragment, new TestProductionHandler("fragment"), terminalSymbol, fragment);
         }
         grammar.addProduction(fragment, new TestProductionHandler("fragment"), Colon, fragment);
@@ -242,11 +242,11 @@ public class UrlParserTest {
         grammar.addProduction(fragment, new TestProductionHandler("fragment"), QuestionMark, fragment);
         
         // userinfo = *( unreserved / pct-encoded / sub-delims / ":" )
-        for (final TerminalSymbol unreserved : unreservedSymbols) {
+        for (final UriTerminalType unreserved : unreservedSymbols) {
             grammar.addProduction(userinfo, new TestProductionHandler("userinfo"), unreserved, userinfo);
         }
         grammar.addProduction(userinfo, new TestProductionHandler("userinfo"), pctEncoded, userinfo);
-        for (final TerminalSymbol subDelim : subDelims) {
+        for (final UriTerminalType subDelim : subDelims) {
             grammar.addProduction(userinfo, new TestProductionHandler("userinfo"), subDelim, userinfo);
         }
         grammar.addProduction(userinfo, new TestProductionHandler("userinfo"), Colon, userinfo);
@@ -254,11 +254,11 @@ public class UrlParserTest {
 
         // TODO: ambiguous with IPv4address
         // reg-name = *( unreserved / pct-encoded / sub-delims )
-        for (final TerminalSymbol unreserved : unreservedSymbols) {
+        for (final UriTerminalType unreserved : unreservedSymbols) {
             grammar.addProduction(regName, new TestProductionHandler("reg-name"), unreserved, regName);
         }
         grammar.addProduction(regName, new TestProductionHandler("reg-name"), pctEncoded, regName);
-        for (final TerminalSymbol subDelim : subDelims) {
+        for (final UriTerminalType subDelim : subDelims) {
             grammar.addProduction(regName, new TestProductionHandler("reg-name"), subDelim, regName);
         }
         grammar.addProduction(regName, new TestProductionHandler("reg-name"));
@@ -279,13 +279,13 @@ public class UrlParserTest {
 //        grammar.addProduction(authority, new TestProductionHandler("authority"), userinfo, AtSign, host, Colon, port);
 
         // segment-nz-nc = 1*( unreserved / pct-encoded / sub-delims / "@" )
-        for (final Symbol symbol : unreservedSymbols) {
+        for (final UriTerminalType symbol : unreservedSymbols) {
             grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), symbol);
             grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), symbol, segmentNzNc);
         }
         grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), pctEncoded);
         grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), pctEncoded, segmentNzNc);
-        for (final TerminalSymbol subDelim : subDelims) {
+        for (final UriTerminalType subDelim : subDelims) {
             grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), subDelim);
             grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), subDelim, segmentNzNc);
         }
@@ -294,11 +294,11 @@ public class UrlParserTest {
 
         // segment-nz = 1*pchar
         // segment-nz = 1*( unreserved / pct-encoded / sub-delims / ":" / "@" )
-        for (final TerminalSymbol symbol : unreservedSymbols) {
+        for (final UriTerminalType symbol : unreservedSymbols) {
             grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), symbol, segmentNz);
         }
         grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), pctEncoded, segmentNz);
-        for (final TerminalSymbol subDelim : subDelims) {
+        for (final UriTerminalType subDelim : subDelims) {
             grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), subDelim, segmentNz);
         }
         grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), Colon);

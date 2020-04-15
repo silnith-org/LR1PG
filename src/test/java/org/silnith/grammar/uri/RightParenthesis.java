@@ -1,7 +1,5 @@
 package org.silnith.grammar.uri;
 
-import org.silnith.grammar.TerminalSymbol;
-
 public class RightParenthesis extends UriTerminal {
 
     private static final RightParenthesis instance = new RightParenthesis();
@@ -15,7 +13,7 @@ public class RightParenthesis extends UriTerminal {
     }
 
     @Override
-    public TerminalSymbol getSymbol() {
+    public UriTerminalType getSymbol() {
         return UriTerminalType.RightParenthesis;
     }
 

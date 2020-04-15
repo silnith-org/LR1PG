@@ -1,7 +1,5 @@
 package org.silnith.grammar.uri;
 
-import org.silnith.grammar.TerminalSymbol;
-
 public class Colon extends UriTerminal {
 
     private static final Colon instance = new Colon();
@@ -15,7 +13,7 @@ public class Colon extends UriTerminal {
     }
 
     @Override
-    public TerminalSymbol getSymbol() {
+    public UriTerminalType getSymbol() {
         return UriTerminalType.Colon;
     }
 

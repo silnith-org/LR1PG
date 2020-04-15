@@ -1,7 +1,5 @@
 package org.silnith.grammar.uri;
 
-import org.silnith.grammar.TerminalSymbol;
-
 public class Comma extends UriTerminal {
 
     private static final Comma instance = new Comma();
@@ -15,7 +13,7 @@ public class Comma extends UriTerminal {
     }
 
     @Override
-    public TerminalSymbol getSymbol() {
+    public UriTerminalType getSymbol() {
         return UriTerminalType.Comma;
     }
 

@@ -1,7 +1,5 @@
 package org.silnith.grammar.uri;
 
-import org.silnith.grammar.TerminalSymbol;
-
 public class Percent extends UriTerminal {
 
     private static final Percent instance = new Percent();
@@ -15,7 +13,7 @@ public class Percent extends UriTerminal {
     }
 
     @Override
-    public TerminalSymbol getSymbol() {
+    public UriTerminalType getSymbol() {
         return UriTerminalType.Percent;
     }
 

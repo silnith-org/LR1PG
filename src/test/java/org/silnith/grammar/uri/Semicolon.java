@@ -1,7 +1,5 @@
 package org.silnith.grammar.uri;
 
-import org.silnith.grammar.TerminalSymbol;
-
 public class Semicolon extends UriTerminal {
 
     private static final Semicolon instance = new Semicolon();
@@ -15,7 +13,7 @@ public class Semicolon extends UriTerminal {
     }
 
     @Override
-    public TerminalSymbol getSymbol() {
+    public UriTerminalType getSymbol() {
         return UriTerminalType.Semicolon;
     }
 
