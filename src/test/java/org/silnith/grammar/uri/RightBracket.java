@@ -1,5 +1,7 @@
 package org.silnith.grammar.uri;
 
+import org.silnith.grammar.TerminalSymbolMatch;
+
 public class RightBracket extends UriTerminal {
 
     private static final RightBracket instance = new RightBracket();
@@ -10,6 +12,11 @@ public class RightBracket extends UriTerminal {
 
     private RightBracket() {
         super(']');
+    }
+
+    @Override
+    public TerminalSymbolMatch getMatch() {
+        return UriTerminalType.RightBracket;
     }
 
 }

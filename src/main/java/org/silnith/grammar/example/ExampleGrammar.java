@@ -3,17 +3,16 @@ package org.silnith.grammar.example;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.silnith.grammar.DataStackElement;
 import org.silnith.grammar.Grammar;
-import org.silnith.grammar.Lexer;
-import org.silnith.grammar.NonTerminalSymbol;
+import org.silnith.grammar.NonTerminalSymbolMatch;
 import org.silnith.grammar.Parser;
 import org.silnith.grammar.Production;
 import org.silnith.grammar.ProductionHandler;
+import org.silnith.grammar.SetFactory;
 
 
 public class ExampleGrammar {
@@ -36,7 +35,7 @@ public class ExampleGrammar {
 
     }
 
-	public static class TerminalSetFactory implements Grammar.SetFactory<Terminals> {
+	public static class TerminalSetFactory implements SetFactory<Terminals> {
         
         @Override
         public Set<Terminals> getNewSet() {
@@ -56,11 +55,11 @@ public class ExampleGrammar {
      * @param args the command-line arguments
      */
     public static void main(final String[] args) {
-        final Grammar<Terminals> grammar = new Grammar<Terminals>(new TerminalSetFactory(),
-        		new Grammar.DefaultMapFactory<NonTerminalSymbol, Set<Production>>(),
-                new Grammar.DefaultSetFactory<NonTerminalSymbol>());
+        final Grammar<Terminals> grammar = new Grammar<>(new TerminalSetFactory(),
+        		new Grammar.DefaultMapFactory<NonTerminalSymbolMatch, Set<Production>>(),
+                new Grammar.DefaultSetFactory<NonTerminalSymbolMatch>());
         
-        final NonTerminalSymbol nonTerminal = grammar.getNonTerminalSymbol("S");
+        final NonTerminalSymbolMatch nonTerminal = grammar.getNonTerminalSymbol("S");
         
 		grammar.addProduction(nonTerminal, new StringProductionHandler("S = A + B + C"), Terminals.A, Terminals.B, Terminals.C);
         
@@ -68,16 +67,9 @@ public class ExampleGrammar {
         
         final List<Terminals> input = Arrays.asList(Terminals.A, Terminals.B, Terminals.C, Terminals.EOF);
         
-        final Object abstractSyntaxTree = parser.parse(new Lexer<Terminals>() {
-            
-            @Override
-            public Iterator<Terminals> iterator() {
-                return input.iterator();
-            }
-            
-        });
-        
-        System.out.println(abstractSyntaxTree);
+//        final Object abstractSyntaxTree = parser.parse(new StaticLexer(input));
+//        
+//        System.out.println(abstractSyntaxTree);
     }
     
 }

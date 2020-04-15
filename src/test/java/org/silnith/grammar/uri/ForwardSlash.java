@@ -1,5 +1,7 @@
 package org.silnith.grammar.uri;
 
+import org.silnith.grammar.TerminalSymbolMatch;
+
 public class ForwardSlash extends UriTerminal {
 
     private static final ForwardSlash instance = new ForwardSlash();
@@ -10,6 +12,11 @@ public class ForwardSlash extends UriTerminal {
 
     private ForwardSlash() {
         super('/');
+    }
+
+    @Override
+    public TerminalSymbolMatch getMatch() {
+        return UriTerminalType.ForwardSlash;
     }
 
 }

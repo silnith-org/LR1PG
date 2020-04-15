@@ -1,5 +1,7 @@
 package org.silnith.grammar.uri;
 
+import org.silnith.grammar.TerminalSymbolMatch;
+
 public class Hyphen extends UriTerminal {
 
     private static final Hyphen instance = new Hyphen();
@@ -10,6 +12,11 @@ public class Hyphen extends UriTerminal {
 
     private Hyphen() {
         super('-');
+    }
+
+    @Override
+    public TerminalSymbolMatch getMatch() {
+        return UriTerminalType.Hyphen;
     }
 
 }

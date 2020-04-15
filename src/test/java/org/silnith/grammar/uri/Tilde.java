@@ -1,5 +1,7 @@
 package org.silnith.grammar.uri;
 
+import org.silnith.grammar.TerminalSymbolMatch;
+
 public class Tilde extends UriTerminal {
 
     private static final Tilde instance = new Tilde();
@@ -10,6 +12,11 @@ public class Tilde extends UriTerminal {
 
     private Tilde() {
         super('~');
+    }
+
+    @Override
+    public TerminalSymbolMatch getMatch() {
+        return UriTerminalType.Tilde;
     }
 
 }

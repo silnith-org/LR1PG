@@ -1,30 +1,18 @@
 package org.silnith.grammar;
 
-import java.util.Collections;
-import java.util.Set;
-
-
-public class CharacterLiteral extends Terminal {
+public class CharacterLiteral implements TerminalSymbolMatch {
     
+    private final String name;
     private final char character;
     
     public CharacterLiteral(final String name, final char character) {
-        super(name);
+        super();
+        this.name = name;
         this.character = character;
     }
     
     public CharacterLiteral(final char character) {
         this(String.valueOf(character), character);
-    }
-    
-    @Override
-    public boolean matches(final char character) {
-        return this.character == character;
-    }
-    
-    @Override
-    public Set<Character> getFirstSet() {
-        return Collections.singleton(character);
     }
     
     @Override
@@ -44,7 +32,7 @@ public class CharacterLiteral extends Terminal {
     
     @Override
     public String toString() {
-        return "'" + getName() + "'#" + (int) character;
+        return "'" + name + "'#" + (int) character;
     }
     
 }

@@ -1,5 +1,7 @@
 package org.silnith.grammar.uri;
 
+import org.silnith.grammar.TerminalSymbolMatch;
+
 public class Equals extends UriTerminal {
 
     private static final Equals instance = new Equals();
@@ -10,6 +12,11 @@ public class Equals extends UriTerminal {
 
     private Equals() {
         super('=');
+    }
+
+    @Override
+    public TerminalSymbolMatch getMatch() {
+        return UriTerminalType.Equals;
     }
 
 }

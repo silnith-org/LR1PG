@@ -8,11 +8,11 @@ public class Production {
     
     private final ProductionHandler productionHandler;
     
-    private final List<Symbol> symbols;
+    private final List<SymbolMatch> symbols;
     
     private final int hashCode;
     
-    public Production(final ProductionHandler productionHandler, final Symbol... symbols) {
+    public Production(final ProductionHandler productionHandler, final SymbolMatch... symbols) {
         super();
         if (productionHandler == null) {
         	throw new IllegalArgumentException();
@@ -37,7 +37,7 @@ public class Production {
      * 
      * @return the symbols in the right hand of the production
      */
-    public List<Symbol> getSymbols() {
+    public List<SymbolMatch> getSymbols() {
         return symbols;
     }
     

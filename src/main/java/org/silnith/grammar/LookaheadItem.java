@@ -3,7 +3,7 @@ package org.silnith.grammar;
 import java.util.Set;
 
 
-public class LookaheadItem<T extends TerminalSymbol> {
+public class LookaheadItem<T extends TerminalSymbolMatch> {
     
     private final Item item;
     
@@ -29,11 +29,11 @@ public class LookaheadItem<T extends TerminalSymbol> {
         return item.isComplete();
     }
     
-    public Symbol getNextSymbol() {
+    public SymbolMatch getNextSymbol() {
         return item.getNextSymbol();
     }
     
-    public NonTerminalSymbol getLeftHandSide() {
+    public NonTerminalSymbolMatch getLeftHandSide() {
         return item.getLeftHandSide();
     }
     
@@ -60,7 +60,7 @@ public class LookaheadItem<T extends TerminalSymbol> {
             return true;
         }
         if (obj instanceof LookaheadItem) {
-            final LookaheadItem<?> other = (LookaheadItem<?>) obj;
+            final LookaheadItem other = (LookaheadItem) obj;
             if (hashCode != other.hashCode) {
                 return false;
             }

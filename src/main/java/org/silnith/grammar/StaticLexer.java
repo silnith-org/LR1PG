@@ -1,18 +1,43 @@
 package org.silnith.grammar;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
-public class StaticLexer<T extends TerminalSymbol> implements Lexer<T> {
+public class StaticLexer implements Lexer {
     
-    private final Iterable<T> iterable;
+    public static class TerminalWrapper implements Terminal {
 
-    public StaticLexer(final Iterable<T> iterable) {
+        private final TerminalSymbolMatch tsm;
+
+        public TerminalWrapper(TerminalSymbolMatch tsm) {
+            this.tsm = tsm;
+        }
+
+        @Override
+        public TerminalSymbolMatch getMatch() {
+            return tsm;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(tsm);
+        }
+
+    }
+
+    private final List<Terminal> iterable;
+
+    public StaticLexer(final TerminalSymbolMatch... iterable) {
         super();
-        this.iterable = iterable;
+        this.iterable = new ArrayList<Terminal>();
+        for (final TerminalSymbolMatch tsm : iterable) {
+            this.iterable.add(new TerminalWrapper(tsm));
+        }
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public Iterator<Terminal> iterator() {
         return iterable.iterator();
     }
     

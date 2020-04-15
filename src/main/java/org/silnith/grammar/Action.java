@@ -5,7 +5,7 @@ package org.silnith.grammar;
  * 
  * @param <T> the type of terminal symbols
  */
-public abstract class Action<T extends TerminalSymbol> {
+public abstract class Action {
     
     /**
      * The type of action to take.
@@ -37,11 +37,11 @@ public abstract class Action<T extends TerminalSymbol> {
         ACCEPT
     }
     
-    private final ItemSet<T> sourceState;
+    private final ItemSet sourceState;
     
-    private final Symbol symbol;
+    private final SymbolMatch symbol;
     
-    public Action(final ItemSet<T> sourceState, final Symbol symbol) {
+    public Action(final ItemSet sourceState, final SymbolMatch symbol) {
         super();
         if (sourceState == null || symbol == null) {
         	throw new IllegalArgumentException();
@@ -50,11 +50,11 @@ public abstract class Action<T extends TerminalSymbol> {
         this.symbol = symbol;
     }
     
-    public ItemSet<T> getSourceState() {
+    public ItemSet getSourceState() {
         return sourceState;
     }
     
-    public Symbol getSymbol() {
+    public SymbolMatch getSymbol() {
         return symbol;
     }
     

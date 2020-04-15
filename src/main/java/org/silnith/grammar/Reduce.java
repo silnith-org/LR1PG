@@ -5,11 +5,11 @@ package org.silnith.grammar;
  * 
  * @param <T> the type of terminal symbols
  */
-public class Reduce<T extends TerminalSymbol> extends Action<T> {
+public class Reduce<T extends TerminalSymbolMatch> extends Action {
     
     private final LookaheadItem<T> reduceItem;
     
-    public Reduce(final ItemSet<T> sourceState, final Symbol symbol, final LookaheadItem<T> reduceItem) {
+    public Reduce(final ItemSet<T> sourceState, final SymbolMatch symbol, final LookaheadItem<T> reduceItem) {
         super(sourceState, symbol);
         if (reduceItem == null) {
         	throw new IllegalArgumentException();

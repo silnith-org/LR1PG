@@ -1,6 +1,6 @@
 package org.silnith.grammar.example;
 
-import org.silnith.grammar.TerminalSymbol;
+import org.silnith.grammar.TerminalSymbolMatch;
 
 /**
  * A type for terminal symbols composed of Unicode code points
@@ -8,7 +8,7 @@ import org.silnith.grammar.TerminalSymbol;
  * <p>
  * This does not include all Unicode characters, only the ASCII set.
  */
-public enum UnicodeTerminalSymbols implements TerminalSymbol {
+public enum UnicodeTerminalSymbols implements TerminalSymbolMatch {
     /*
      * All the terminal symbols reachable from the original production
      * "document".
@@ -472,11 +472,6 @@ public enum UnicodeTerminalSymbols implements TerminalSymbol {
     
     public char getCharacter() {
         return character;
-    }
-    
-    @Override
-    public Type getType() {
-        return Type.TERMINAL;
     }
     
 }

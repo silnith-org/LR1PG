@@ -5,11 +5,11 @@ package org.silnith.grammar;
  * 
  * @param <T> the type of terminal symbols
  */
-public class Shift<T extends TerminalSymbol> extends Action<T> {
+public class Shift<T extends TerminalSymbolMatch> extends Action {
     
     private final ItemSet<T> destinationState;
     
-    public Shift(final ItemSet<T> sourceState, final Symbol symbol, final ItemSet<T> destinationState) {
+    public Shift(final ItemSet<T> sourceState, final SymbolMatch symbol, final ItemSet<T> destinationState) {
         super(sourceState, symbol);
         if (destinationState == null) {
         	throw new IllegalArgumentException();

@@ -1,35 +1,24 @@
 package org.silnith.grammar;
 
-import java.util.Collections;
-import java.util.Set;
-
-
-public class Identifier extends Terminal {
+public class Identifier implements TerminalSymbolMatch {
+    
+    private final String name;
     
     public Identifier(final String name) {
-        super(name);
-    }
-    
-    @Override
-    public boolean matches(final char character) {
-        return false;
-    }
-    
-    @Override
-    public Set<Character> getFirstSet() {
-        return Collections.singleton(getName().charAt(0));
+        super();
+        this.name = name;
     }
     
     @Override
     public int hashCode() {
-        return getName().hashCode();
+        return name.hashCode();
     }
     
     @Override
     public boolean equals(final Object obj) {
         if (obj instanceof Identifier) {
             final Identifier other = (Identifier) obj;
-            return getName().equals(other.getName());
+            return name.equals(other.name);
         } else {
             return false;
         }

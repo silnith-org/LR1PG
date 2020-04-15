@@ -31,13 +31,19 @@ import org.silnith.grammar.uri.Semicolon;
 import org.silnith.grammar.uri.Tilde;
 import org.silnith.grammar.uri.Underscore;
 import org.silnith.grammar.uri.UriTerminal;
+import org.silnith.grammar.uri.UriTerminalType;
 
-public class UriLexer implements Lexer<UriTerminal> {
+public class UriLexer implements Lexer {
 
     private static class EndOfFile extends UriTerminal {
 
         private EndOfFile() {
             super((char) 0);
+        }
+
+        @Override
+        public TerminalSymbolMatch getMatch() {
+            return UriTerminalType.EndOfFile;
         }
 
     }
@@ -162,11 +168,11 @@ public class UriLexer implements Lexer<UriTerminal> {
         }
     }
 
-    private final List<UriTerminal> terminals;
+    private final List<Terminal> terminals;
 
     public UriLexer(final String string) {
         super();            
-        this.terminals = new ArrayList<UriTerminal>(string.length());
+        this.terminals = new ArrayList<>(string.length());
         for (final char c : string.toCharArray()) {
             this.terminals.add(getTerminal(c));
         }
@@ -174,7 +180,7 @@ public class UriLexer implements Lexer<UriTerminal> {
     }
 
     @Override
-    public Iterator<UriTerminal> iterator() {
+    public Iterator<Terminal> iterator() {
         return terminals.iterator();
     }
     

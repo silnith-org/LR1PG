@@ -1,5 +1,7 @@
 package org.silnith.grammar.uri;
 
+import org.silnith.grammar.TerminalSymbolMatch;
+
 public class Underscore extends UriTerminal {
 
     private static final Underscore instance = new Underscore();
@@ -10,6 +12,11 @@ public class Underscore extends UriTerminal {
 
     private Underscore() {
         super('_');
+    }
+
+    @Override
+    public TerminalSymbolMatch getMatch() {
+        return UriTerminalType.Underscore;
     }
 
 }

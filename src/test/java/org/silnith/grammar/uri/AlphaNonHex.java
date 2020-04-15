@@ -3,6 +3,8 @@ package org.silnith.grammar.uri;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.silnith.grammar.TerminalSymbolMatch;
+
 public class AlphaNonHex extends UriTerminal {
 
     private static final Map<Character, AlphaNonHex> instances;
@@ -23,6 +25,11 @@ public class AlphaNonHex extends UriTerminal {
 
     private AlphaNonHex(final char character) {
         super(character);
+    }
+
+    @Override
+    public TerminalSymbolMatch getMatch() {
+        return UriTerminalType.AlphaNonHex;
     }
 
 }

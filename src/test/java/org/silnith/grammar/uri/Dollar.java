@@ -1,5 +1,7 @@
 package org.silnith.grammar.uri;
 
+import org.silnith.grammar.TerminalSymbolMatch;
+
 public class Dollar extends UriTerminal {
 
     private static final Dollar instance = new Dollar();
@@ -10,6 +12,11 @@ public class Dollar extends UriTerminal {
 
     private Dollar() {
         super('$');
+    }
+
+    @Override
+    public TerminalSymbolMatch getMatch() {
+        return UriTerminalType.Dollar;
     }
 
 }

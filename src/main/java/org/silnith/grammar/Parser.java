@@ -14,10 +14,9 @@ import java.util.Set;
  * A parser for the language defined by the grammar.  The generated parser is guaranteed to process any input stream
  * of terminal symbols in {@code O(n)} time.
  * 
- * @param <T> the concrete type of terminal symbols
  * @author <a href="mailto:silnith@gmail.com">Kent Rosenkoetter</a>
  */
-public class Parser<T extends TerminalSymbol> {
+public class Parser<T extends TerminalSymbolMatch> {
 	
     private final Map<ItemSet<T>, String> parserStateNames;
     
@@ -27,9 +26,9 @@ public class Parser<T extends TerminalSymbol> {
     
     private final T endOfFileSymbol;
     
-    private final ParsingStateTable<ItemSet<T>, Symbol, Action<T>> parsingTable;
+    private final ParsingStateTable<ItemSet<T>, SymbolMatch, Action> parsingTable;
     
-    private final Deque<Symbol> symbolStack;
+    private final Deque<SymbolMatch> symbolMatchStack;
     
     private final Deque<ItemSet<T>> stateStack;
     
@@ -51,7 +50,7 @@ public class Parser<T extends TerminalSymbol> {
         this.startState = startState;
         this.endOfFileSymbol = endOfFileSymbol;
         this.parsingTable = new ParsingStateTable<>();
-        this.symbolStack = new ArrayDeque<>();
+        this.symbolMatchStack = new ArrayDeque<>();
         this.stateStack = new ArrayDeque<>();
         this.dataStack = new ArrayDeque<>();
         
@@ -61,13 +60,13 @@ public class Parser<T extends TerminalSymbol> {
     public void calculateParseTable() {
         for (final Edge<T> edge : edges) {
             final ItemSet<T> parserState = edge.getInitialState();
-            final Symbol symbol = edge.getSymbol();
+            final SymbolMatch symbol = edge.getSymbol();
             final ItemSet<T> destinationState = edge.getFinalState();
-            final Action<T> action;
-            if (symbol.getType() == Symbol.Type.TERMINAL) {
+            final Action action;
+            if (symbol instanceof TerminalSymbolMatch) {
                 final Shift<T> shiftAction = new Shift<>(parserState, symbol, destinationState);
                 action = shiftAction;
-            } else if (symbol.getType() == Symbol.Type.NON_TERMINAL) {
+            } else if (symbol instanceof NonTerminalSymbolMatch) {
                 final Goto<T> gotoAction = new Goto<>(parserState, symbol, destinationState);
                 action = gotoAction;
             } else {
@@ -78,13 +77,13 @@ public class Parser<T extends TerminalSymbol> {
         for (final ItemSet<T> parserState : parserStateNames.keySet()) {
             for (final LookaheadItem<T> item : parserState.getItems()) {
                 if (item.isComplete()) {
-                    for (final Symbol lookahead : item.getLookaheadSet()) {
+                    for (final T lookahead : item.getLookaheadSet()) {
                         putAction(parserState, lookahead, new Reduce<>(parserState, lookahead, item));
                     }
                 } else {
-                    final Symbol symbol = item.getNextSymbol();
+                    final SymbolMatch symbol = item.getNextSymbol();
                     if (symbol.equals(endOfFileSymbol)) {
-                        putAction(parserState, symbol, new Accept<>(parserState, symbol));
+                        putAction(parserState, symbol, new Accept(parserState, symbol));
                     }
                 }
             }
@@ -101,8 +100,8 @@ public class Parser<T extends TerminalSymbol> {
      * @param symbol the next symbol to be consumed
      * @param action the parser action to take
      */
-    protected void putAction(final ItemSet<T> parserState, final Symbol symbol, final Action<T> action) {
-        final Action<T> previousAction = parsingTable.put(parserState, symbol, action);
+    protected void putAction(final ItemSet<T> parserState, final SymbolMatch symbol, final Action action) {
+        final Action previousAction = parsingTable.put(parserState, symbol, action);
         if (previousAction != null) {
         	conflictCount++;
             System.out.println("Action conflict #" + conflictCount);
@@ -120,11 +119,11 @@ public class Parser<T extends TerminalSymbol> {
         return parserStateNames.get(state);
     }
     
-    private T currentSymbol;
+    private Terminal currentSymbol;
     
-    private T lookahead;
+    private Terminal lookahead;
     
-    protected T getNextSymbol(final Iterator<T> iterator) {
+    protected Terminal getNextSymbol(final Iterator<Terminal> iterator) {
         if (currentSymbol == null) {
             currentSymbol = iterator.next();
         } else {
@@ -133,12 +132,19 @@ public class Parser<T extends TerminalSymbol> {
         if (iterator.hasNext()) {
             lookahead = iterator.next();
         } else {
-            lookahead = endOfFileSymbol;
+            lookahead = new Terminal() {
+                
+                @Override
+                public T getMatch() {
+                    return endOfFileSymbol;
+                }
+                
+            };
         }
         return currentSymbol;
     }
     
-    protected Symbol getLookahead() {
+    protected Terminal getLookahead() {
         return lookahead;
     }
     
@@ -149,32 +155,16 @@ public class Parser<T extends TerminalSymbol> {
      * @return an abstract syntax tree as constructed by the various {@link ProductionHandler} implementations used in
      *         the {@link Grammar}
      */
-    public Object parse(final Lexer<T> lexer) {
+    public Object parse(final Lexer lexer) {
     	currentSymbol = null;
     	lookahead = null;
         ItemSet<T> currentState = startState;
         stateStack.push(currentState);
-        final Iterator<T> iterator = lexer.iterator();
-        T nextSymbol = getNextSymbol(iterator);
-//        System.out.print("First symbol: ");
-//        System.out.println(nextSymbol);
+        final Iterator<Terminal> iterator = lexer.iterator();
+        Terminal nextSymbol = getNextSymbol(iterator);
         boolean done = false;
         do {
-//            System.out.println(stateStack);
-//            System.out.println(symbolStack);
-//            System.out.println(getName(currentState));
-//            currentState.printLong();
-//            System.out.print("next symbol: ");
-//            System.out.println(nextSymbol);
-//            final Map<Symbol, Action> actionRow = parsingTable.getRow(currentState);
-//            for (final Map.Entry<Symbol, Action> entry : actionRow.entrySet()) {
-//                final Symbol key = entry.getKey();
-//                System.out.print("Symbol: ");
-//                System.out.println(key);
-//                System.out.print("Action: ");
-//                System.out.println(entry.getValue().getClass());
-//            }
-            final Action<T> action = parsingTable.get(currentState, nextSymbol);
+            final Action action = parsingTable.get(currentState, nextSymbol.getMatch());
             if (action == null) {
                 currentState.printLong();
                 System.out.print("Next symbol: ");
@@ -186,23 +176,21 @@ public class Parser<T extends TerminalSymbol> {
             case SHIFT: {
                 final Shift<T> shiftAction = (Shift<T>) action;
                 currentState = shiftAction.getDestinationState();
-                symbolStack.push(nextSymbol);
+                symbolMatchStack.push(nextSymbol.getMatch());
                 stateStack.push(currentState);
                 dataStack.push(new DataStackElement(nextSymbol));
-//                System.out.print("Shifted terminal: ");
-//                System.out.println(nextSymbol);
                 nextSymbol = getNextSymbol(iterator);
             }
                 break;
             case REDUCE: {
                 final Reduce<T> reduceAction = (Reduce<T>) action;
                 final LookaheadItem<T> reduceItem = reduceAction.getReduceItem();
-                final NonTerminalSymbol leftHandSide = reduceItem.getLeftHandSide();
+                final NonTerminalSymbolMatch leftHandSide = reduceItem.getLeftHandSide();
                 final Production production = reduceItem.getRightHandSide();
                 final List<DataStackElement> data = new LinkedList<>();
                 for (@SuppressWarnings("unused")
-                final Symbol symbol : production.getSymbols()) {
-                    symbolStack.pop();
+                final SymbolMatch symbol : production.getSymbols()) {
+                    symbolMatchStack.pop();
                     stateStack.pop();
                     final DataStackElement datum = dataStack.pop();
                     data.add(0, datum);
@@ -210,38 +198,23 @@ public class Parser<T extends TerminalSymbol> {
                 final ProductionHandler handler = production.getProductionHandler();
                 final DataStackElement newDatum = new DataStackElement(handler.handleReduction(data));
                 currentState = stateStack.peek();
-//                System.out.println(getName(currentState));
-//                currentState.printLong();
-//                for (final Map.Entry<Symbol, Action> entry :
-//                    parsingTable.getRow(currentState).entrySet()) {
-//                    final Symbol key = entry.getKey();
-//                    System.out.print("Symbol: ");
-//                    System.out.println(key);
-//                    System.out.print("Action: ");
-//                    System.out.println(entry.getValue().getClass());
-//                }
-                final Action<T> tempAction = parsingTable.get(currentState, leftHandSide);
+                final Action tempAction = parsingTable.get(currentState, leftHandSide);
                 assert tempAction instanceof Goto;
                 final Goto<T> gotoAction = (Goto<T>) tempAction;
                 currentState = gotoAction.getDestinationState();
-                symbolStack.push(leftHandSide);
+                symbolMatchStack.push(leftHandSide);
                 stateStack.push(currentState);
                 dataStack.push(newDatum);
-//                System.out.print("Reduced by production: ");
-//                System.out.println(reduceItem);
             }
                 break;
             case GOTO: {
                 final Goto<T> gotoAction = (Goto<T>) action;
                 currentState = gotoAction.getDestinationState();
-//                System.out.print("Gone to state: ");
-//                System.out.println(getName(currentState));
             }
                 break;
             case ACCEPT: {
                 done = true;
                 System.out.println("Accept.");
-//                System.out.println(dataStack);
             }
                 break;
             default: {

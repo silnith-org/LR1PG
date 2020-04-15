@@ -1,5 +1,7 @@
 package org.silnith.grammar.uri;
 
+import org.silnith.grammar.TerminalSymbolMatch;
+
 public class ExclamationMark extends UriTerminal {
 
     private static final ExclamationMark instance = new ExclamationMark();
@@ -10,6 +12,11 @@ public class ExclamationMark extends UriTerminal {
 
     private ExclamationMark() {
         super('!');
+    }
+
+    @Override
+    public TerminalSymbolMatch getMatch() {
+        return UriTerminalType.ExclamationMark;
     }
 
 }

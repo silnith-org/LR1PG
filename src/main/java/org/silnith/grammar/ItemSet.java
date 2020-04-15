@@ -6,10 +6,8 @@ import java.util.Set;
 /**
  * Represents a parser state.  This is a set of items, where each item is xxx
  * coupled with a look-ahead set.
- * 
- * @param <T> the type of terminal symbols
  */
-public class ItemSet<T extends TerminalSymbol> {
+public class ItemSet<T extends TerminalSymbolMatch> {
     
     private final Set<LookaheadItem<T>> itemSet;
     
@@ -39,7 +37,7 @@ public class ItemSet<T extends TerminalSymbol> {
             return true;
         }
         if (obj instanceof ItemSet) {
-            final ItemSet<?> other = (ItemSet<?>) obj;
+            final ItemSet other = (ItemSet) obj;
             if (hashCode != other.hashCode) {
                 return false;
             }

@@ -1,8 +1,5 @@
 package org.silnith.grammar;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.Test;
 
 
@@ -10,16 +7,16 @@ public class ParserTest {
     
     @Test
     public void testParse() {
-        final Grammar<Terminal> grammar = new Grammar<>();
+        final Grammar<CharacterLiteral> grammar = new Grammar<>();
         
-        final Terminal eq = new CharacterLiteral("=", '=');
-        final Terminal x = new CharacterLiteral("x", 'x');
-        final Terminal star = new CharacterLiteral("*", '*');
-        final Terminal eof = new CharacterLiteral("$", '$');
+        final TerminalSymbolMatch eq = new CharacterLiteral("=", '=');
+        final TerminalSymbolMatch x = new CharacterLiteral("x", 'x');
+        final TerminalSymbolMatch star = new CharacterLiteral("*", '*');
+        final CharacterLiteral eof = new CharacterLiteral("$", '$');
         
-        final NonTerminal s = new NonTerminal("S");
-        final NonTerminal v = new NonTerminal("V");
-        final NonTerminal e = new NonTerminal("E");
+        final NonTerminalSymbolMatch s = grammar.getNonTerminalSymbol("S");
+        final NonTerminalSymbolMatch v = grammar.getNonTerminalSymbol("V");
+        final NonTerminalSymbolMatch e = grammar.getNonTerminalSymbol("E");
         
         grammar.addProduction(s, new TestProductionHandler("S"), v, eq, e);
         grammar.addProduction(s, new TestProductionHandler("S"), e);
@@ -29,11 +26,9 @@ public class ParserTest {
         
         grammar.compute();
         
-        final Parser<Terminal> parser = grammar.createParser(s, eof);
+        final Parser<CharacterLiteral> parser = grammar.createParser(s, eof);
         
-        final List<Terminal> input = Arrays.asList(star, x, eq, star, x);
-        
-        parser.parse(new StaticLexer<>(input));
+        parser.parse(new StaticLexer(star, x, eq, star, x));
         
 //        fail("Not yet implemented");
     }
