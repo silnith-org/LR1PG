@@ -62,6 +62,7 @@ public class UrlParserTest {
     private NonTerminalSymbol port;
     private NonTerminalSymbol authority;
     private NonTerminalSymbol segment;
+    private NonTerminalSymbol segmentSequence;
     private NonTerminalSymbol query;
     private NonTerminalSymbol fragment;
     @Test
@@ -126,7 +127,7 @@ public class UrlParserTest {
         final NonTerminalSymbol segmentNz = grammar.getNonTerminalSymbol("segment-nz");
         final NonTerminalSymbol segmentNzNc = grammar.getNonTerminalSymbol("segment-nz-nc");
         
-        final NonTerminalSymbol segmentSequence = grammar.getNonTerminalSymbol("segment-sequence");
+        segmentSequence = grammar.getNonTerminalSymbol("segment-sequence");
         final NonTerminalSymbol segmentSequenceElement = grammar.getNonTerminalSymbol("segment-sequence-element");
         
         final NonTerminalSymbol segmentPrime = grammar.getNonTerminalSymbol("segment'");
@@ -553,6 +554,17 @@ public class UrlParserTest {
                 // pass
             }
         }
+    }
+    
+    @Test
+    public void testSegmentSequence() {
+        parser = grammar.createParser(segmentSequence, EndOfFile);
+        Object ast;
+        
+        ast = parser.parse(new UriLexer(""));
+        ast = parser.parse(new UriLexer("/abyz0189%2F-._~:@!$&'()*+,;="));
+        ast = parser.parse(new UriLexer("/abyz0189%2F-._~:@!$&'()*+,;=/abyz0189%2F-._~:@!$&'()*+,;="));
+        ast = parser.parse(new UriLexer("/abyz0189%2F-._~:@!$&'()*+,;=/abyz0189%2F-._~:@!$&'()*+,;=/abyz0189%2F-._~:@!$&'()*+,;="));
     }
 
     @Test
