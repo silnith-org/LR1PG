@@ -69,7 +69,7 @@ public class UrlParserTest {
     @Ignore
     public void testRegularExpression() {
         final Pattern urlPattern = Pattern.compile("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
-        final Matcher matcher = urlPattern.matcher("foo");
+        final Matcher matcher = urlPattern.matcher("https://foo-bar.example.com:65536/abyz/abyz/abyz?query=foo&query=bar#fragment");
         if (matcher.matches()) {
             final String scheme = matcher.group(2);
             final String authority = matcher.group(4);
@@ -113,13 +113,6 @@ public class UrlParserTest {
         final NonTerminalSymbol ipFutureContent = grammar.getNonTerminalSymbol("IPvFuture-content");
 
         final NonTerminalSymbol decOctet = grammar.getNonTerminalSymbol("dec-octet");
-
-        final NonTerminalSymbol schemePrime = grammar.getNonTerminalSymbol("scheme'");
-        
-        final NonTerminalSymbol userinfoPrime = grammar.getNonTerminalSymbol("userinfoPrime");
-        
-        final NonTerminalSymbol regNamePrime = grammar.getNonTerminalSymbol("reg-name-prime");
-        final NonTerminalSymbol portPrime = grammar.getNonTerminalSymbol("port-prime");
         
         final NonTerminalSymbol path = grammar.getNonTerminalSymbol("path");
         final NonTerminalSymbol pathNoScheme = grammar.getNonTerminalSymbol("path-noscheme");
@@ -128,13 +121,6 @@ public class UrlParserTest {
         final NonTerminalSymbol segmentNzNc = grammar.getNonTerminalSymbol("segment-nz-nc");
         
         segmentSequence = grammar.getNonTerminalSymbol("segment-sequence");
-        final NonTerminalSymbol segmentSequenceElement = grammar.getNonTerminalSymbol("segment-sequence-element");
-        
-        final NonTerminalSymbol segmentPrime = grammar.getNonTerminalSymbol("segment'");
-        
-        final NonTerminalSymbol queryPrime = grammar.getNonTerminalSymbol("query'");
-        
-        final NonTerminalSymbol fragmentPrime = grammar.getNonTerminalSymbol("fragment'");
         
         uriReference = grammar.getNonTerminalSymbol("URI-reference");
         relativeRef = grammar.getNonTerminalSymbol("relative-ref");
@@ -148,16 +134,11 @@ public class UrlParserTest {
 
         // sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
         final Collection<UriTerminalType> subDelims = new ArrayList<>(11);
-        subDelims.addAll(Arrays.asList(ExclamationMark, Dollar, Ampersand, Apostrophe, LeftParenthesis, RightParenthesis, Asterisk, Plus, Comma, Semicolon, Equals));
+        subDelims.addAll(Arrays.asList(ExclamationMark, Dollar, Ampersand, Apostrophe, LeftParenthesis, RightParenthesis,
+                Asterisk, Plus, Comma, Semicolon, Equals));
         
         final Collection<UriTerminalType> unreservedSymbols = new ArrayList<>(7);
-        unreservedSymbols.add(Digit);
-        unreservedSymbols.add(AlphaHex);
-        unreservedSymbols.add(AlphaNonHex);
-        unreservedSymbols.add(Hyphen);
-        unreservedSymbols.add(Period);
-        unreservedSymbols.add(Underscore);
-        unreservedSymbols.add(Tilde);
+        unreservedSymbols.addAll(Arrays.asList(Digit, AlphaHex, AlphaNonHex, Hyphen, Period, Underscore, Tilde));
 
         // pct-encoded = "%" HEXDIG HEXDIG
         grammar.addProduction(pctEncoded, new TestProductionHandler("pct-encoded"), Percent, Digit, Digit);
