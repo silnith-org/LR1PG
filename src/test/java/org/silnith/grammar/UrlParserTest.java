@@ -1,32 +1,32 @@
 package org.silnith.grammar;
 
-import static org.silnith.grammar.uri.UriTerminalType.AlphaHex;
-import static org.silnith.grammar.uri.UriTerminalType.AlphaNonHex;
-import static org.silnith.grammar.uri.UriTerminalType.Ampersand;
-import static org.silnith.grammar.uri.UriTerminalType.Apostrophe;
-import static org.silnith.grammar.uri.UriTerminalType.Asterisk;
-import static org.silnith.grammar.uri.UriTerminalType.AtSign;
-import static org.silnith.grammar.uri.UriTerminalType.Colon;
-import static org.silnith.grammar.uri.UriTerminalType.Comma;
-import static org.silnith.grammar.uri.UriTerminalType.Digit;
-import static org.silnith.grammar.uri.UriTerminalType.Dollar;
-import static org.silnith.grammar.uri.UriTerminalType.EndOfFile;
-import static org.silnith.grammar.uri.UriTerminalType.Equals;
-import static org.silnith.grammar.uri.UriTerminalType.ExclamationMark;
-import static org.silnith.grammar.uri.UriTerminalType.ForwardSlash;
-import static org.silnith.grammar.uri.UriTerminalType.Hyphen;
-import static org.silnith.grammar.uri.UriTerminalType.LeftBracket;
-import static org.silnith.grammar.uri.UriTerminalType.LeftParenthesis;
-import static org.silnith.grammar.uri.UriTerminalType.NumberSign;
-import static org.silnith.grammar.uri.UriTerminalType.Percent;
-import static org.silnith.grammar.uri.UriTerminalType.Period;
-import static org.silnith.grammar.uri.UriTerminalType.Plus;
-import static org.silnith.grammar.uri.UriTerminalType.QuestionMark;
-import static org.silnith.grammar.uri.UriTerminalType.RightBracket;
-import static org.silnith.grammar.uri.UriTerminalType.RightParenthesis;
-import static org.silnith.grammar.uri.UriTerminalType.Semicolon;
-import static org.silnith.grammar.uri.UriTerminalType.Tilde;
-import static org.silnith.grammar.uri.UriTerminalType.Underscore;
+import static org.silnith.grammar.uri.token.UriTerminalType.AlphaHex;
+import static org.silnith.grammar.uri.token.UriTerminalType.AlphaNonHex;
+import static org.silnith.grammar.uri.token.UriTerminalType.Ampersand;
+import static org.silnith.grammar.uri.token.UriTerminalType.Apostrophe;
+import static org.silnith.grammar.uri.token.UriTerminalType.Asterisk;
+import static org.silnith.grammar.uri.token.UriTerminalType.AtSign;
+import static org.silnith.grammar.uri.token.UriTerminalType.Colon;
+import static org.silnith.grammar.uri.token.UriTerminalType.Comma;
+import static org.silnith.grammar.uri.token.UriTerminalType.Digit;
+import static org.silnith.grammar.uri.token.UriTerminalType.Dollar;
+import static org.silnith.grammar.uri.token.UriTerminalType.EndOfFile;
+import static org.silnith.grammar.uri.token.UriTerminalType.Equals;
+import static org.silnith.grammar.uri.token.UriTerminalType.ExclamationMark;
+import static org.silnith.grammar.uri.token.UriTerminalType.ForwardSlash;
+import static org.silnith.grammar.uri.token.UriTerminalType.Hyphen;
+import static org.silnith.grammar.uri.token.UriTerminalType.LeftBracket;
+import static org.silnith.grammar.uri.token.UriTerminalType.LeftParenthesis;
+import static org.silnith.grammar.uri.token.UriTerminalType.NumberSign;
+import static org.silnith.grammar.uri.token.UriTerminalType.Percent;
+import static org.silnith.grammar.uri.token.UriTerminalType.Period;
+import static org.silnith.grammar.uri.token.UriTerminalType.Plus;
+import static org.silnith.grammar.uri.token.UriTerminalType.QuestionMark;
+import static org.silnith.grammar.uri.token.UriTerminalType.RightBracket;
+import static org.silnith.grammar.uri.token.UriTerminalType.RightParenthesis;
+import static org.silnith.grammar.uri.token.UriTerminalType.Semicolon;
+import static org.silnith.grammar.uri.token.UriTerminalType.Tilde;
+import static org.silnith.grammar.uri.token.UriTerminalType.Underscore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +39,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.silnith.grammar.uri.UriTerminalType;
+import org.silnith.grammar.uri.production.FragmentProductionHandler;
+import org.silnith.grammar.uri.production.PercentEncodedProductionHandler;
+import org.silnith.grammar.uri.production.PortProductionHandler;
+import org.silnith.grammar.uri.production.QueryProductionHandler;
+import org.silnith.grammar.uri.production.SchemeProductionHandler;
+import org.silnith.grammar.uri.production.SegmentProductionHandler;
+import org.silnith.grammar.uri.token.UriTerminalType;
 
 public class UrlParserTest {
 
@@ -141,10 +147,10 @@ public class UrlParserTest {
         unreservedSymbols.addAll(Arrays.asList(Digit, AlphaHex, AlphaNonHex, Hyphen, Period, Underscore, Tilde));
 
         // pct-encoded = "%" HEXDIG HEXDIG
-        grammar.addProduction(pctEncoded, new TestProductionHandler("pct-encoded"), Percent, Digit, Digit);
-        grammar.addProduction(pctEncoded, new TestProductionHandler("pct-encoded"), Percent, Digit, AlphaHex);
-        grammar.addProduction(pctEncoded, new TestProductionHandler("pct-encoded"), Percent, AlphaHex, Digit);
-        grammar.addProduction(pctEncoded, new TestProductionHandler("pct-encoded"), Percent, AlphaHex, AlphaHex);
+        grammar.addProduction(pctEncoded, PercentEncodedProductionHandler.getInstance(), Percent, Digit, Digit);
+        grammar.addProduction(pctEncoded, PercentEncodedProductionHandler.getInstance(), Percent, Digit, AlphaHex);
+        grammar.addProduction(pctEncoded, PercentEncodedProductionHandler.getInstance(), Percent, AlphaHex, Digit);
+        grammar.addProduction(pctEncoded, PercentEncodedProductionHandler.getInstance(), Percent, AlphaHex, AlphaHex);
         
         // reserved = gen-delims / sub-delims
         
@@ -157,14 +163,14 @@ public class UrlParserTest {
         grammar.addProduction(hierPart, new TestProductionHandler("hier-part"), pathEmpty);
         
         // scheme = ALPHA *( ALPHA / DIGIT / "+" / "-" / ".")
-        grammar.addProduction(scheme, new TestProductionHandler("scheme"), AlphaHex);
-        grammar.addProduction(scheme, new TestProductionHandler("scheme"), AlphaNonHex);
-        grammar.addProduction(scheme, new TestProductionHandler("scheme"), scheme, AlphaHex);
-        grammar.addProduction(scheme, new TestProductionHandler("scheme"), scheme, AlphaNonHex);
-        grammar.addProduction(scheme, new TestProductionHandler("scheme"), scheme, Digit);
-        grammar.addProduction(scheme, new TestProductionHandler("scheme"), scheme, Plus);
-        grammar.addProduction(scheme, new TestProductionHandler("scheme"), scheme, Hyphen);
-        grammar.addProduction(scheme, new TestProductionHandler("scheme"), scheme, Period);
+        grammar.addProduction(scheme, SchemeProductionHandler.getInstance(), AlphaHex);
+        grammar.addProduction(scheme, SchemeProductionHandler.getInstance(), AlphaNonHex);
+        grammar.addProduction(scheme, SchemeProductionHandler.getInstance(), scheme, AlphaHex);
+        grammar.addProduction(scheme, SchemeProductionHandler.getInstance(), scheme, AlphaNonHex);
+        grammar.addProduction(scheme, SchemeProductionHandler.getInstance(), scheme, Digit);
+        grammar.addProduction(scheme, SchemeProductionHandler.getInstance(), scheme, Plus);
+        grammar.addProduction(scheme, SchemeProductionHandler.getInstance(), scheme, Hyphen);
+        grammar.addProduction(scheme, SchemeProductionHandler.getInstance(), scheme, Period);
 
         // IP-literal = "[" ( IPv6address / IPvFuture ) "]"
         grammar.addProduction(ipLiteral, new TestProductionHandler("IP-literal"), LeftBracket, ipv6address, RightBracket);
@@ -202,17 +208,17 @@ public class UrlParserTest {
         // query = *( pchar / "/" / "?" )
         // query = *( unreserved / pct-encoded / sub-delims / ":" / "@" / "/" / "?" )
         for (final UriTerminalType unreserved : unreservedSymbols) {
-            grammar.addProduction(query, new TestProductionHandler("query"), unreserved, query);
+            grammar.addProduction(query, QueryProductionHandler.getInstance(), unreserved, query);
         }
-        grammar.addProduction(query, new TestProductionHandler("query"), pctEncoded, query);
-        for (final UriTerminalType terminalSymbol : subDelims) {
-            grammar.addProduction(query, new TestProductionHandler("query"), terminalSymbol, query);
+        grammar.addProduction(query, QueryProductionHandler.getInstance(), pctEncoded, query);
+        for (final UriTerminalType subDelim : subDelims) {
+            grammar.addProduction(query, QueryProductionHandler.getInstance(), subDelim, query);
         }
-        grammar.addProduction(query, new TestProductionHandler("query"), Colon, query);
-        grammar.addProduction(query, new TestProductionHandler("query"), AtSign, query);
-        grammar.addProduction(query, new TestProductionHandler("query"), ForwardSlash, query);
-        grammar.addProduction(query, new TestProductionHandler("query"), QuestionMark, query);
-        grammar.addProduction(query, new TestProductionHandler("query"));
+        grammar.addProduction(query, QueryProductionHandler.getInstance(), Colon, query);
+        grammar.addProduction(query, QueryProductionHandler.getInstance(), AtSign, query);
+        grammar.addProduction(query, QueryProductionHandler.getInstance(), ForwardSlash, query);
+        grammar.addProduction(query, QueryProductionHandler.getInstance(), QuestionMark, query);
+        grammar.addProduction(query, QueryProductionHandler.getInstance());
 
         // absolute-URI = scheme ":" hier-part [ "?" query ]
         grammar.addProduction(absoluteUri, new TestProductionHandler("absolute-URI"), scheme, Colon, hierPart);
@@ -220,18 +226,18 @@ public class UrlParserTest {
 
         // fragment = *( pchar / "/" / "?" )
         // fragment = *( unreserved / pct-encoded / sub-delims / ":" / "@" / "/" / "?" )
-        grammar.addProduction(fragment, new TestProductionHandler("fragment"));
         for (final UriTerminalType unreserved : unreservedSymbols) {
-            grammar.addProduction(fragment, new TestProductionHandler("fragment"), unreserved, fragment);
+            grammar.addProduction(fragment, FragmentProductionHandler.getInstance(), unreserved, fragment);
         }
-        grammar.addProduction(fragment, new TestProductionHandler("fragment"), pctEncoded, fragment);
-        for (final UriTerminalType terminalSymbol : subDelims) {
-            grammar.addProduction(fragment, new TestProductionHandler("fragment"), terminalSymbol, fragment);
+        grammar.addProduction(fragment, FragmentProductionHandler.getInstance(), pctEncoded, fragment);
+        for (final UriTerminalType subDelim : subDelims) {
+            grammar.addProduction(fragment, FragmentProductionHandler.getInstance(), subDelim, fragment);
         }
-        grammar.addProduction(fragment, new TestProductionHandler("fragment"), Colon, fragment);
-        grammar.addProduction(fragment, new TestProductionHandler("fragment"), AtSign, fragment);
-        grammar.addProduction(fragment, new TestProductionHandler("fragment"), ForwardSlash, fragment);
-        grammar.addProduction(fragment, new TestProductionHandler("fragment"), QuestionMark, fragment);
+        grammar.addProduction(fragment, FragmentProductionHandler.getInstance(), Colon, fragment);
+        grammar.addProduction(fragment, FragmentProductionHandler.getInstance(), AtSign, fragment);
+        grammar.addProduction(fragment, FragmentProductionHandler.getInstance(), ForwardSlash, fragment);
+        grammar.addProduction(fragment, FragmentProductionHandler.getInstance(), QuestionMark, fragment);
+        grammar.addProduction(fragment, FragmentProductionHandler.getInstance());
         
         // userinfo = *( unreserved / pct-encoded / sub-delims / ":" )
         for (final UriTerminalType unreserved : unreservedSymbols) {
@@ -261,8 +267,8 @@ public class UrlParserTest {
         grammar.addProduction(host, new TestProductionHandler("host"), regName);
 
         // port = *DIGIT
-        grammar.addProduction(port, new TestProductionHandler("port"));
-        grammar.addProduction(port, new TestProductionHandler("port"), Digit, port);
+        grammar.addProduction(port, PortProductionHandler.getInstance());
+        grammar.addProduction(port, PortProductionHandler.getInstance(), Digit, port);
 
         // authority = [ userinfo "@" ] host [ ":" port ]
         grammar.addProduction(authority, new TestProductionHandler("authority"), host);
@@ -271,40 +277,40 @@ public class UrlParserTest {
 //        grammar.addProduction(authority, new TestProductionHandler("authority"), userinfo, AtSign, host, Colon, port);
 
         // segment-nz-nc = 1*( unreserved / pct-encoded / sub-delims / "@" )
-        for (final UriTerminalType symbol : unreservedSymbols) {
-            grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), symbol);
-            grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), symbol, segmentNzNc);
+        for (final UriTerminalType unreserved : unreservedSymbols) {
+            grammar.addProduction(segmentNzNc, SegmentProductionHandler.getInstance(), unreserved);
+            grammar.addProduction(segmentNzNc, SegmentProductionHandler.getInstance(), unreserved, segmentNzNc);
         }
-        grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), pctEncoded);
-        grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), pctEncoded, segmentNzNc);
+        grammar.addProduction(segmentNzNc, SegmentProductionHandler.getInstance(), pctEncoded);
+        grammar.addProduction(segmentNzNc, SegmentProductionHandler.getInstance(), pctEncoded, segmentNzNc);
         for (final UriTerminalType subDelim : subDelims) {
-            grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), subDelim);
-            grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), subDelim, segmentNzNc);
+            grammar.addProduction(segmentNzNc, SegmentProductionHandler.getInstance(), subDelim);
+            grammar.addProduction(segmentNzNc, SegmentProductionHandler.getInstance(), subDelim, segmentNzNc);
         }
-        grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), AtSign);
-        grammar.addProduction(segmentNzNc, new TestProductionHandler("segment-nz-nc"), AtSign, segmentNzNc);
+        grammar.addProduction(segmentNzNc, SegmentProductionHandler.getInstance(), AtSign);
+        grammar.addProduction(segmentNzNc, SegmentProductionHandler.getInstance(), AtSign, segmentNzNc);
 
         // segment-nz = 1*pchar
         // segment-nz = 1*( unreserved / pct-encoded / sub-delims / ":" / "@" )
-        for (final UriTerminalType symbol : unreservedSymbols) {
-            grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), symbol);
-            grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), symbol, segmentNz);
+        for (final UriTerminalType unreserved : unreservedSymbols) {
+            grammar.addProduction(segmentNz, SegmentProductionHandler.getInstance(), unreserved);
+            grammar.addProduction(segmentNz, SegmentProductionHandler.getInstance(), unreserved, segmentNz);
         }
-        grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), pctEncoded);
-        grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), pctEncoded, segmentNz);
+        grammar.addProduction(segmentNz, SegmentProductionHandler.getInstance(), pctEncoded);
+        grammar.addProduction(segmentNz, SegmentProductionHandler.getInstance(), pctEncoded, segmentNz);
         for (final UriTerminalType subDelim : subDelims) {
-            grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), subDelim);
-            grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), subDelim, segmentNz);
+            grammar.addProduction(segmentNz, SegmentProductionHandler.getInstance(), subDelim);
+            grammar.addProduction(segmentNz, SegmentProductionHandler.getInstance(), subDelim, segmentNz);
         }
-        grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), Colon);
-        grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), Colon, segmentNz);
-        grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), AtSign);
-        grammar.addProduction(segmentNz, new TestProductionHandler("segment-nz"), AtSign, segmentNz);
+        grammar.addProduction(segmentNz, SegmentProductionHandler.getInstance(), Colon);
+        grammar.addProduction(segmentNz, SegmentProductionHandler.getInstance(), Colon, segmentNz);
+        grammar.addProduction(segmentNz, SegmentProductionHandler.getInstance(), AtSign);
+        grammar.addProduction(segmentNz, SegmentProductionHandler.getInstance(), AtSign, segmentNz);
         
         // segment = *pchar
         // segment = *( unreserved / pct-encoded / sub-delims / ":" / "@" )
-        grammar.addProduction(segment, new TestProductionHandler("segment"));
-        grammar.addProduction(segment, new TestProductionHandler("segment"), segmentNz);
+        grammar.addProduction(segment, SegmentProductionHandler.getInstance());
+        grammar.addProduction(segment, SegmentProductionHandler.getInstance(), segmentNz);
         
         // segment-sequence = *( "/" segment )
         grammar.addProduction(segmentSequence, new TestProductionHandler("segment-sequence"), ForwardSlash, segment, segmentSequence);
@@ -354,7 +360,7 @@ public class UrlParserTest {
         parser = grammar.createParser(pctEncoded, EndOfFile);
         
         for (int b = 0; b < 256; b++) {
-            final Object ast = parser.parse(new UriLexer(String.format(Locale.ROOT, "%%%02x", b)));
+            final Object ast = parser.parse(new UriLexer(String.format(Locale.ROOT, "%%%02X", b)));
             Assert.assertNotNull(ast);
         }
         
@@ -416,7 +422,7 @@ public class UrlParserTest {
         ast = parser.parse(new UriLexer("example"));
         ast = parser.parse(new UriLexer("example:com"));
         ast = parser.parse(new UriLexer("foo-bar:example:com"));
-        ast = parser.parse(new UriLexer("%00abyz0189-._~:!$&'()*+,;=%ff"));
+        ast = parser.parse(new UriLexer("%00abyz0189-._~:!$&'()*+,;=%FF"));
         
         final String reservedCharacters = "/?#[]@";
         for (final char c : reservedCharacters.toCharArray()) {
@@ -440,7 +446,7 @@ public class UrlParserTest {
         ast = parser.parse(new UriLexer("example.com"));
         ast = parser.parse(new UriLexer("foo-bar.example.com"));
         ast = parser.parse(new UriLexer("foo-bar.example.com."));
-        ast = parser.parse(new UriLexer("%00abyz0189-._~!$&'()*+,;=%ff"));
+        ast = parser.parse(new UriLexer("%00abyz0189-._~!$&'()*+,;=%FF"));
         
         final String reservedCharacters = ":/?#[]@";
         for (final char c : reservedCharacters.toCharArray()) {
@@ -493,28 +499,28 @@ public class UrlParserTest {
         ast = parser.parse(new UriLexer("example.com"));
         ast = parser.parse(new UriLexer("foo-bar.example.com"));
         ast = parser.parse(new UriLexer("foo-bar.example.com."));
-        ast = parser.parse(new UriLexer("%00abyz0189-._~!$&'()*+,;=%ff"));
+        ast = parser.parse(new UriLexer("%00abyz0189-._~!$&'()*+,;=%FF"));
 
         ast = parser.parse(new UriLexer(":80"));
         ast = parser.parse(new UriLexer("example:80"));
         ast = parser.parse(new UriLexer("example.com:80"));
         ast = parser.parse(new UriLexer("foo-bar.example.com:80"));
         ast = parser.parse(new UriLexer("foo-bar.example.com.:80"));
-        ast = parser.parse(new UriLexer("%00abyz0189-._~!$&'()*+,;=%ff:80"));
+        ast = parser.parse(new UriLexer("%00abyz0189-._~!$&'()*+,;=%FF:80"));
 
 //        ast = parser.parse(new UriLexer("foo:bar@"));
 //        ast = parser.parse(new UriLexer("foo:bar@example"));
 //        ast = parser.parse(new UriLexer("foo:bar@example.com"));
 //        ast = parser.parse(new UriLexer("foo:bar@foo-bar.example.com"));
 //        ast = parser.parse(new UriLexer("foo:bar@foo-bar.example.com."));
-//        ast = parser.parse(new UriLexer("foo:bar@%00abyz0189-._~!$&'()*+,;=%ff"));
+//        ast = parser.parse(new UriLexer("foo:bar@%00abyz0189-._~!$&'()*+,;=%FF"));
 //
 //        ast = parser.parse(new UriLexer("foo:bar@:80"));
 //        ast = parser.parse(new UriLexer("foo:bar@example:80"));
 //        ast = parser.parse(new UriLexer("foo:bar@example.com:80"));
 //        ast = parser.parse(new UriLexer("foo:bar@foo-bar.example.com:80"));
 //        ast = parser.parse(new UriLexer("foo:bar@foo-bar.example.com.:80"));
-//        ast = parser.parse(new UriLexer("foo:bar@%00abyz0189-._~!$&'()*+,;=%ff:80"));
+//        ast = parser.parse(new UriLexer("foo:bar@%00abyz0189-._~!$&'()*+,;=%FF:80"));
     }
     
     @Test
@@ -523,7 +529,7 @@ public class UrlParserTest {
         Object ast;
         
         ast = parser.parse(new UriLexer(""));
-        ast = parser.parse(new UriLexer("%00abyz0189-._~:@!$&'()*+,;=%ff"));
+        ast = parser.parse(new UriLexer("%00abyz0189-._~:@!$&'()*+,;=%FF"));
         
         final String reservedCharacters = "/?#[]";
         for (final char c : reservedCharacters.toCharArray()) {
@@ -554,7 +560,7 @@ public class UrlParserTest {
         Object ast;
         
         ast = parser.parse(new UriLexer(""));
-        ast = parser.parse(new UriLexer("%00abyz0189-._~:/?@!$&'()*+,;=%ff"));
+        ast = parser.parse(new UriLexer("%00abyz0189-._~:/?@!$&'()*+,;=%FF"));
         
         final String reservedCharacters = "#[]";
         for (final char c : reservedCharacters.toCharArray()) {
@@ -574,7 +580,7 @@ public class UrlParserTest {
         Object ast;
         
         ast = parser.parse(new UriLexer(""));
-        ast = parser.parse(new UriLexer("%00abyz0189-._~:/?@!$&'()*+,;=%ff"));
+        ast = parser.parse(new UriLexer("%00abyz0189-._~:/?@!$&'()*+,;=%FF"));
 
         final String reservedCharacters = "#[]";
         for (final char c : reservedCharacters.toCharArray()) {
