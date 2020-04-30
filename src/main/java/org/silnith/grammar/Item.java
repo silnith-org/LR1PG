@@ -23,6 +23,12 @@ public class Item {
         if (leftHandSide == null || rightHandSide == null) {
         	throw new IllegalArgumentException();
         }
+        if (parserPosition < 0) {
+        	throw new IllegalArgumentException();
+        }
+        if (parserPosition > rightHandSide.getSymbols().size()) {
+        	throw new IllegalArgumentException();
+        }
         this.leftHandSide = leftHandSide;
         this.rightHandSide = rightHandSide;
         this.parserPosition = parserPosition;
@@ -37,7 +43,7 @@ public class Item {
      * @return {@code true} if the production is complete
      */
     public boolean isComplete() {
-        return parserPosition >= rightHandSide.getSymbols().size();
+        return parserPosition == rightHandSide.getSymbols().size();
     }
     
     /**
