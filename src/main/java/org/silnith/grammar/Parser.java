@@ -116,7 +116,19 @@ public class Parser<T extends TerminalSymbol> {
         }
     }
     
-    protected String getName(final ItemSet<T> state) {
+    private Action<T> getAction(ItemSet<T> currentState, final Symbol symbol) {
+		final Action<T> action = parsingTable.get(currentState, symbol);
+		if (action == null) {
+		    currentState.printLong();
+		    System.out.print("Next symbol: ");
+		    System.out.println(symbol);
+		    throw new IllegalStateException(
+		            "No parse action for symbol: " + symbol + " and state: " + getName(currentState));
+		}
+		return action;
+	}
+
+	protected String getName(final ItemSet<T> state) {
         return parserStateNames.get(state);
     }
     
@@ -224,17 +236,5 @@ public class Parser<T extends TerminalSymbol> {
         stateStack.pop();
         return dataStack.pop().getAbstractSyntaxTreeElement();
     }
-
-	private Action<T> getAction(ItemSet<T> currentState, final Symbol lookaheadSymbol) {
-		final Action<T> action = parsingTable.get(currentState, lookaheadSymbol);
-		if (action == null) {
-		    currentState.printLong();
-		    System.out.print("Next symbol: ");
-		    System.out.println(lookaheadSymbol);
-		    throw new IllegalStateException(
-		            "No parse action for symbol: " + lookaheadSymbol + " and state: " + getName(currentState));
-		}
-		return action;
-	}
     
 }
