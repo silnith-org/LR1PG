@@ -365,15 +365,11 @@ public class Grammar<T extends TerminalSymbol> {
                 }
                 final Set<Production> productionsForSymbol = entry.getValue();
                 
-                // If all the symbols in the production are nullable, then so is the non-terminal.
-                production: for (final Production production : productionsForSymbol) {
-                    for (final Symbol symbol : production.getSymbols()) {
-                    	if (!nullable.contains(symbol)) {
-                    		continue production;
-                    	}
-                    }
-                    nullable.add(nonTerminal);
-                    break;
+                for (final Production production : productionsForSymbol) {
+                	if (nullable.containsAll(production.getSymbols())) {
+                		nullable.add(nonTerminal);
+                		break;
+                	}
                 }
             }
         } while (size < nullable.size());
