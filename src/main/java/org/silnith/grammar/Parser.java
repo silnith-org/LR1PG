@@ -18,6 +18,8 @@ import java.util.Set;
  * @author <a href="mailto:silnith@gmail.com">Kent Rosenkoetter</a>
  */
 public class Parser<T extends TerminalSymbol> {
+
+	private final Set<ItemSet<T>> parserStates;
 	
     private final Map<ItemSet<T>, String> parserStateNames;
     
@@ -41,6 +43,7 @@ public class Parser<T extends TerminalSymbol> {
         if (parserStates == null || edges == null || startState == null || endOfFileSymbol == null) {
         	throw new IllegalArgumentException();
         }
+        this.parserStates = parserStates;
         this.parserStateNames = new HashMap<>(parserStates.size());
         int i = 1;
         for (final ItemSet<T> state : parserStates) {
@@ -75,7 +78,7 @@ public class Parser<T extends TerminalSymbol> {
             }
             putAction(parserState, symbol, action);
         }
-        for (final ItemSet<T> parserState : parserStateNames.keySet()) {
+        for (final ItemSet<T> parserState : parserStates) {
             for (final LookaheadItem<T> item : parserState.getItems()) {
                 if (item.isComplete()) {
                     for (final T lookahead : item.getLookaheadSet()) {
