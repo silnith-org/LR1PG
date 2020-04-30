@@ -49,26 +49,6 @@ public class Grammar<T extends TerminalSymbol> {
         
     }
     
-    /**
-     * A default implementation that returns instances of {@link HashMap}.
-     * 
-     * @param <K> the type of keys in the map
-     * @param <V> the type of values in the map
-     */
-    public static class DefaultMapFactory<K, V> implements MapFactory<K, V> {
-        
-        @Override
-        public Map<K, V> getNewMap() {
-            return new HashMap<>();
-        }
-        
-        @Override
-        public Map<K, V> getNewMap(final Map<K, V> m) {
-            return new HashMap<>(m);
-        }
-        
-    }
-    
     private static final NonTerminalSymbol START = new NonTerminalSymbol() {
         
         @Override
@@ -133,10 +113,6 @@ public class Grammar<T extends TerminalSymbol> {
     
     private final SetFactory<T> terminalSetFactory;
     
-    private final MapFactory<NonTerminalSymbol, Set<Production>> nonTerminalMapFactory;
-    
-    private final SetFactory<NonTerminalSymbol> nonTerminalSetFactory;
-    
     private final Set<T> lexicon;
     
     /**
@@ -182,33 +158,14 @@ public class Grammar<T extends TerminalSymbol> {
      * @param terminalSetFactory a factory for sets of terminal symbols
      */
     public Grammar(final SetFactory<T> terminalSetFactory) {
-        this(terminalSetFactory, new DefaultMapFactory<NonTerminalSymbol, Set<Production>>(),
-                new DefaultSetFactory<NonTerminalSymbol>());
-    }
-    
-    /**
-     * Creates a new grammar.  This constructor overload provides a mechanism for client code
-     * that uses specialized types for terminals or non-terminals to provide factories that
-     * generate specialized collection types for those terminals and non-terminals.
-     * 
-     * @param terminalSetFactory a factory for sets of terminal symbols
-     * @param nonTerminalMapFactory a factory for maps of non-terminal symbols to productions
-     * @param nonTerminalSetFactory a factory for a set of non-terminal symbols
-     */
-    public Grammar(final SetFactory<T> terminalSetFactory,
-            final MapFactory<NonTerminalSymbol, Set<Production>> nonTerminalMapFactory,
-            final SetFactory<NonTerminalSymbol> nonTerminalSetFactory) {
         super();
-        if (terminalSetFactory == null || nonTerminalMapFactory == null || nonTerminalSetFactory == null) {
-        	throw new IllegalArgumentException();
+        if (terminalSetFactory == null) {
+            throw new IllegalArgumentException();
         }
         this.terminalSetFactory = terminalSetFactory;
-        this.nonTerminalMapFactory = nonTerminalMapFactory;
-        this.nonTerminalSetFactory = nonTerminalSetFactory;
-        
         this.lexicon = this.terminalSetFactory.getNewSet();
-        this.productions = this.nonTerminalMapFactory.getNewMap();
-        this.nullable = this.nonTerminalSetFactory.getNewSet();
+        this.productions = new HashMap<>();
+        this.nullable = new HashSet<>();
         this.first = new HashMap<>();
         this.follow = new HashMap<>();
         
@@ -249,7 +206,7 @@ public class Grammar<T extends TerminalSymbol> {
     public Map<Symbol, Set<T>> getFirstSet() {
         return first;
     }
-
+    
     /**
      * Returns a map containing the follow set for each symbol in the language.
      * 
@@ -291,7 +248,7 @@ public class Grammar<T extends TerminalSymbol> {
      * @return a non-terminal symbol
      */
     public NonTerminalSymbol getNonTerminalSymbol(final String name) {
-    	return new NonTerminal(name);
+        return new NonTerminal(name);
     }
     
     /**
@@ -357,7 +314,7 @@ public class Grammar<T extends TerminalSymbol> {
         nullable.clear();
         boolean changed;
         do {
-        	changed = false;
+            changed = false;
             for (final Map.Entry<NonTerminalSymbol, Set<Production>> entry : productions.entrySet()) {
                 final NonTerminalSymbol nonTerminal = entry.getKey();
                 if (nullable.contains(nonTerminal)) {
@@ -366,12 +323,12 @@ public class Grammar<T extends TerminalSymbol> {
                 final Set<Production> productionsForSymbol = entry.getValue();
                 
                 for (final Production production : productionsForSymbol) {
-                	if (nullable.containsAll(production.getSymbols())) {
-                		final boolean b = nullable.add(nonTerminal);
-                		assert b;
-                		changed = true;
-                		break;
-                	}
+                    if (nullable.containsAll(production.getSymbols())) {
+                        final boolean b = nullable.add(nonTerminal);
+                        assert b;
+                        changed = true;
+                        break;
+                    }
                 }
             }
         } while (changed);
@@ -397,24 +354,24 @@ public class Grammar<T extends TerminalSymbol> {
         first.clear();
         for (final T terminalSymbol : lexicon) {
             final Set<T> firstSet = getFirstSet(terminalSymbol);
-			firstSet.add(terminalSymbol);
+            firstSet.add(terminalSymbol);
         }
         
         boolean changed;
         do {
             changed = false;
             for (final Map.Entry<NonTerminalSymbol, Set<Production>> entry : productions.entrySet()) {
-                final NonTerminalSymbol nonTerminal = entry.getKey();
-                final Set<T> firstSetForLeftHandSide = getFirstSet(nonTerminal);
-                final Set<Production> productionsForSymbol = entry.getValue();
+                final NonTerminalSymbol leftHandSide = entry.getKey();
+                final Set<T> firstSetForLeftHandSide = getFirstSet(leftHandSide);
+                final Set<Production> productions = entry.getValue();
                 
-                for (final Production production : productionsForSymbol) {
+                for (final Production production : productions) {
                     for (final Symbol symbol : production.getSymbols()) {
                         final Set<T> firstSetForSymbolInProduction = getFirstSet(symbol);
                         final boolean addedElementsToFirstSet = firstSetForLeftHandSide.addAll(firstSetForSymbolInProduction);
-						changed = addedElementsToFirstSet || changed;
+                        changed = addedElementsToFirstSet || changed;
                         
-                        if ( !nullable.contains(symbol)) {
+                        if (!nullable.contains(symbol)) {
                             break;
                         }
                     }
@@ -439,18 +396,18 @@ public class Grammar<T extends TerminalSymbol> {
         do {
             changed = false;
             for (final Map.Entry<NonTerminalSymbol, Set<Production>> entry : productions.entrySet()) {
-                final NonTerminalSymbol nonTerminal = entry.getKey();
-                final Set<T> followSetForLeftHandSide = getFollowSet(nonTerminal);
-                final Set<Production> productionsForSymbol = entry.getValue();
+                final NonTerminalSymbol leftHandSide = entry.getKey();
+                final Set<T> followSetForLeftHandSide = getFollowSet(leftHandSide);
+                final Set<Production> productions = entry.getValue();
                 
-                for (final Production production : productionsForSymbol) {
+                for (final Production production : productions) {
                     final List<Symbol> productionSymbols = production.getSymbols();
                     final ListIterator<Symbol> revIter = productionSymbols.listIterator(productionSymbols.size());
                     while (revIter.hasPrevious()) {
                         final Symbol symbol = revIter.previous();
                         final Set<T> followSetForSymbolInProduction = getFollowSet(symbol);
                         changed = followSetForSymbolInProduction.addAll(followSetForLeftHandSide) || changed;
-                        if ( !nullable.contains(symbol)) {
+                        if (!nullable.contains(symbol)) {
                             break;
                         }
                     }
@@ -465,7 +422,7 @@ public class Grammar<T extends TerminalSymbol> {
                             final Symbol endSymbol = innerIter.next();
                             final Set<T> firstSetForRangeEnd = getFirstSet(endSymbol);
                             followSetForRangeStart.addAll(firstSetForRangeEnd);
-                            if ( !nullable.contains(endSymbol)) {
+                            if (!nullable.contains(endSymbol)) {
                                 break;
                             }
                         }
@@ -504,7 +461,7 @@ public class Grammar<T extends TerminalSymbol> {
         } else {
             final Set<List<Symbol>> productionRemainders = new HashSet<>();
             for (final T lookahead : lookaheadSet) {
-                productionRemainders.add(Collections.<Symbol> singletonList(lookahead));
+                productionRemainders.add(Collections.<Symbol>singletonList(lookahead));
             }
             return productionRemainders;
         }
@@ -514,7 +471,7 @@ public class Grammar<T extends TerminalSymbol> {
         final Set<T> set = terminalSetFactory.getNewSet();
         for (final Symbol symbol : tempProduction) {
             set.addAll(getFirstSet(symbol));
-            if ( !nullable.contains(symbol)) {
+            if (!nullable.contains(symbol)) {
                 break;
             }
         }
@@ -604,10 +561,11 @@ public class Grammar<T extends TerminalSymbol> {
         parserStates.add(startState);
         boolean changed;
         do {
-            changed = false;
             // Copy the item set because we are going to modify it in the loop.
             // Without the copy this throws ConcurrentModificationExceptions.
-            for (final ItemSet<T> parserState : new ArrayList<>(parserStates)) {
+            final Set<ItemSet<T>> newParserStates = new HashSet<>();
+            final Set<Edge<T>> newEdges = new HashSet<>();
+            for (final ItemSet<T> parserState : parserStates) {
                 final Set<LookaheadItem<T>> stateItems = parserState.getItems();
                 for (final LookaheadItem<T> item : stateItems) {
 //                    System.out.print('.');
@@ -620,11 +578,14 @@ public class Grammar<T extends TerminalSymbol> {
                     }
                     final ItemSet<T> newParserState = calculateGoto(stateItems, nextSymbolInProduction);
                     final Edge<T> newEdge = new Edge<>(parserState, nextSymbolInProduction, newParserState);
-                    changed = parserStates.add(newParserState) || changed;
-                    changed = edges.add(newEdge) || changed;
+                    newParserStates.add(newParserState);
+                    newEdges.add(newEdge);
                 }
 //                System.out.println();
             }
+            final boolean addedParserStates = parserStates.addAll(newParserStates);
+            final boolean addedEdges = edges.addAll(newEdges);
+            changed = addedParserStates || addedEdges;
             System.out.print("Number of states: ");
             System.out.println(parserStates.size());
             System.out.print("Number of edges: ");
