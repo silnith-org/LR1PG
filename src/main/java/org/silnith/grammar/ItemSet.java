@@ -37,7 +37,7 @@ public class ItemSet<T extends TerminalSymbol> {
             return true;
         }
         if (obj instanceof ItemSet) {
-            final ItemSet other = (ItemSet) obj;
+            final ItemSet<?> other = (ItemSet<?>) obj;
             if (hashCode != other.hashCode) {
                 return false;
             }
