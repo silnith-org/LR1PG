@@ -355,9 +355,9 @@ public class Grammar<T extends TerminalSymbol> {
      */
     private void computeNullable() {
         nullable.clear();
-        int size;
+        boolean changed;
         do {
-            size = nullable.size();
+        	changed = false;
             for (final Map.Entry<NonTerminalSymbol, Set<Production>> entry : productions.entrySet()) {
                 final NonTerminalSymbol nonTerminal = entry.getKey();
                 if (nullable.contains(nonTerminal)) {
@@ -367,12 +367,14 @@ public class Grammar<T extends TerminalSymbol> {
                 
                 for (final Production production : productionsForSymbol) {
                 	if (nullable.containsAll(production.getSymbols())) {
-                		nullable.add(nonTerminal);
+                		final boolean b = nullable.add(nonTerminal);
+                		assert b;
+                		changed = true;
                 		break;
                 	}
                 }
             }
-        } while (size < nullable.size());
+        } while (changed);
     }
     
     /**
