@@ -168,19 +168,13 @@ public class Parser<T extends TerminalSymbol> {
         Token<T> nextSymbol = getNextSymbol(iterator);
         boolean done = false;
         do {
-            final Action<T> action = parsingTable.get(currentState, nextSymbol.getSymbol());
-            if (action == null) {
-                currentState.printLong();
-                System.out.print("Next symbol: ");
-                System.out.println(nextSymbol);
-                throw new IllegalStateException(
-                        "No parse action for symbol: " + nextSymbol + " and state: " + getName(currentState));
-            }
+            final T lookaheadSymbol = nextSymbol.getSymbol();
+			final Action<T> action = getAction(currentState, lookaheadSymbol);
             switch (action.getType()) {
             case SHIFT: {
                 final Shift<T> shiftAction = (Shift<T>) action;
                 currentState = shiftAction.getDestinationState();
-                symbolMatchStack.push(nextSymbol.getSymbol());
+                symbolMatchStack.push(lookaheadSymbol);
                 stateStack.push(currentState);
                 dataStack.push(new DataStackElement(nextSymbol));
                 nextSymbol = getNextSymbol(iterator);
@@ -202,7 +196,7 @@ public class Parser<T extends TerminalSymbol> {
                 final ProductionHandler handler = production.getProductionHandler();
                 final DataStackElement newDatum = new DataStackElement(handler.handleReduction(data));
                 currentState = stateStack.peek();
-                final Action<T> tempAction = parsingTable.get(currentState, leftHandSide);
+                final Action<T> tempAction = getAction(currentState, leftHandSide);
                 assert tempAction instanceof Goto;
                 final Goto<T> gotoAction = (Goto<T>) tempAction;
                 currentState = gotoAction.getDestinationState();
@@ -230,5 +224,17 @@ public class Parser<T extends TerminalSymbol> {
         stateStack.pop();
         return dataStack.pop().getAbstractSyntaxTreeElement();
     }
+
+	private Action<T> getAction(ItemSet<T> currentState, final Symbol lookaheadSymbol) {
+		final Action<T> action = parsingTable.get(currentState, lookaheadSymbol);
+		if (action == null) {
+		    currentState.printLong();
+		    System.out.print("Next symbol: ");
+		    System.out.println(lookaheadSymbol);
+		    throw new IllegalStateException(
+		            "No parse action for symbol: " + lookaheadSymbol + " and state: " + getName(currentState));
+		}
+		return action;
+	}
     
 }
