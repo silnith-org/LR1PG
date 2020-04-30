@@ -109,7 +109,7 @@ public class Parser<T extends TerminalSymbol> {
         }
     }
     
-    private Action<T> getAction(ItemSet<T> currentState, final Symbol symbol) {
+    private Action<T> getAction(final ItemSet<T> currentState, final Symbol symbol) {
 		final Action<T> action = parsingTable.get(currentState, symbol);
 		if (action == null) {
 		    currentState.printLong();
