@@ -71,6 +71,7 @@ public class UrlParserTest {
     private NonTerminalSymbol segmentSequence;
     private NonTerminalSymbol query;
     private NonTerminalSymbol fragment;
+
     @Test
     @Ignore
     public void testRegularExpression() {
