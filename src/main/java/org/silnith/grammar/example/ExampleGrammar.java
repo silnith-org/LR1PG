@@ -10,7 +10,6 @@ import org.silnith.grammar.DataStackElement;
 import org.silnith.grammar.Grammar;
 import org.silnith.grammar.NonTerminalSymbol;
 import org.silnith.grammar.Parser;
-import org.silnith.grammar.Production;
 import org.silnith.grammar.ProductionHandler;
 import org.silnith.grammar.SetFactory;
 
@@ -55,9 +54,7 @@ public class ExampleGrammar {
      * @param args the command-line arguments
      */
     public static void main(final String[] args) {
-        final Grammar<Terminals> grammar = new Grammar<>(new TerminalSetFactory(),
-        		new Grammar.DefaultMapFactory<NonTerminalSymbol, Set<Production>>(),
-                new Grammar.DefaultSetFactory<NonTerminalSymbol>());
+        final Grammar<Terminals> grammar = new Grammar<>(new TerminalSetFactory());
         
         final NonTerminalSymbol nonTerminal = grammar.getNonTerminalSymbol("S");
         
