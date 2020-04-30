@@ -2,11 +2,9 @@ package org.silnith.grammar;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 
@@ -21,8 +19,6 @@ public class Parser<T extends TerminalSymbol> {
 
 	private final Set<ItemSet<T>> parserStates;
 	
-    private final Map<ItemSet<T>, String> parserStateNames;
-    
     private final Set<Edge<T>> edges;
     
     private final ItemSet<T> startState;
@@ -44,12 +40,6 @@ public class Parser<T extends TerminalSymbol> {
         	throw new IllegalArgumentException();
         }
         this.parserStates = parserStates;
-        this.parserStateNames = new HashMap<>(parserStates.size());
-        int i = 1;
-        for (final ItemSet<T> state : parserStates) {
-            this.parserStateNames.put(state, "state" + i);
-            i++ ;
-        }
         this.edges = edges;
         this.startState = startState;
         this.endOfFileSymbol = endOfFileSymbol;
@@ -126,15 +116,11 @@ public class Parser<T extends TerminalSymbol> {
 		    System.out.print("Next symbol: ");
 		    System.out.println(symbol);
 		    throw new IllegalStateException(
-		            "No parse action for symbol: " + symbol + " and state: " + getName(currentState));
+		            "No parse action for symbol: " + symbol + " and state: " + currentState);
 		}
 		return action;
 	}
 
-	protected String getName(final ItemSet<T> state) {
-        return parserStateNames.get(state);
-    }
-    
     private Token<T> currentSymbol;
     
     private Token<T> lookahead;
