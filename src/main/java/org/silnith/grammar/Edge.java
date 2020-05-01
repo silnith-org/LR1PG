@@ -15,7 +15,7 @@ public class Edge<T extends TerminalSymbol> {
     public Edge(final ItemSet<T> initialState, final Symbol symbol, final ItemSet<T> finalState) {
         super();
         if (initialState == null || symbol == null || finalState == null) {
-        	throw new IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
         this.initialState = initialState;
         this.symbol = symbol;
