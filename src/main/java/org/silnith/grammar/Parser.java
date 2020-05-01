@@ -92,10 +92,10 @@ public class Parser<T extends TerminalSymbol> {
         @Override
         public void perform() {
             currentState = destinationState;
-            symbolMatchStack.push(nextSymbol.getSymbol());
+            symbolMatchStack.push(nextToken.getSymbol());
             stateStack.push(currentState);
-            dataStack.push(new DataStackElement(nextSymbol));
-            nextSymbol = getNextSymbol(iterator);
+            dataStack.push(new DataStackElement(nextToken));
+            nextToken = getNextToken(iterator);
         }
         
     }
@@ -122,11 +122,10 @@ public class Parser<T extends TerminalSymbol> {
 
         @Override
         public void perform() {
-            final NonTerminalSymbol leftHandSide = reduceItem.getLeftHandSide();
+            final NonTerminalSymbol targetNonTerminal = reduceItem.getLeftHandSide();
             final Production production = reduceItem.getRightHandSide();
             final List<DataStackElement> data = new LinkedList<>();
-            for (@SuppressWarnings("unused")
-            final Symbol symbol : production.getSymbols()) {
+            for (@SuppressWarnings("unused") final Symbol symbol : production.getSymbols()) {
                 symbolMatchStack.pop();
                 stateStack.pop();
                 final DataStackElement datum = dataStack.pop();
@@ -135,10 +134,10 @@ public class Parser<T extends TerminalSymbol> {
             final ProductionHandler handler = production.getProductionHandler();
             final DataStackElement newDatum = new DataStackElement(handler.handleReduction(data));
             currentState = stateStack.peek();
-            final Action<T> gotoAction = currentState.getAction(leftHandSide);
+            final Action<T> gotoAction = currentState.getAction(targetNonTerminal);
             assert gotoAction instanceof Parser.Goto;
             gotoAction.perform();
-            symbolMatchStack.push(leftHandSide);
+            symbolMatchStack.push(targetNonTerminal);
             stateStack.push(currentState);
             dataStack.push(newDatum);
         }
@@ -194,8 +193,9 @@ public class Parser<T extends TerminalSymbol> {
         for (final ItemSet<T> parserState : parserStates) {
             for (final LookaheadItem<T> item : parserState.getItems()) {
                 if (item.isComplete()) {
+                    final Reduce action = new Reduce(item);
                     for (final T lookahead : item.getLookaheadSet()) {
-                        parserState.putAction(lookahead, new Reduce(item));
+                        parserState.putAction(lookahead, action);
                     }
                 } else {
                     final Symbol symbol = item.getNextSymbol();
@@ -208,28 +208,28 @@ public class Parser<T extends TerminalSymbol> {
 //        parsingTable.printTableLong();
     }
     
-    private Token<T> currentSymbol;
+    private Token<T> currentToken;
     
-    private Token<T> lookahead;
+    private Token<T> lookaheadToken;
 
     private boolean done;
 
     private ItemSet<T> currentState;
 
-    private Token<T> nextSymbol;
+    private Token<T> nextToken;
 
     private Iterator<Token<T>> iterator;
     
-    protected Token<T> getNextSymbol(final Iterator<Token<T>> iterator) {
-        if (currentSymbol == null) {
-            currentSymbol = iterator.next();
+    protected Token<T> getNextToken(final Iterator<Token<T>> iterator) {
+        if (currentToken == null) {
+            currentToken = iterator.next();
         } else {
-            currentSymbol = lookahead;
+            currentToken = lookaheadToken;
         }
         if (iterator.hasNext()) {
-            lookahead = iterator.next();
+            lookaheadToken = iterator.next();
         } else {
-            lookahead = new Token<T>() {
+            lookaheadToken = new Token<T>() {
                 
                 @Override
                 public T getSymbol() {
@@ -238,7 +238,7 @@ public class Parser<T extends TerminalSymbol> {
                 
             };
         }
-        return currentSymbol;
+        return currentToken;
     }
     
     /**
@@ -252,15 +252,16 @@ public class Parser<T extends TerminalSymbol> {
         symbolMatchStack.clear();
         stateStack.clear();
         dataStack.clear();
-    	currentSymbol = null;
-    	lookahead = null;
+    	currentToken = null;
+    	lookaheadToken = null;
         currentState = startState;
         stateStack.push(currentState);
         iterator = lexer.iterator();
-        nextSymbol = getNextSymbol(iterator);
+        nextToken = getNextToken(iterator);
         done = false;
         do {
-            final Action<T> action = currentState.getAction(nextSymbol.getSymbol());
+            final T symbol = nextToken.getSymbol();
+            final Action<T> action = currentState.getAction(symbol);
             action.perform();
         } while ( !done);
         symbolMatchStack.pop();
