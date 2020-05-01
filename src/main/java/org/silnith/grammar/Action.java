@@ -60,4 +60,9 @@ public abstract class Action<T extends TerminalSymbol> {
     
     public abstract Type getType();
     
+    /**
+     * Perform the action on the parser.
+     */
+    public abstract void perform();
+    
 }

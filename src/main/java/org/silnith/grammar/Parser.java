@@ -7,8 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.silnith.grammar.Action.Type;
-
 
 /**
  * A parser for the language defined by a {@link Grammar}.  The generated parser is guaranteed to process any input stream
@@ -43,6 +41,12 @@ public class Parser<T extends TerminalSymbol> {
         public String toString() {
             return "Accept";
         }
+
+        @Override
+        public void perform() {
+            done = true;
+            System.out.println("Accept.");
+        }
         
     }
 
@@ -73,6 +77,11 @@ public class Parser<T extends TerminalSymbol> {
         @Override
         public String toString() {
             return "Goto(" + destinationState + ")";
+        }
+
+        @Override
+        public void perform() {
+            currentState = getDestinationState();
         }
         
     }
@@ -105,6 +114,15 @@ public class Parser<T extends TerminalSymbol> {
         public String toString() {
             return "Shift(" + destinationState + ")";
         }
+
+        @Override
+        public void perform() {
+            currentState = getDestinationState();
+            symbolMatchStack.push(nextSymbol.getSymbol());
+            stateStack.push(currentState);
+            dataStack.push(new DataStackElement(nextSymbol));
+            nextSymbol = getNextSymbol(iterator);
+        }
         
     }
 
@@ -135,6 +153,31 @@ public class Parser<T extends TerminalSymbol> {
         @Override
         public String toString() {
             return "Reduce(" + reduceItem + ")";
+        }
+
+        @Override
+        public void perform() {
+            final LookaheadItem<T> reduceItem = getReduceItem();
+            final NonTerminalSymbol leftHandSide = reduceItem.getLeftHandSide();
+            final Production production = reduceItem.getRightHandSide();
+            final List<DataStackElement> data = new LinkedList<>();
+            for (@SuppressWarnings("unused")
+            final Symbol symbol : production.getSymbols()) {
+                symbolMatchStack.pop();
+                stateStack.pop();
+                final DataStackElement datum = dataStack.pop();
+                data.add(0, datum);
+            }
+            final ProductionHandler handler = production.getProductionHandler();
+            final DataStackElement newDatum = new DataStackElement(handler.handleReduction(data));
+            currentState = stateStack.peek();
+            final Action<T> tempAction = getAction(currentState, leftHandSide);
+            assert tempAction instanceof Parser.Goto;
+            final Goto gotoAction = (Goto) tempAction;
+            currentState = gotoAction.getDestinationState();
+            symbolMatchStack.push(leftHandSide);
+            stateStack.push(currentState);
+            dataStack.push(newDatum);
         }
         
     }
@@ -222,6 +265,14 @@ public class Parser<T extends TerminalSymbol> {
     private Token<T> currentSymbol;
     
     private Token<T> lookahead;
+
+    private boolean done;
+
+    private ItemSet<T> currentState;
+
+    private Token<T> nextSymbol;
+
+    private Iterator<Token<T>> iterator;
     
     protected Token<T> getNextSymbol(final Iterator<Token<T>> iterator) {
         if (currentSymbol == null) {
@@ -261,63 +312,14 @@ public class Parser<T extends TerminalSymbol> {
         dataStack.clear();
     	currentSymbol = null;
     	lookahead = null;
-        ItemSet<T> currentState = startState;
+        currentState = startState;
         stateStack.push(currentState);
-        final Iterator<Token<T>> iterator = lexer.iterator();
-        Token<T> nextSymbol = getNextSymbol(iterator);
-        boolean done = false;
+        iterator = lexer.iterator();
+        nextSymbol = getNextSymbol(iterator);
+        done = false;
         do {
-            final T lookaheadSymbol = nextSymbol.getSymbol();
-			final Action<T> action = getAction(currentState, lookaheadSymbol);
-            switch (action.getType()) {
-            case SHIFT: {
-                final Shift shiftAction = (Shift) action;
-                currentState = shiftAction.getDestinationState();
-                symbolMatchStack.push(lookaheadSymbol);
-                stateStack.push(currentState);
-                dataStack.push(new DataStackElement(nextSymbol));
-                nextSymbol = getNextSymbol(iterator);
-            }
-                break;
-            case REDUCE: {
-                final Reduce reduceAction = (Reduce) action;
-                final LookaheadItem<T> reduceItem = reduceAction.getReduceItem();
-                final NonTerminalSymbol leftHandSide = reduceItem.getLeftHandSide();
-                final Production production = reduceItem.getRightHandSide();
-                final List<DataStackElement> data = new LinkedList<>();
-                for (@SuppressWarnings("unused")
-                final Symbol symbol : production.getSymbols()) {
-                    symbolMatchStack.pop();
-                    stateStack.pop();
-                    final DataStackElement datum = dataStack.pop();
-                    data.add(0, datum);
-                }
-                final ProductionHandler handler = production.getProductionHandler();
-                final DataStackElement newDatum = new DataStackElement(handler.handleReduction(data));
-                currentState = stateStack.peek();
-                final Action<T> tempAction = getAction(currentState, leftHandSide);
-                assert tempAction instanceof Parser.Goto;
-                final Goto gotoAction = (Goto) tempAction;
-                currentState = gotoAction.getDestinationState();
-                symbolMatchStack.push(leftHandSide);
-                stateStack.push(currentState);
-                dataStack.push(newDatum);
-            }
-                break;
-            case GOTO: {
-                final Goto gotoAction = (Goto) action;
-                currentState = gotoAction.getDestinationState();
-            }
-                break;
-            case ACCEPT: {
-                done = true;
-                System.out.println("Accept.");
-            }
-                break;
-            default: {
-                throw new IllegalStateException("Unknown action: " + action);
-            } // break;
-            }
+            final Action<T> action = getAction(currentState, nextSymbol.getSymbol());
+            action.perform();
         } while ( !done);
         symbolMatchStack.pop();
         stateStack.pop();
