@@ -1,5 +1,7 @@
 package org.silnith.grammar;
 
+import java.util.Objects;
+
 public class Edge<T extends TerminalSymbol> {
     
     private final ItemSet<T> initialState;
@@ -18,7 +20,7 @@ public class Edge<T extends TerminalSymbol> {
         this.initialState = initialState;
         this.symbol = symbol;
         this.finalState = finalState;
-        this.hashCode = this.initialState.hashCode() ^ this.symbol.hashCode() ^ this.finalState.hashCode();
+        this.hashCode = Objects.hash(this.initialState, this.symbol, this.finalState);
     }
     
     public ItemSet<T> getInitialState() {
@@ -35,7 +37,6 @@ public class Edge<T extends TerminalSymbol> {
     
     @Override
     public int hashCode() {
-//        return initialState.hashCode() ^ symbol.hashCode() ^ finalState.hashCode();
         return hashCode;
     }
     
