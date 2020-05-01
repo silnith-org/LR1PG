@@ -3,7 +3,6 @@ package org.silnith.grammar;
 import java.util.List;
 import java.util.Objects;
 
-
 /**
  * An item represents a production coupled with a parse position.  It represents one node in the
  * <abbr title="non-deterministic finite state automata">NFA</abbr>.  A node in the
@@ -22,13 +21,13 @@ public class Item {
     public Item(final NonTerminalSymbol leftHandSide, final Production rightHandSide, final int parserPosition) {
         super();
         if (leftHandSide == null || rightHandSide == null) {
-        	throw new IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
         if (parserPosition < 0) {
-        	throw new IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
         if (parserPosition > rightHandSide.getSymbols().size()) {
-        	throw new IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
         this.leftHandSide = leftHandSide;
         this.rightHandSide = rightHandSide;
