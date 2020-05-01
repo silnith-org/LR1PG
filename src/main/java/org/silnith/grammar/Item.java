@@ -33,7 +33,7 @@ public class Item {
         this.leftHandSide = leftHandSide;
         this.rightHandSide = rightHandSide;
         this.parserPosition = parserPosition;
-        this.hashCode = Objects.hash(leftHandSide, rightHandSide, parserPosition);
+        this.hashCode = Objects.hash(this.leftHandSide, this.rightHandSide, this.parserPosition);
     }
     
     /**
