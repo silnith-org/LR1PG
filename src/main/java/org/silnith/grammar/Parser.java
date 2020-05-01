@@ -24,23 +24,9 @@ public class Parser<T extends TerminalSymbol> {
      */
     public abstract class AbstractAction implements Action<T> {
         
-        private final ItemSet<T> sourceState;
-        
-        private final Symbol symbol;
-        
         public AbstractAction(final ItemSet<T> sourceState, final Symbol symbol) {
             super();
-            if (sourceState == null || symbol == null) {
-                throw new IllegalArgumentException();
-            }
-            this.sourceState = sourceState;
-            this.symbol = symbol;
         }
-        
-        /**
-         * Perform the action on the parser.
-         */
-        public abstract void perform();
         
     }
 
