@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class CanonicalFactory<T> {
     
     private final ConcurrentMap<T, T> canonicalInstance;
+    
     private final AtomicLong callCount;
     
     public CanonicalFactory() {
