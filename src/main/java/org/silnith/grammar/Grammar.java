@@ -476,14 +476,14 @@ public class Grammar<T extends TerminalSymbol> {
     }
 
     protected Set<T> calculateFirstSet(final List<Symbol> tempProduction) {
-        final Set<T> set = terminalSetFactory.getNewSet();
+        final Set<T> firstSet = terminalSetFactory.getNewSet();
         for (final Symbol symbol : tempProduction) {
-            set.addAll(getFirstSet(symbol));
+            firstSet.addAll(getFirstSet(symbol));
             if (!nullable.contains(symbol)) {
                 break;
             }
         }
-        return set;
+        return firstSet;
     }
     
     protected ItemSet<T> calculateClosure(final Collection<LookaheadItem<T>> items) {
