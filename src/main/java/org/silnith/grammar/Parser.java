@@ -18,6 +18,37 @@ import java.util.Set;
 public class Parser<T extends TerminalSymbol> {
 
     /**
+     * The parser changes state without otherwise modifying the stack.
+     */
+    public class Goto extends Action<T> {
+        
+        private final ItemSet<T> destinationState;
+        
+        public Goto(final ItemSet<T> sourceState, final Symbol symbol, final ItemSet<T> destinationState) {
+            super(sourceState, symbol);
+            if (destinationState == null) {
+                throw new IllegalArgumentException();
+            }
+            this.destinationState = destinationState;
+        }
+        
+        @Override
+        public Type getType() {
+            return Type.GOTO;
+        }
+        
+        public ItemSet<T> getDestinationState() {
+            return destinationState;
+        }
+        
+        @Override
+        public String toString() {
+            return "Goto(" + destinationState + ")";
+        }
+        
+    }
+
+    /**
      * The parser consumes an additional terminal symbol.
      */
     public class Shift extends Action<T> {
@@ -120,7 +151,7 @@ public class Parser<T extends TerminalSymbol> {
                 final Shift shiftAction = new Shift(parserState, symbol, destinationState);
                 action = shiftAction;
             } else if (symbol instanceof NonTerminalSymbol) {
-                final Goto<T> gotoAction = new Goto<>(parserState, symbol, destinationState);
+                final Goto gotoAction = new Goto(parserState, symbol, destinationState);
                 action = gotoAction;
             } else {
                 throw new IllegalStateException("Symbol is neither terminal nor non-terminal: " + symbol);
@@ -236,8 +267,8 @@ public class Parser<T extends TerminalSymbol> {
                 final DataStackElement newDatum = new DataStackElement(handler.handleReduction(data));
                 currentState = stateStack.peek();
                 final Action<T> tempAction = getAction(currentState, leftHandSide);
-                assert tempAction instanceof Goto;
-                final Goto<T> gotoAction = (Goto<T>) tempAction;
+                assert tempAction instanceof Parser.Goto;
+                final Goto gotoAction = (Goto) tempAction;
                 currentState = gotoAction.getDestinationState();
                 symbolMatchStack.push(leftHandSide);
                 stateStack.push(currentState);
@@ -245,7 +276,7 @@ public class Parser<T extends TerminalSymbol> {
             }
                 break;
             case GOTO: {
-                final Goto<T> gotoAction = (Goto<T>) action;
+                final Goto gotoAction = (Goto) action;
                 currentState = gotoAction.getDestinationState();
             }
                 break;
