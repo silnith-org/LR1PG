@@ -70,10 +70,6 @@ public class Parser<T extends TerminalSymbol> {
             return Type.GOTO;
         }
         
-        public ItemSet<T> getDestinationState() {
-            return destinationState;
-        }
-        
         @Override
         public String toString() {
             return "Goto(" + destinationState + ")";
@@ -81,7 +77,7 @@ public class Parser<T extends TerminalSymbol> {
 
         @Override
         public void perform() {
-            currentState = getDestinationState();
+            currentState = destinationState;
         }
         
     }
@@ -106,10 +102,6 @@ public class Parser<T extends TerminalSymbol> {
             return Type.SHIFT;
         }
         
-        public ItemSet<T> getDestinationState() {
-            return destinationState;
-        }
-        
         @Override
         public String toString() {
             return "Shift(" + destinationState + ")";
@@ -117,7 +109,7 @@ public class Parser<T extends TerminalSymbol> {
 
         @Override
         public void perform() {
-            currentState = getDestinationState();
+            currentState = destinationState;
             symbolMatchStack.push(nextSymbol.getSymbol());
             stateStack.push(currentState);
             dataStack.push(new DataStackElement(nextSymbol));
@@ -146,10 +138,6 @@ public class Parser<T extends TerminalSymbol> {
             return Type.REDUCE;
         }
         
-        public LookaheadItem<T> getReduceItem() {
-            return reduceItem;
-        }
-        
         @Override
         public String toString() {
             return "Reduce(" + reduceItem + ")";
@@ -157,7 +145,6 @@ public class Parser<T extends TerminalSymbol> {
 
         @Override
         public void perform() {
-            final LookaheadItem<T> reduceItem = getReduceItem();
             final NonTerminalSymbol leftHandSide = reduceItem.getLeftHandSide();
             final Production production = reduceItem.getRightHandSide();
             final List<DataStackElement> data = new LinkedList<>();
@@ -174,7 +161,7 @@ public class Parser<T extends TerminalSymbol> {
             final Action<T> tempAction = getAction(currentState, leftHandSide);
             assert tempAction instanceof Parser.Goto;
             final Goto gotoAction = (Goto) tempAction;
-            currentState = gotoAction.getDestinationState();
+            gotoAction.perform();
             symbolMatchStack.push(leftHandSide);
             stateStack.push(currentState);
             dataStack.push(newDatum);
