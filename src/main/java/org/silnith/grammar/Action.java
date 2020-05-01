@@ -5,12 +5,12 @@ package org.silnith.grammar;
  * 
  * @param <T> the type of terminal symbols
  */
-public abstract class Action<T extends TerminalSymbol> {
+public interface Action<T extends TerminalSymbol> {
     
     /**
      * The type of action to take.
      */
-    public enum Type {
+    enum Type {
         /**
          * The parser consumes an additional terminal symbol.
          * 
@@ -37,32 +37,15 @@ public abstract class Action<T extends TerminalSymbol> {
         ACCEPT
     }
     
-    private final ItemSet<T> sourceState;
+    ItemSet<T> getSourceState();
     
-    private final Symbol symbol;
+    Symbol getSymbol();
     
-    public Action(final ItemSet<T> sourceState, final Symbol symbol) {
-        super();
-        if (sourceState == null || symbol == null) {
-        	throw new IllegalArgumentException();
-        }
-        this.sourceState = sourceState;
-        this.symbol = symbol;
-    }
-    
-    public ItemSet<T> getSourceState() {
-        return sourceState;
-    }
-    
-    public Symbol getSymbol() {
-        return symbol;
-    }
-    
-    public abstract Type getType();
+    Type getType();
     
     /**
      * Perform the action on the parser.
      */
-    public abstract void perform();
+    void perform();
     
 }

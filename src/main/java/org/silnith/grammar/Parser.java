@@ -18,9 +18,46 @@ import java.util.Set;
 public class Parser<T extends TerminalSymbol> {
 
     /**
+     * An action to take on consuming a symbol.
+     * 
+     * @param <T> the type of terminal symbols
+     */
+    public abstract class AbstractAction implements Action<T> {
+        
+        private final ItemSet<T> sourceState;
+        
+        private final Symbol symbol;
+        
+        public AbstractAction(final ItemSet<T> sourceState, final Symbol symbol) {
+            super();
+            if (sourceState == null || symbol == null) {
+                throw new IllegalArgumentException();
+            }
+            this.sourceState = sourceState;
+            this.symbol = symbol;
+        }
+        
+        public ItemSet<T> getSourceState() {
+            return sourceState;
+        }
+        
+        public Symbol getSymbol() {
+            return symbol;
+        }
+        
+        public abstract Type getType();
+        
+        /**
+         * Perform the action on the parser.
+         */
+        public abstract void perform();
+        
+    }
+
+    /**
      * The parser accepts the input as a complete "statement" in the language.
      */
-    public class Accept extends Action<T> {
+    public class Accept extends AbstractAction {
         
         /**
          * Creates a new "accept" action.
@@ -53,7 +90,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * The parser changes state without otherwise modifying the stack.
      */
-    public class Goto extends Action<T> {
+    public class Goto extends AbstractAction {
         
         private final ItemSet<T> destinationState;
         
@@ -85,7 +122,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * The parser consumes an additional terminal symbol.
      */
-    public class Shift extends Action<T> {
+    public class Shift extends AbstractAction {
         
         private final ItemSet<T> destinationState;
         
@@ -121,7 +158,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * The parser replaces some symbols on the top of the stack with a new symbol.
      */
-    public class Reduce extends Action<T> {
+    public class Reduce extends AbstractAction {
         
         private final LookaheadItem<T> reduceItem;
         
