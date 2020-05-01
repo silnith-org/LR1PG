@@ -1,6 +1,7 @@
 package org.silnith.grammar;
 
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -32,8 +33,7 @@ public class Item {
         this.leftHandSide = leftHandSide;
         this.rightHandSide = rightHandSide;
         this.parserPosition = parserPosition;
-        this.hashCode = this.leftHandSide.hashCode() ^ this.rightHandSide.hashCode()
-                ^ Integer.valueOf(this.parserPosition).hashCode();
+        this.hashCode = Objects.hash(leftHandSide, rightHandSide, parserPosition);
     }
     
     /**
