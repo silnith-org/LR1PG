@@ -37,16 +37,6 @@ public class Parser<T extends TerminalSymbol> {
             this.symbol = symbol;
         }
         
-        public ItemSet<T> getSourceState() {
-            return sourceState;
-        }
-        
-        public Symbol getSymbol() {
-            return symbol;
-        }
-        
-        public abstract Type getType();
-        
         /**
          * Perform the action on the parser.
          */
@@ -67,11 +57,6 @@ public class Parser<T extends TerminalSymbol> {
          */
         public Accept(final ItemSet<T> sourceState, final Symbol symbol) {
             super(sourceState, symbol);
-        }
-        
-        @Override
-        public Type getType() {
-            return Type.ACCEPT;
         }
         
         @Override
@@ -103,11 +88,6 @@ public class Parser<T extends TerminalSymbol> {
         }
         
         @Override
-        public Type getType() {
-            return Type.GOTO;
-        }
-        
-        @Override
         public String toString() {
             return "Goto(" + destinationState + ")";
         }
@@ -132,11 +112,6 @@ public class Parser<T extends TerminalSymbol> {
                 throw new IllegalArgumentException();
             }
             this.destinationState = destinationState;
-        }
-        
-        @Override
-        public Type getType() {
-            return Type.SHIFT;
         }
         
         @Override
@@ -168,11 +143,6 @@ public class Parser<T extends TerminalSymbol> {
                 throw new IllegalArgumentException();
             }
             this.reduceItem = reduceItem;
-        }
-        
-        @Override
-        public Type getType() {
-            return Type.REDUCE;
         }
         
         @Override
