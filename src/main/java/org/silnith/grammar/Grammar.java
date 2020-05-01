@@ -475,9 +475,9 @@ public class Grammar<T extends TerminalSymbol> {
         return changedByProduction;
     }
 
-    protected Set<T> calculateFirstSet(final List<Symbol> tempProduction) {
+    protected Set<T> calculateFirstSet(final List<Symbol> symbols) {
         final Set<T> firstSet = terminalSetFactory.getNewSet();
-        for (final Symbol symbol : tempProduction) {
+        for (final Symbol symbol : symbols) {
             final Set<T> firstSetForSymbolInProduction = getFirstSet(symbol);
             firstSet.addAll(firstSetForSymbolInProduction);
             if (!nullable.contains(symbol)) {
