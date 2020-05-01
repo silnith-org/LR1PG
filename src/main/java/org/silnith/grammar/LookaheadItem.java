@@ -1,5 +1,6 @@
 package org.silnith.grammar;
 
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -23,7 +24,7 @@ public class LookaheadItem<T extends TerminalSymbol> {
         }
         this.item = item;
         this.lookaheadSet = lookaheadSet;
-        this.hashCode = this.item.hashCode() ^ this.lookaheadSet.hashCode();
+        this.hashCode = Objects.hash(this.item, this.lookaheadSet);
     }
     
     public Item getItem() {
