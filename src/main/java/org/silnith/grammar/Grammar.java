@@ -561,8 +561,6 @@ public class Grammar<T extends TerminalSymbol> {
         parserStates.add(startState);
         boolean changed;
         do {
-            // Copy the item set because we are going to modify it in the loop.
-            // Without the copy this throws ConcurrentModificationExceptions.
             final Set<ItemSet<T>> newParserStates = new HashSet<>();
             final Set<Edge<T>> newEdges = new HashSet<>();
             for (final ItemSet<T> parserState : parserStates) {
