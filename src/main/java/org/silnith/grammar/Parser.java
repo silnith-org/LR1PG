@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.silnith.grammar.Action.Type;
+
 
 /**
  * A parser for the language defined by a {@link Grammar}.  The generated parser is guaranteed to process any input stream
@@ -16,6 +18,33 @@ import java.util.Set;
  * @author <a href="mailto:silnith@gmail.com">Kent Rosenkoetter</a>
  */
 public class Parser<T extends TerminalSymbol> {
+
+    /**
+     * The parser accepts the input as a complete "statement" in the language.
+     */
+    public class Accept extends Action<T> {
+        
+        /**
+         * Creates a new "accept" action.
+         * 
+         * @param sourceState the source state to accept
+         * @param symbol the next symbol to consume.  This should be whatever the end-of-file symbol is.
+         */
+        public Accept(final ItemSet<T> sourceState, final Symbol symbol) {
+            super(sourceState, symbol);
+        }
+        
+        @Override
+        public Type getType() {
+            return Type.ACCEPT;
+        }
+        
+        @Override
+        public String toString() {
+            return "Accept";
+        }
+        
+    }
 
     /**
      * The parser changes state without otherwise modifying the stack.
@@ -167,7 +196,7 @@ public class Parser<T extends TerminalSymbol> {
                 } else {
                     final Symbol symbol = item.getNextSymbol();
                     if (symbol.equals(endOfFileSymbol)) {
-                        putAction(parserState, symbol, new Accept<>(parserState, symbol));
+                        putAction(parserState, symbol, new Accept(parserState, symbol));
                     }
                 }
             }
