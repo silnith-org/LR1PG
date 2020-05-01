@@ -10,13 +10,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -70,47 +65,6 @@ public class Grammar<T extends TerminalSymbol> {
         
     }
     
-    private class Worker implements Callable<Boolean> {
-        
-        private final ItemSet<T> itemSet;
-        
-        final T endOfFileSymbol;
-        
-        public Worker(final ItemSet<T> itemSet, final T endOfFileSymbol) {
-            super();
-            this.itemSet = itemSet;
-            this.endOfFileSymbol = endOfFileSymbol;
-        }
-        
-        @Override
-        public Boolean call() throws Exception {
-            boolean changed = false;
-            final Set<LookaheadItem<T>> stateItems = itemSet.getItems();
-            for (final LookaheadItem<T> item : stateItems) {
-                if (item.isComplete()) {
-                    continue;
-                }
-                final Symbol nextSymbolInProduction = item.getNextSymbol();
-                if (endOfFileSymbol.equals(nextSymbolInProduction)) {
-                    continue;
-                }
-                final ItemSet<T> newParserState = calculateGoto(stateItems, nextSymbolInProduction);
-                final Edge<T> newEdge = edgeFactory.createInstance(itemSet, nextSymbolInProduction, newParserState);
-                
-                final Integer previousName = addState(newParserState);
-                if (previousName == null) {
-                    changed = true;
-                }
-                final Boolean previousEdge = edges.putIfAbsent(newEdge, true);
-                if (previousEdge == null) {
-                    changed = true;
-                }
-            }
-            return changed;
-        }
-        
-    }
-    
     private final SetFactory<T> terminalSetFactory;
     
     private final Set<T> lexicon;
@@ -134,14 +88,6 @@ public class Grammar<T extends TerminalSymbol> {
      * The follow set for each symbol.
      */
     private final Map<Symbol, Set<T>> follow;
-    
-//    private volatile boolean computed;
-    
-    private final ConcurrentMap<ItemSet<T>, Integer> parserStates;
-    
-    private final ConcurrentMap<Integer, ItemSet<T>> parserStatesByName;
-    
-    private final AtomicInteger stateCounter;
     
     private final ConcurrentMap<Edge<T>, Boolean> edges;
     
@@ -169,11 +115,6 @@ public class Grammar<T extends TerminalSymbol> {
         this.first = new HashMap<>();
         this.follow = new HashMap<>();
         
-//        this.computed = false;
-        
-        this.parserStates = new ConcurrentHashMap<>();
-        this.parserStatesByName = new ConcurrentHashMap<>();
-        this.stateCounter = new AtomicInteger();
         this.edges = new ConcurrentHashMap<>();
     }
     
@@ -230,11 +171,7 @@ public class Grammar<T extends TerminalSymbol> {
         nullable.clear();
         first.clear();
         follow.clear();
-//        computed = false;
         
-        parserStates.clear();
-        parserStatesByName.clear();
-        stateCounter.set(0);
         edges.clear();
         
     }
@@ -259,13 +196,11 @@ public class Grammar<T extends TerminalSymbol> {
      * @param terminal the terminal symbol to add to the grammar
      */
     public void addTerminalSymbol(final T terminal) {
-//        computed = false;
         lexicon.add(terminal);
     }
     
     @SafeVarargs
     public final void addTerminalSymbols(final T... terminals) {
-//        computed = false;
         lexicon.addAll(Arrays.asList(terminals));
     }
     
@@ -278,7 +213,6 @@ public class Grammar<T extends TerminalSymbol> {
      */
     public void addProduction(final NonTerminalSymbol leftHandSide, final ProductionHandler productionHandler,
             final Symbol... rightHandSide) {
-//        computed = false;
         final Production production = new Production(productionHandler, rightHandSide);
         final Set<Production> productionSet = getProductionSet(leftHandSide);
         productionSet.add(production);
@@ -626,70 +560,6 @@ public class Grammar<T extends TerminalSymbol> {
         System.out.print("Edge factory instance count: ");
         System.out.println(edgeFactory.getInstanceCount());
 
-        return parser;
-    }
-    
-    private Integer addState(final ItemSet<T> state) {
-        final Integer firstTry = parserStates.get(state);
-        if (firstTry != null) {
-            return firstTry;
-        } else {
-            final int name = stateCounter.incrementAndGet();
-            final Integer secondTry = parserStates.putIfAbsent(state, name);
-            parserStatesByName.put(name, state);
-            return secondTry;
-        }
-    }
-    
-    /**
-     * A parallelized version of {@link #createParser}.
-     * 
-     * @param startSymbol the initial non-terminal symbol that the parser will attempt to produce
-     *         from the input stream of terminal symbols
-     * @param endOfFileSymbol the terminal symbol that represents the end of the input
-     * @param executorService the executor service to use
-     * @return a parser for the language defined by this grammar
-     * @throws InterruptedException sometimes
-     * @throws ExecutionException other times
-     */
-    public Parser<T> threadedCreateParser(final NonTerminalSymbol startSymbol, final T endOfFileSymbol,
-            final ExecutorService executorService) throws InterruptedException, ExecutionException {
-        compute();
-        parserStates.clear();
-        parserStatesByName.clear();
-        stateCounter.set(0);
-        edges.clear();
-        final long startTime = System.currentTimeMillis();
-        
-        final LookaheadItem<T> initialProduction = createInitialProduction(startSymbol, endOfFileSymbol);
-        final ItemSet<T> startState = calculateClosure(Collections.singleton(initialProduction));
-        parserStates.put(startState, stateCounter.get());
-        parserStatesByName.putIfAbsent(stateCounter.get(), startState);
-        final ArrayList<Worker> workers = new ArrayList<>();
-        boolean changed;
-        do {
-            changed = false;
-            workers.clear();
-            for (final ItemSet<T> parserState : parserStates.keySet()) {
-                final Worker worker = new Worker(parserState, endOfFileSymbol);
-                workers.add(worker);
-            }
-            final List<Future<Boolean>> results = executorService.invokeAll(workers);
-            for (final Future<Boolean> result : results) {
-                changed = result.get() || changed;
-            }
-            System.out.print("Number of states: ");
-            System.out.println(parserStates.size());
-            System.out.print("Number of edges: ");
-            System.out.println(edges.size());
-        } while (changed);
-        
-        final long endTime = System.currentTimeMillis();
-        
-        System.out.print("Parser states creation, Duration: ");
-        System.out.println(endTime - startTime);
-        
-        final Parser<T> parser = new Parser<>(parserStates.keySet(), edges.keySet(), startState, endOfFileSymbol);
         return parser;
     }
     
