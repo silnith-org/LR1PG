@@ -241,10 +241,6 @@ public class Parser<T extends TerminalSymbol> {
         return currentSymbol;
     }
     
-    protected Token<T> getLookahead() {
-        return lookahead;
-    }
-    
     /**
      * Parses a sequence of terminal symbols and returns an abstract syntax tree.  This runs in {@code O(n)} time.
      * 
