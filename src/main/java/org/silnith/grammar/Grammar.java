@@ -95,7 +95,7 @@ public class Grammar<T extends TerminalSymbol> {
                     continue;
                 }
                 final ItemSet<T> newParserState = calculateGoto(stateItems, nextSymbolInProduction);
-                final Edge<T> newEdge = new Edge<>(itemSet, nextSymbolInProduction, newParserState);
+                final Edge<T> newEdge = edgeFactory.createInstance(itemSet, nextSymbolInProduction, newParserState);
                 
                 final Integer previousName = addState(newParserState);
                 if (previousName == null) {
@@ -547,6 +547,8 @@ public class Grammar<T extends TerminalSymbol> {
         return calculateClosure(jset);
     }
     
+    private final EdgeFactory<T> edgeFactory = new EdgeFactory<>();
+    
     /**
      * Creates a parser for the grammar.  This is called after all calls to
      * {@link #addTerminalSymbol} and
@@ -582,7 +584,7 @@ public class Grammar<T extends TerminalSymbol> {
                         continue;
                     }
                     final ItemSet<T> newParserState = calculateGoto(stateItems, nextSymbolInProduction);
-                    final Edge<T> newEdge = new Edge<>(parserState, nextSymbolInProduction, newParserState);
+                    final Edge<T> newEdge = edgeFactory.createInstance(parserState, nextSymbolInProduction, newParserState);
                     newParserStates.add(newParserState);
                     newEdges.add(newEdge);
                 }
@@ -618,6 +620,11 @@ public class Grammar<T extends TerminalSymbol> {
         System.out.println(itemSetFactory.getCallCount());
         System.out.print("Item Set factory instance count: ");
         System.out.println(itemSetFactory.getInstanceCount());
+
+        System.out.print("Edge factory call count: ");
+        System.out.println(edgeFactory.getCallCount());
+        System.out.print("Edge factory instance count: ");
+        System.out.println(edgeFactory.getInstanceCount());
 
         return parser;
     }
