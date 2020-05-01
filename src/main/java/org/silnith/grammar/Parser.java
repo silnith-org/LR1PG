@@ -20,7 +20,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * The parser accepts the input as a complete "statement" in the language.
      */
-    public class Accept implements Action<T> {
+    private class Accept implements Action<T> {
         
         /**
          * Creates a new "accept" action.
@@ -45,7 +45,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * The parser changes state without otherwise modifying the stack.
      */
-    public class Goto implements Action<T> {
+    private class Goto implements Action<T> {
         
         private final ItemSet<T> destinationState;
         
@@ -72,7 +72,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * The parser consumes an additional terminal symbol.
      */
-    public class Shift implements Action<T> {
+    private class Shift implements Action<T> {
         
         private final ItemSet<T> destinationState;
         
@@ -103,7 +103,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * The parser replaces some symbols on the top of the stack with a new symbol.
      */
-    public class Reduce implements Action<T> {
+    private class Reduce implements Action<T> {
         
         private final LookaheadItem<T> reduceItem;
         
