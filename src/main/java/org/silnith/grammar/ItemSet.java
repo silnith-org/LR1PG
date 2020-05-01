@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-
 /**
  * Represents a parser state.  This is a set of items, where each item is xxx
  * coupled with a look-ahead set.
  */
 public class ItemSet<T extends TerminalSymbol> {
+    
     private final Set<LookaheadItem<T>> itemSet;
     
     private final int hashCode;
@@ -17,7 +17,7 @@ public class ItemSet<T extends TerminalSymbol> {
     public ItemSet(final Set<LookaheadItem<T>> items) {
         super();
         if (items == null) {
-        	throw new IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
         this.itemSet = items;
         this.hashCode = this.itemSet.hashCode();
@@ -26,8 +26,9 @@ public class ItemSet<T extends TerminalSymbol> {
     public Set<LookaheadItem<T>> getItems() {
         return itemSet;
     }
-
+    
     private int conflictCount = 0;
+    
     private final Map<Symbol, Action> parsingTable = new HashMap<>();
     
     /**
@@ -63,7 +64,7 @@ public class ItemSet<T extends TerminalSymbol> {
         }
         return action;
     }
-
+    
     @Override
     public int hashCode() {
         return hashCode;
