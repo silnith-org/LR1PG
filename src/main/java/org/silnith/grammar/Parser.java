@@ -45,7 +45,7 @@ public class Parser<T extends TerminalSymbol> {
         @Override
         public void perform() {
             done = true;
-            System.out.println("Accept.");
+//            System.out.println("Accept.");
         }
         
     }
