@@ -24,7 +24,7 @@ public class Parser<T extends TerminalSymbol> {
      */
     public abstract class AbstractAction implements Action<T> {
         
-        public AbstractAction(final ItemSet<T> sourceState, final Symbol symbol) {
+        public AbstractAction() {
             super();
         }
         
@@ -37,12 +37,9 @@ public class Parser<T extends TerminalSymbol> {
         
         /**
          * Creates a new "accept" action.
-         * 
-         * @param sourceState the source state to accept
-         * @param symbol the next symbol to consume.  This should be whatever the end-of-file symbol is.
          */
-        public Accept(final ItemSet<T> sourceState, final Symbol symbol) {
-            super(sourceState, symbol);
+        public Accept() {
+            super();
         }
         
         @Override
@@ -65,8 +62,8 @@ public class Parser<T extends TerminalSymbol> {
         
         private final ItemSet<T> destinationState;
         
-        public Goto(final ItemSet<T> sourceState, final Symbol symbol, final ItemSet<T> destinationState) {
-            super(sourceState, symbol);
+        public Goto(final ItemSet<T> destinationState) {
+            super();
             if (destinationState == null) {
                 throw new IllegalArgumentException();
             }
@@ -92,8 +89,8 @@ public class Parser<T extends TerminalSymbol> {
         
         private final ItemSet<T> destinationState;
         
-        public Shift(final ItemSet<T> sourceState, final Symbol symbol, final ItemSet<T> destinationState) {
-            super(sourceState, symbol);
+        public Shift(final ItemSet<T> destinationState) {
+            super();
             if (destinationState == null) {
                 throw new IllegalArgumentException();
             }
@@ -123,8 +120,8 @@ public class Parser<T extends TerminalSymbol> {
         
         private final LookaheadItem<T> reduceItem;
         
-        public Reduce(final ItemSet<T> sourceState, final Symbol symbol, final LookaheadItem<T> reduceItem) {
-            super(sourceState, symbol);
+        public Reduce(final LookaheadItem<T> reduceItem) {
+            super();
             if (reduceItem == null) {
                 throw new IllegalArgumentException();
             }
@@ -200,10 +197,10 @@ public class Parser<T extends TerminalSymbol> {
             final ItemSet<T> destinationState = edge.getFinalState();
             final Action<T> action;
             if (symbol instanceof TerminalSymbol) {
-                final Shift shiftAction = new Shift(parserState, symbol, destinationState);
+                final Shift shiftAction = new Shift(destinationState);
                 action = shiftAction;
             } else if (symbol instanceof NonTerminalSymbol) {
-                final Goto gotoAction = new Goto(parserState, symbol, destinationState);
+                final Goto gotoAction = new Goto(destinationState);
                 action = gotoAction;
             } else {
                 throw new IllegalStateException("Symbol is neither terminal nor non-terminal: " + symbol);
@@ -214,12 +211,12 @@ public class Parser<T extends TerminalSymbol> {
             for (final LookaheadItem<T> item : parserState.getItems()) {
                 if (item.isComplete()) {
                     for (final T lookahead : item.getLookaheadSet()) {
-                        putAction(parserState, lookahead, new Reduce(parserState, lookahead, item));
+                        putAction(parserState, lookahead, new Reduce(item));
                     }
                 } else {
                     final Symbol symbol = item.getNextSymbol();
                     if (symbol.equals(endOfFileSymbol)) {
-                        putAction(parserState, symbol, new Accept(parserState, symbol));
+                        putAction(parserState, symbol, new Accept());
                     }
                 }
             }
