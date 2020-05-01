@@ -3,6 +3,11 @@ package org.silnith.grammar;
 import java.util.Set;
 
 
+/**
+ * An {@link Item} paired with a set of lookahead tokens.
+ * 
+ * @param <T> the concrete type of terminal symbols
+ */
 public class LookaheadItem<T extends TerminalSymbol> {
     
     private final Item item;
