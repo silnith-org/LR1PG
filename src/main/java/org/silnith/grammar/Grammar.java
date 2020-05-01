@@ -434,7 +434,7 @@ public class Grammar<T extends TerminalSymbol> {
     
     protected LookaheadItem<T> createInitialProduction(final NonTerminalSymbol symbol, final T endOfFileSymbol) {
         getFirstSet(endOfFileSymbol).add(endOfFileSymbol);
-        final Item item = new Item(START, new Production(new IdentityProductionHandler(), symbol, endOfFileSymbol), 0);
+        final Item item = itemFactory.createItem(START, new Production(new IdentityProductionHandler(), symbol, endOfFileSymbol), 0);
         final Set<T> lookaheadSet = terminalSetFactory.getNewSet();
         lookaheadSet.add(endOfFileSymbol);
         return new LookaheadItem<>(item, lookaheadSet);
@@ -480,6 +480,8 @@ public class Grammar<T extends TerminalSymbol> {
         expandFirstSetByProduction(firstSet, symbols);
         return firstSet;
     }
+    
+    private final ItemFactory itemFactory = new ItemFactory();
 
     protected ItemSet<T> calculateClosure(final Collection<LookaheadItem<T>> items) {
         final Map<Item, Set<T>> itemLookaheadMap = new HashMap<>();
@@ -504,7 +506,7 @@ public class Grammar<T extends TerminalSymbol> {
                             final NonTerminalSymbol nextNonTerminalSymbol = (NonTerminalSymbol) nextSymbol;
                             final Set<Production> productionsForNextSymbol = getProductionSet(nextNonTerminalSymbol);
                             for (final Production production : productionsForNextSymbol) {
-                                final Item newItem = new Item(nextNonTerminalSymbol, production, 0);
+                                final Item newItem = itemFactory.createItem(nextNonTerminalSymbol, production, 0);
                                 final Set<T> lookaheadSet = itemLookaheadMap.get(newItem);
                                 if (lookaheadSet == null) {
                                     final Set<T> newSet = terminalSetFactory.getNewSet(firstSetOfRemainder);
@@ -535,7 +537,7 @@ public class Grammar<T extends TerminalSymbol> {
             final Symbol nextSymbol = item.getNextSymbol();
             if (symbol.equals(nextSymbol)) {
                 final Item newItem =
-                        new Item(item.getLeftHandSide(), item.getRightHandSide(), item.getParserPosition() + 1);
+                        itemFactory.createItem(item.getLeftHandSide(), item.getRightHandSide(), item.getParserPosition() + 1);
                 final LookaheadItem<T> newLookaheadItem = new LookaheadItem<>(newItem, item.getLookaheadSet());
                 jset.add(newLookaheadItem);
             }
@@ -599,6 +601,10 @@ public class Grammar<T extends TerminalSymbol> {
         System.out.println(endTime - startTime);
         
         final Parser<T> parser = new Parser<>(parserStates, edges, startState, endOfFileSymbol);
+        System.out.print("Item factory call count: ");
+        System.out.println(itemFactory.getCallCount());
+        System.out.print("Item factory instance count: ");
+        System.out.println(itemFactory.getInstanceCount());
         return parser;
     }
     
