@@ -18,22 +18,9 @@ import java.util.Set;
 public class Parser<T extends TerminalSymbol> {
 
     /**
-     * An action to take on consuming a symbol.
-     * 
-     * @param <T> the type of terminal symbols
-     */
-    public abstract class AbstractAction implements Action<T> {
-        
-        public AbstractAction() {
-            super();
-        }
-        
-    }
-
-    /**
      * The parser accepts the input as a complete "statement" in the language.
      */
-    public class Accept extends AbstractAction {
+    public class Accept implements Action<T> {
         
         /**
          * Creates a new "accept" action.
@@ -58,7 +45,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * The parser changes state without otherwise modifying the stack.
      */
-    public class Goto extends AbstractAction {
+    public class Goto implements Action<T> {
         
         private final ItemSet<T> destinationState;
         
@@ -85,7 +72,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * The parser consumes an additional terminal symbol.
      */
-    public class Shift extends AbstractAction {
+    public class Shift implements Action<T> {
         
         private final ItemSet<T> destinationState;
         
@@ -116,7 +103,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * The parser replaces some symbols on the top of the stack with a new symbol.
      */
-    public class Reduce extends AbstractAction {
+    public class Reduce implements Action<T> {
         
         private final LookaheadItem<T> reduceItem;
         
