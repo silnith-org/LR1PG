@@ -19,8 +19,6 @@ public class Parser<T extends TerminalSymbol> {
 
     /**
      * The parser consumes an additional terminal symbol.
-     * 
-     * @param <T> the type of terminal symbols
      */
     public class Shift extends Action<T> {
         
@@ -46,6 +44,37 @@ public class Parser<T extends TerminalSymbol> {
         @Override
         public String toString() {
             return "Shift(" + destinationState + ")";
+        }
+        
+    }
+
+    /**
+     * The parser replaces some symbols on the top of the stack with a new symbol.
+     */
+    public class Reduce extends Action<T> {
+        
+        private final LookaheadItem<T> reduceItem;
+        
+        public Reduce(final ItemSet<T> sourceState, final Symbol symbol, final LookaheadItem<T> reduceItem) {
+            super(sourceState, symbol);
+            if (reduceItem == null) {
+                throw new IllegalArgumentException();
+            }
+            this.reduceItem = reduceItem;
+        }
+        
+        @Override
+        public Type getType() {
+            return Type.REDUCE;
+        }
+        
+        public LookaheadItem<T> getReduceItem() {
+            return reduceItem;
+        }
+        
+        @Override
+        public String toString() {
+            return "Reduce(" + reduceItem + ")";
         }
         
     }
@@ -102,7 +131,7 @@ public class Parser<T extends TerminalSymbol> {
             for (final LookaheadItem<T> item : parserState.getItems()) {
                 if (item.isComplete()) {
                     for (final T lookahead : item.getLookaheadSet()) {
-                        putAction(parserState, lookahead, new Reduce<>(parserState, lookahead, item));
+                        putAction(parserState, lookahead, new Reduce(parserState, lookahead, item));
                     }
                 } else {
                     final Symbol symbol = item.getNextSymbol();
@@ -191,7 +220,7 @@ public class Parser<T extends TerminalSymbol> {
             }
                 break;
             case REDUCE: {
-                final Reduce<T> reduceAction = (Reduce<T>) action;
+                final Reduce reduceAction = (Reduce) action;
                 final LookaheadItem<T> reduceItem = reduceAction.getReduceItem();
                 final NonTerminalSymbol leftHandSide = reduceItem.getLeftHandSide();
                 final Production production = reduceItem.getRightHandSide();
