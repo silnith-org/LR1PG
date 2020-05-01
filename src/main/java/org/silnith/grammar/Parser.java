@@ -25,8 +25,6 @@ public class Parser<T extends TerminalSymbol> {
     
     private final T endOfFileSymbol;
     
-    private final ParsingStateTable<ItemSet<T>, Symbol, Action<T>> parsingTable;
-    
     private final Deque<Symbol> symbolMatchStack;
     
     private final Deque<ItemSet<T>> stateStack;
@@ -43,7 +41,6 @@ public class Parser<T extends TerminalSymbol> {
         this.edges = edges;
         this.startState = startState;
         this.endOfFileSymbol = endOfFileSymbol;
-        this.parsingTable = new ParsingStateTable<>();
         this.symbolMatchStack = new ArrayDeque<>();
         this.stateStack = new ArrayDeque<>();
         this.dataStack = new ArrayDeque<>();
@@ -85,8 +82,6 @@ public class Parser<T extends TerminalSymbol> {
 //        parsingTable.printTableLong();
     }
     
-    private int conflictCount = 0;
-    
     /**
      * Adds an action to the parse table.
      * 
@@ -95,30 +90,11 @@ public class Parser<T extends TerminalSymbol> {
      * @param action the parser action to take
      */
     protected void putAction(final ItemSet<T> parserState, final Symbol symbol, final Action<T> action) {
-        final Action<T> previousAction = parsingTable.put(parserState, symbol, action);
-        if (previousAction != null) {
-        	conflictCount++;
-            System.out.println("Action conflict #" + conflictCount);
-//            System.out.println(parserState);
-            parserState.printLong();
-            System.out.println(symbol);
-            System.out.println(previousAction);
-            System.out.println(action);
-            
-            throw new IllegalStateException("Conflict between actions " + action + " and " + previousAction);
-        }
+        parserState.putAction(symbol, action);
     }
     
     private Action<T> getAction(final ItemSet<T> currentState, final Symbol symbol) {
-		final Action<T> action = parsingTable.get(currentState, symbol);
-		if (action == null) {
-		    currentState.printLong();
-		    System.out.print("Next symbol: ");
-		    System.out.println(symbol);
-		    throw new IllegalStateException(
-		            "No parse action for symbol: " + symbol + " and state: " + currentState);
-		}
-		return action;
+        return currentState.getAction(symbol);
 	}
 
     private Token<T> currentSymbol;

@@ -1,5 +1,7 @@
 package org.silnith.grammar;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -24,7 +26,44 @@ public class ItemSet<T extends TerminalSymbol> {
     public Set<LookaheadItem<T>> getItems() {
         return itemSet;
     }
+
+    private int conflictCount = 0;
+    private final Map<Symbol, Action<T>> parsingTable = new HashMap<>();
     
+    /**
+     * Adds an action to the parse table.
+     * 
+     * @param parserState the current parser state
+     * @param symbol the next symbol to be consumed
+     * @param action the parser action to take
+     */
+    public void putAction(final Symbol symbol, final Action<T> action) {
+        final Action<T> previousAction = parsingTable.put(symbol, action);
+        if (previousAction != null) {
+            conflictCount++;
+            System.out.println("Action conflict #" + conflictCount);
+//            System.out.println(parserState);
+            printLong();
+            System.out.println(symbol);
+            System.out.println(previousAction);
+            System.out.println(action);
+            
+            throw new IllegalStateException("Conflict between actions " + action + " and " + previousAction);
+        }
+    }
+    
+    public Action<T> getAction(final Symbol symbol) {
+        final Action<T> action = parsingTable.get(symbol);
+        if (action == null) {
+            printLong();
+            System.out.print("Next symbol: ");
+            System.out.println(symbol);
+            throw new IllegalStateException(
+                    "No parse action for symbol: " + symbol + " and state: " + this);
+        }
+        return action;
+    }
+
     @Override
     public int hashCode() {
         return hashCode;
