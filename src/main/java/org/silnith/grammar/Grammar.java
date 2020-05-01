@@ -366,7 +366,8 @@ public class Grammar<T extends TerminalSymbol> {
                 final Set<Production> productions = entry.getValue();
                 
                 for (final Production production : productions) {
-                    for (final Symbol symbol : production.getSymbols()) {
+                    final List<Symbol> symbols = production.getSymbols();
+                    for (final Symbol symbol : symbols) {
                         final Set<T> firstSetForSymbolInProduction = getFirstSet(symbol);
                         final boolean addedElementsToFirstSet = firstSetForLeftHandSide.addAll(firstSetForSymbolInProduction);
                         changed = addedElementsToFirstSet || changed;
