@@ -461,11 +461,11 @@ public class Grammar<T extends TerminalSymbol> {
         }
     }
     
-    private boolean expandFirstSetByProduction(final Set<T> firstSetForLeftHandSide, final List<Symbol> symbols) {
+    private boolean expandFirstSetByProduction(final Set<T> firstSet, final List<Symbol> symbols) {
         boolean changedByProduction = false;
         for (final Symbol symbol : symbols) {
             final Set<T> firstSetForSymbolInProduction = getFirstSet(symbol);
-            final boolean addedElementsToFirstSet = firstSetForLeftHandSide.addAll(firstSetForSymbolInProduction);
+            final boolean addedElementsToFirstSet = firstSet.addAll(firstSetForSymbolInProduction);
             changedByProduction = addedElementsToFirstSet || changedByProduction;
             
             if (!nullable.contains(symbol)) {
