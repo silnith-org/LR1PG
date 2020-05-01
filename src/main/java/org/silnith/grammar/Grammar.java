@@ -374,20 +374,6 @@ public class Grammar<T extends TerminalSymbol> {
         } while (changed);
     }
 
-    private boolean expandFirstSetByProduction(final Set<T> firstSetForLeftHandSide, final List<Symbol> symbols) {
-        boolean changedByProduction = false;
-        for (final Symbol symbol : symbols) {
-            final Set<T> firstSetForSymbolInProduction = getFirstSet(symbol);
-            final boolean addedElementsToFirstSet = firstSetForLeftHandSide.addAll(firstSetForSymbolInProduction);
-            changedByProduction = addedElementsToFirstSet || changedByProduction;
-            
-            if (!nullable.contains(symbol)) {
-                break;
-            }
-        }
-        return changedByProduction;
-    }
-    
     protected Set<T> getFollowSet(final Symbol symbol) {
         if (follow.containsKey(symbol)) {
             return follow.get(symbol);
@@ -475,6 +461,20 @@ public class Grammar<T extends TerminalSymbol> {
         }
     }
     
+    private boolean expandFirstSetByProduction(final Set<T> firstSetForLeftHandSide, final List<Symbol> symbols) {
+        boolean changedByProduction = false;
+        for (final Symbol symbol : symbols) {
+            final Set<T> firstSetForSymbolInProduction = getFirstSet(symbol);
+            final boolean addedElementsToFirstSet = firstSetForLeftHandSide.addAll(firstSetForSymbolInProduction);
+            changedByProduction = addedElementsToFirstSet || changedByProduction;
+            
+            if (!nullable.contains(symbol)) {
+                break;
+            }
+        }
+        return changedByProduction;
+    }
+
     protected Set<T> calculateFirstSet(final List<Symbol> tempProduction) {
         final Set<T> set = terminalSetFactory.getNewSet();
         for (final Symbol symbol : tempProduction) {
