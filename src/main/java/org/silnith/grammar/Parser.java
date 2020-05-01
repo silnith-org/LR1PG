@@ -20,7 +20,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * The parser accepts the input as a complete "statement" in the language.
      */
-    private class Accept implements Action<T> {
+    private class Accept implements Action {
         
         /**
          * Creates a new "accept" action.
@@ -45,7 +45,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * The parser changes state without otherwise modifying the stack.
      */
-    private class Goto implements Action<T> {
+    private class Goto implements Action {
         
         private final ItemSet<T> destinationState;
         
@@ -72,7 +72,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * The parser consumes an additional terminal symbol.
      */
-    private class Shift implements Action<T> {
+    private class Shift implements Action {
         
         private final ItemSet<T> destinationState;
         
@@ -103,7 +103,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * The parser replaces some symbols on the top of the stack with a new symbol.
      */
-    private class Reduce implements Action<T> {
+    private class Reduce implements Action {
         
         private final LookaheadItem<T> reduceItem;
         
@@ -134,7 +134,7 @@ public class Parser<T extends TerminalSymbol> {
             final ProductionHandler handler = production.getProductionHandler();
             final DataStackElement newDatum = new DataStackElement(handler.handleReduction(data));
             currentState = stateStack.peek();
-            final Action<T> gotoAction = currentState.getAction(targetNonTerminal);
+            final Action gotoAction = currentState.getAction(targetNonTerminal);
             assert gotoAction instanceof Parser.Goto;
             gotoAction.perform();
             symbolMatchStack.push(targetNonTerminal);
@@ -180,7 +180,7 @@ public class Parser<T extends TerminalSymbol> {
             final ItemSet<T> parserState = edge.getInitialState();
             final Symbol symbol = edge.getSymbol();
             final ItemSet<T> destinationState = edge.getFinalState();
-            final Action<T> action;
+            final Action action;
             if (symbol instanceof TerminalSymbol) {
                 action = new Shift(destinationState);
             } else if (symbol instanceof NonTerminalSymbol) {
@@ -261,7 +261,7 @@ public class Parser<T extends TerminalSymbol> {
         done = false;
         do {
             final T symbol = nextToken.getSymbol();
-            final Action<T> action = currentState.getAction(symbol);
+            final Action action = currentState.getAction(symbol);
             action.perform();
         } while ( !done);
         symbolMatchStack.pop();

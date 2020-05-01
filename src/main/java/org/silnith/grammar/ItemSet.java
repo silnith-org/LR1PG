@@ -28,7 +28,7 @@ public class ItemSet<T extends TerminalSymbol> {
     }
 
     private int conflictCount = 0;
-    private final Map<Symbol, Action<T>> parsingTable = new HashMap<>();
+    private final Map<Symbol, Action> parsingTable = new HashMap<>();
     
     /**
      * Adds an action to the parse table.
@@ -37,8 +37,8 @@ public class ItemSet<T extends TerminalSymbol> {
      * @param symbol the next symbol to be consumed
      * @param action the parser action to take
      */
-    public void putAction(final Symbol symbol, final Action<T> action) {
-        final Action<T> previousAction = parsingTable.put(symbol, action);
+    public void putAction(final Symbol symbol, final Action action) {
+        final Action previousAction = parsingTable.put(symbol, action);
         if (previousAction != null) {
             conflictCount++;
             System.out.println("Action conflict #" + conflictCount);
@@ -52,8 +52,8 @@ public class ItemSet<T extends TerminalSymbol> {
         }
     }
     
-    public Action<T> getAction(final Symbol symbol) {
-        final Action<T> action = parsingTable.get(symbol);
+    public Action getAction(final Symbol symbol) {
+        final Action action = parsingTable.get(symbol);
         if (action == null) {
             printLong();
             System.out.print("Next symbol: ");
