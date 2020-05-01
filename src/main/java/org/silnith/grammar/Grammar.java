@@ -477,6 +477,11 @@ public class Grammar<T extends TerminalSymbol> {
 
     protected Set<T> calculateFirstSet(final List<Symbol> symbols) {
         final Set<T> firstSet = terminalSetFactory.getNewSet();
+        extracted(firstSet, symbols);
+        return firstSet;
+    }
+
+    private void extracted(final Set<T> firstSet, final List<Symbol> symbols) {
         boolean changedByProduction = false;
         for (final Symbol symbol : symbols) {
             final Set<T> firstSetForSymbolInProduction = getFirstSet(symbol);
@@ -487,7 +492,6 @@ public class Grammar<T extends TerminalSymbol> {
                 break;
             }
         }
-        return firstSet;
     }
     
     protected ItemSet<T> calculateClosure(final Collection<LookaheadItem<T>> items) {
