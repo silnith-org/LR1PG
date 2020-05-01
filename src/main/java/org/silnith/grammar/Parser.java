@@ -9,13 +9,46 @@ import java.util.Set;
 
 
 /**
- * A parser for the language defined by the grammar.  The generated parser is guaranteed to process any input stream
+ * A parser for the language defined by a {@link Grammar}.  The generated parser is guaranteed to process any input stream
  * of terminal symbols in {@code O(n)} time.
  * 
  * @param <T> the concrete type of identifiers for terminal symbols
  * @author <a href="mailto:silnith@gmail.com">Kent Rosenkoetter</a>
  */
 public class Parser<T extends TerminalSymbol> {
+
+    /**
+     * The parser consumes an additional terminal symbol.
+     * 
+     * @param <T> the type of terminal symbols
+     */
+    public class Shift extends Action<T> {
+        
+        private final ItemSet<T> destinationState;
+        
+        public Shift(final ItemSet<T> sourceState, final Symbol symbol, final ItemSet<T> destinationState) {
+            super(sourceState, symbol);
+            if (destinationState == null) {
+                throw new IllegalArgumentException();
+            }
+            this.destinationState = destinationState;
+        }
+        
+        @Override
+        public Type getType() {
+            return Type.SHIFT;
+        }
+        
+        public ItemSet<T> getDestinationState() {
+            return destinationState;
+        }
+        
+        @Override
+        public String toString() {
+            return "Shift(" + destinationState + ")";
+        }
+        
+    }
 
 	private final Set<ItemSet<T>> parserStates;
 	
@@ -55,7 +88,7 @@ public class Parser<T extends TerminalSymbol> {
             final ItemSet<T> destinationState = edge.getFinalState();
             final Action<T> action;
             if (symbol instanceof TerminalSymbol) {
-                final Shift<T> shiftAction = new Shift<>(parserState, symbol, destinationState);
+                final Shift shiftAction = new Shift(parserState, symbol, destinationState);
                 action = shiftAction;
             } else if (symbol instanceof NonTerminalSymbol) {
                 final Goto<T> gotoAction = new Goto<>(parserState, symbol, destinationState);
@@ -149,7 +182,7 @@ public class Parser<T extends TerminalSymbol> {
 			final Action<T> action = getAction(currentState, lookaheadSymbol);
             switch (action.getType()) {
             case SHIFT: {
-                final Shift<T> shiftAction = (Shift<T>) action;
+                final Shift shiftAction = (Shift) action;
                 currentState = shiftAction.getDestinationState();
                 symbolMatchStack.push(lookaheadSymbol);
                 stateStack.push(currentState);
