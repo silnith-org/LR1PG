@@ -135,9 +135,8 @@ public class Parser<T extends TerminalSymbol> {
             final ProductionHandler handler = production.getProductionHandler();
             final DataStackElement newDatum = new DataStackElement(handler.handleReduction(data));
             currentState = stateStack.peek();
-            final Action<T> tempAction = getAction(currentState, leftHandSide);
-            assert tempAction instanceof Parser.Goto;
-            final Goto gotoAction = (Goto) tempAction;
+            final Action<T> gotoAction = currentState.getAction(leftHandSide);
+            assert gotoAction instanceof Parser.Goto;
             gotoAction.perform();
             symbolMatchStack.push(leftHandSide);
             stateStack.push(currentState);
@@ -184,26 +183,24 @@ public class Parser<T extends TerminalSymbol> {
             final ItemSet<T> destinationState = edge.getFinalState();
             final Action<T> action;
             if (symbol instanceof TerminalSymbol) {
-                final Shift shiftAction = new Shift(destinationState);
-                action = shiftAction;
+                action = new Shift(destinationState);
             } else if (symbol instanceof NonTerminalSymbol) {
-                final Goto gotoAction = new Goto(destinationState);
-                action = gotoAction;
+                action = new Goto(destinationState);
             } else {
                 throw new IllegalStateException("Symbol is neither terminal nor non-terminal: " + symbol);
             }
-            putAction(parserState, symbol, action);
+            parserState.putAction(symbol, action);
         }
         for (final ItemSet<T> parserState : parserStates) {
             for (final LookaheadItem<T> item : parserState.getItems()) {
                 if (item.isComplete()) {
                     for (final T lookahead : item.getLookaheadSet()) {
-                        putAction(parserState, lookahead, new Reduce(item));
+                        parserState.putAction(lookahead, new Reduce(item));
                     }
                 } else {
                     final Symbol symbol = item.getNextSymbol();
                     if (symbol.equals(endOfFileSymbol)) {
-                        putAction(parserState, symbol, new Accept());
+                        parserState.putAction(symbol, new Accept());
                     }
                 }
             }
@@ -211,21 +208,6 @@ public class Parser<T extends TerminalSymbol> {
 //        parsingTable.printTableLong();
     }
     
-    /**
-     * Adds an action to the parse table.
-     * 
-     * @param parserState the current parser state
-     * @param symbol the next symbol to be consumed
-     * @param action the parser action to take
-     */
-    protected void putAction(final ItemSet<T> parserState, final Symbol symbol, final Action<T> action) {
-        parserState.putAction(symbol, action);
-    }
-    
-    private Action<T> getAction(final ItemSet<T> currentState, final Symbol symbol) {
-        return currentState.getAction(symbol);
-	}
-
     private Token<T> currentSymbol;
     
     private Token<T> lookahead;
@@ -282,7 +264,7 @@ public class Parser<T extends TerminalSymbol> {
         nextSymbol = getNextSymbol(iterator);
         done = false;
         do {
-            final Action<T> action = getAction(currentState, nextSymbol.getSymbol());
+            final Action<T> action = currentState.getAction(nextSymbol.getSymbol());
             action.perform();
         } while ( !done);
         symbolMatchStack.pop();
