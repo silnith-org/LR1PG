@@ -437,7 +437,7 @@ public class Grammar<T extends TerminalSymbol> {
         final Item item = itemFactory.createItem(START, new Production(new IdentityProductionHandler(), symbol, endOfFileSymbol), 0);
         final Set<T> lookaheadSet = terminalSetFactory.getNewSet();
         lookaheadSet.add(endOfFileSymbol);
-        return new LookaheadItem<>(item, lookaheadSet);
+        return lookaheadItemFactory.createInstance(item, lookaheadSet);
     }
     
     protected Set<List<Symbol>> getProductionRemainders(final Item item, final Collection<T> lookaheadSet) {
@@ -482,6 +482,8 @@ public class Grammar<T extends TerminalSymbol> {
     }
     
     private final ItemFactory itemFactory = new ItemFactory();
+    private final LookaheadItemFactory<T> lookaheadItemFactory = new LookaheadItemFactory<>();
+    private final ItemSetFactory<T> itemSetFactory = new ItemSetFactory<>();
 
     protected ItemSet<T> calculateClosure(final Collection<LookaheadItem<T>> items) {
         final Map<Item, Set<T>> itemLookaheadMap = new HashMap<>();
@@ -523,9 +525,9 @@ public class Grammar<T extends TerminalSymbol> {
         } while (changed);
         final Set<LookaheadItem<T>> itemSet = new HashSet<>(itemLookaheadMap.size());
         for (final Map.Entry<Item, Set<T>> entry : itemLookaheadMap.entrySet()) {
-            itemSet.add(new LookaheadItem<>(entry.getKey(), entry.getValue()));
+            itemSet.add(lookaheadItemFactory.createInstance(entry.getKey(), entry.getValue()));
         }
-        return new ItemSet<>(itemSet);
+        return itemSetFactory.createInstance(itemSet);
     }
     
     protected ItemSet<T> calculateGoto(final Collection<LookaheadItem<T>> itemSet, final Symbol symbol) {
@@ -538,7 +540,7 @@ public class Grammar<T extends TerminalSymbol> {
             if (symbol.equals(nextSymbol)) {
                 final Item newItem =
                         itemFactory.createItem(item.getLeftHandSide(), item.getRightHandSide(), item.getParserPosition() + 1);
-                final LookaheadItem<T> newLookaheadItem = new LookaheadItem<>(newItem, item.getLookaheadSet());
+                final LookaheadItem<T> newLookaheadItem = lookaheadItemFactory.createInstance(newItem, item.getLookaheadSet());
                 jset.add(newLookaheadItem);
             }
         }
@@ -601,10 +603,22 @@ public class Grammar<T extends TerminalSymbol> {
         System.out.println(endTime - startTime);
         
         final Parser<T> parser = new Parser<>(parserStates, edges, startState, endOfFileSymbol);
+        
         System.out.print("Item factory call count: ");
         System.out.println(itemFactory.getCallCount());
         System.out.print("Item factory instance count: ");
         System.out.println(itemFactory.getInstanceCount());
+
+        System.out.print("Look-ahead Item factory call count: ");
+        System.out.println(lookaheadItemFactory.getCallCount());
+        System.out.print("Look-ahead Item factory instance count: ");
+        System.out.println(lookaheadItemFactory.getInstanceCount());
+
+        System.out.print("Item Set factory call count: ");
+        System.out.println(itemSetFactory.getCallCount());
+        System.out.print("Item Set factory instance count: ");
+        System.out.println(itemSetFactory.getInstanceCount());
+
         return parser;
     }
     

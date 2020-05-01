@@ -8,7 +8,6 @@ import java.util.Set;
  * coupled with a look-ahead set.
  */
 public class ItemSet<T extends TerminalSymbol> {
-    
     private final Set<LookaheadItem<T>> itemSet;
     
     private final int hashCode;
