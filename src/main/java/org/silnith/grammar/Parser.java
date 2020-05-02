@@ -26,10 +26,12 @@ public class Parser<T extends TerminalSymbol> {
 
         /**
          * Creates a new "accept" action.
+         * 
+         * @param parser the parser to act upon
          */
-        public Accept() {
+        public Accept(final Parser<T> parser) {
             super();
-            this.parser = Parser.this;
+            this.parser = parser;
         }
         
         @Override
@@ -53,12 +55,12 @@ public class Parser<T extends TerminalSymbol> {
         
         private final ParserState<T> destinationState;
         
-        public Goto(final ParserState<T> destinationState) {
+        public Goto(final Parser<T> parser, final ParserState<T> destinationState) {
             super();
             if (destinationState == null) {
                 throw new IllegalArgumentException();
             }
-            this.parser = Parser.this;
+            this.parser = parser;
             this.destinationState = destinationState;
         }
         
@@ -83,12 +85,12 @@ public class Parser<T extends TerminalSymbol> {
         
         private final ParserState<T> destinationState;
         
-        public Shift(final ParserState<T> destinationState) {
+        public Shift(final Parser<T> parser, final ParserState<T> destinationState) {
             super();
             if (destinationState == null) {
                 throw new IllegalArgumentException();
             }
-            this.parser = Parser.this;
+            this.parser = parser;
             this.destinationState = destinationState;
         }
         
@@ -113,12 +115,12 @@ public class Parser<T extends TerminalSymbol> {
         
         private final LookaheadItem<T> reduceItem;
         
-        public Reduce(final LookaheadItem<T> reduceItem) {
+        public Reduce(final Parser<T> parser, final LookaheadItem<T> reduceItem) {
             super();
             if (reduceItem == null) {
                 throw new IllegalArgumentException();
             }
-            this.parser = Parser.this;
+            this.parser = parser;
             this.reduceItem = reduceItem;
         }
         
@@ -172,9 +174,9 @@ public class Parser<T extends TerminalSymbol> {
             final ParserState<T> destinationState = edge.getFinalState();
             final Action action;
             if (symbol instanceof TerminalSymbol) {
-                action = new Shift(destinationState);
+                action = new Shift(this, destinationState);
             } else if (symbol instanceof NonTerminalSymbol) {
-                action = new Goto(destinationState);
+                action = new Goto(this, destinationState);
             } else {
                 throw new IllegalStateException("Symbol is neither terminal nor non-terminal: " + symbol);
             }
@@ -183,14 +185,14 @@ public class Parser<T extends TerminalSymbol> {
         for (final ParserState<T> parserState : parserStates) {
             for (final LookaheadItem<T> item : parserState.getItems()) {
                 if (item.isComplete()) {
-                    final Reduce action = new Reduce(item);
+                    final Reduce action = new Reduce(this, item);
                     for (final T lookahead : item.getLookaheadSet()) {
                         parserState.putAction(lookahead, action);
                     }
                 } else {
                     final Symbol symbol = item.getNextSymbol();
                     if (symbol.equals(endOfFileSymbol)) {
-                        parserState.putAction(symbol, new Accept());
+                        parserState.putAction(symbol, new Accept(this));
                     }
                 }
             }
