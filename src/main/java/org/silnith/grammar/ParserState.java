@@ -2,10 +2,11 @@ package org.silnith.grammar;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
- * Represents a parser state.  This is a set of items, where each item is xxx
+ * Represents a parser state.  This is a set of items, where each item is a partially-completed production
  * coupled with a look-ahead set.
  */
 public class ParserState<T extends TerminalSymbol> {
@@ -13,14 +14,21 @@ public class ParserState<T extends TerminalSymbol> {
     private final Set<LookaheadItem<T>> itemSet;
     
     private final int hashCode;
-    
+
+    private final Map<Symbol, Action> parsingTable;
+
     public ParserState(final Set<LookaheadItem<T>> items) {
         super();
         if (items == null) {
             throw new IllegalArgumentException();
         }
         this.itemSet = items;
-        this.hashCode = this.itemSet.hashCode();
+        this.hashCode = Objects.hash(this.itemSet);
+        /*
+         * The parsing table is not part of a state's "identity" and so is not included in the
+         * hash code calculation or the equals comparison.
+         */
+        this.parsingTable = new HashMap<>();
     }
     
     public Set<LookaheadItem<T>> getItems() {
@@ -28,8 +36,6 @@ public class ParserState<T extends TerminalSymbol> {
     }
     
     private int conflictCount = 0;
-    
-    private final Map<Symbol, Action> parsingTable = new HashMap<>();
     
     /**
      * Adds an action to the parse table.
@@ -43,7 +49,6 @@ public class ParserState<T extends TerminalSymbol> {
         if (previousAction != null) {
             conflictCount++;
             System.out.println("Action conflict #" + conflictCount);
-//            System.out.println(parserState);
             printLong();
             System.out.println(symbol);
             System.out.println(previousAction);
