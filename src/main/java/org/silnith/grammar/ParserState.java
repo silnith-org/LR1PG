@@ -8,13 +8,13 @@ import java.util.Set;
  * Represents a parser state.  This is a set of items, where each item is xxx
  * coupled with a look-ahead set.
  */
-public class ItemSet<T extends TerminalSymbol> {
+public class ParserState<T extends TerminalSymbol> {
     
     private final Set<LookaheadItem<T>> itemSet;
     
     private final int hashCode;
     
-    public ItemSet(final Set<LookaheadItem<T>> items) {
+    public ParserState(final Set<LookaheadItem<T>> items) {
         super();
         if (items == null) {
             throw new IllegalArgumentException();
@@ -75,8 +75,8 @@ public class ItemSet<T extends TerminalSymbol> {
         if (obj == this) {
             return true;
         }
-        if (obj instanceof ItemSet) {
-            final ItemSet<?> other = (ItemSet<?>) obj;
+        if (obj instanceof ParserState) {
+            final ParserState<?> other = (ParserState<?>) obj;
             if (hashCode != other.hashCode) {
                 return false;
             }

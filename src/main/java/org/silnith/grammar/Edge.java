@@ -4,15 +4,15 @@ import java.util.Objects;
 
 public class Edge<T extends TerminalSymbol> {
     
-    private final ItemSet<T> initialState;
+    private final ParserState<T> initialState;
     
     private final Symbol symbol;
     
-    private final ItemSet<T> finalState;
+    private final ParserState<T> finalState;
     
     private final int hashCode;
     
-    public Edge(final ItemSet<T> initialState, final Symbol symbol, final ItemSet<T> finalState) {
+    public Edge(final ParserState<T> initialState, final Symbol symbol, final ParserState<T> finalState) {
         super();
         if (initialState == null || symbol == null || finalState == null) {
             throw new IllegalArgumentException();
@@ -23,7 +23,7 @@ public class Edge<T extends TerminalSymbol> {
         this.hashCode = Objects.hash(this.initialState, this.symbol, this.finalState);
     }
     
-    public ItemSet<T> getInitialState() {
+    public ParserState<T> getInitialState() {
         return initialState;
     }
     
@@ -31,7 +31,7 @@ public class Edge<T extends TerminalSymbol> {
         return symbol;
     }
     
-    public ItemSet<T> getFinalState() {
+    public ParserState<T> getFinalState() {
         return finalState;
     }
     

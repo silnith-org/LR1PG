@@ -47,9 +47,9 @@ public class Parser<T extends TerminalSymbol> {
      */
     private class Goto implements Action {
         
-        private final ItemSet<T> destinationState;
+        private final ParserState<T> destinationState;
         
-        public Goto(final ItemSet<T> destinationState) {
+        public Goto(final ParserState<T> destinationState) {
             super();
             if (destinationState == null) {
                 throw new IllegalArgumentException();
@@ -74,9 +74,9 @@ public class Parser<T extends TerminalSymbol> {
      */
     private class Shift implements Action {
         
-        private final ItemSet<T> destinationState;
+        private final ParserState<T> destinationState;
         
-        public Shift(final ItemSet<T> destinationState) {
+        public Shift(final ParserState<T> destinationState) {
             super();
             if (destinationState == null) {
                 throw new IllegalArgumentException();
@@ -144,21 +144,21 @@ public class Parser<T extends TerminalSymbol> {
         
     }
 
-	private final Set<ItemSet<T>> parserStates;
+	private final Set<ParserState<T>> parserStates;
 	
     private final Set<Edge<T>> edges;
     
-    private final ItemSet<T> startState;
+    private final ParserState<T> startState;
     
     private final T endOfFileSymbol;
     
     private final Deque<Symbol> symbolMatchStack;
     
-    private final Deque<ItemSet<T>> stateStack;
+    private final Deque<ParserState<T>> stateStack;
     
     private final Deque<DataStackElement> dataStack;
     
-    public Parser(final Set<ItemSet<T>> parserStates, final Set<Edge<T>> edges, final ItemSet<T> startState,
+    public Parser(final Set<ParserState<T>> parserStates, final Set<Edge<T>> edges, final ParserState<T> startState,
             final T endOfFileSymbol) {
         super();
         if (parserStates == null || edges == null || startState == null || endOfFileSymbol == null) {
@@ -177,9 +177,9 @@ public class Parser<T extends TerminalSymbol> {
     
     public void calculateParseTable() {
         for (final Edge<T> edge : edges) {
-            final ItemSet<T> parserState = edge.getInitialState();
+            final ParserState<T> parserState = edge.getInitialState();
             final Symbol symbol = edge.getSymbol();
-            final ItemSet<T> destinationState = edge.getFinalState();
+            final ParserState<T> destinationState = edge.getFinalState();
             final Action action;
             if (symbol instanceof TerminalSymbol) {
                 action = new Shift(destinationState);
@@ -190,7 +190,7 @@ public class Parser<T extends TerminalSymbol> {
             }
             parserState.putAction(symbol, action);
         }
-        for (final ItemSet<T> parserState : parserStates) {
+        for (final ParserState<T> parserState : parserStates) {
             for (final LookaheadItem<T> item : parserState.getItems()) {
                 if (item.isComplete()) {
                     final Reduce action = new Reduce(item);
@@ -214,7 +214,7 @@ public class Parser<T extends TerminalSymbol> {
 
     private boolean done;
 
-    private ItemSet<T> currentState;
+    private ParserState<T> currentState;
 
     private Token<T> nextToken;
 

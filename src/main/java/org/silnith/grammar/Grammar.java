@@ -417,9 +417,9 @@ public class Grammar<T extends TerminalSymbol> {
     
     private final ItemFactory itemFactory = new ItemFactory();
     private final LookaheadItemFactory<T> lookaheadItemFactory = new LookaheadItemFactory<>();
-    private final ItemSetFactory<T> itemSetFactory = new ItemSetFactory<>();
+    private final ParserStateFactory<T> itemSetFactory = new ParserStateFactory<>();
 
-    protected ItemSet<T> calculateClosure(final Collection<LookaheadItem<T>> items) {
+    protected ParserState<T> calculateClosure(final Collection<LookaheadItem<T>> items) {
         final Map<Item, Set<T>> itemLookaheadMap = new HashMap<>();
         for (final LookaheadItem<T> lookaheadItem : items) {
             final Set<T> newSet = terminalSetFactory.getNewSet(lookaheadItem.getLookaheadSet());
@@ -464,7 +464,7 @@ public class Grammar<T extends TerminalSymbol> {
         return itemSetFactory.createInstance(itemSet);
     }
     
-    protected ItemSet<T> calculateGoto(final Collection<LookaheadItem<T>> itemSet, final Symbol symbol) {
+    protected ParserState<T> calculateGoto(final Collection<LookaheadItem<T>> itemSet, final Symbol symbol) {
         final Set<LookaheadItem<T>> jset = new HashSet<>(itemSet.size());
         for (final LookaheadItem<T> item : itemSet) {
             if (item.isComplete()) {
@@ -497,16 +497,16 @@ public class Grammar<T extends TerminalSymbol> {
         compute();
         final long startTime = System.currentTimeMillis();
         
-        final Set<ItemSet<T>> parserStates = new HashSet<>();
+        final Set<ParserState<T>> parserStates = new HashSet<>();
         final Set<Edge<T>> edges = new HashSet<>();
         final LookaheadItem<T> initialProduction = createInitialProduction(startSymbol, endOfFileSymbol);
-        final ItemSet<T> startState = calculateClosure(Collections.singleton(initialProduction));
+        final ParserState<T> startState = calculateClosure(Collections.singleton(initialProduction));
         parserStates.add(startState);
         boolean changed;
         do {
-            final Set<ItemSet<T>> newParserStates = new HashSet<>();
+            final Set<ParserState<T>> newParserStates = new HashSet<>();
             final Set<Edge<T>> newEdges = new HashSet<>();
-            for (final ItemSet<T> parserState : parserStates) {
+            for (final ParserState<T> parserState : parserStates) {
                 final Set<LookaheadItem<T>> stateItems = parserState.getItems();
                 for (final LookaheadItem<T> item : stateItems) {
 //                    System.out.print('.');
@@ -517,7 +517,7 @@ public class Grammar<T extends TerminalSymbol> {
                     if (endOfFileSymbol.equals(nextSymbolInProduction)) {
                         continue;
                     }
-                    final ItemSet<T> newParserState = calculateGoto(stateItems, nextSymbolInProduction);
+                    final ParserState<T> newParserState = calculateGoto(stateItems, nextSymbolInProduction);
                     final Edge<T> newEdge = edgeFactory.createInstance(parserState, nextSymbolInProduction, newParserState);
                     newParserStates.add(newParserState);
                     newEdges.add(newEdge);
