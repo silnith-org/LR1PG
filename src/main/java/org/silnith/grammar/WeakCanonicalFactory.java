@@ -29,13 +29,13 @@ public class WeakCanonicalFactory<T> {
             /*
              * There was no existing entry.  Create one.
              */
-            final WeakReference<T> previousWeakReference = canonicalInstance.put(t, newWeakReference);
+            final WeakReference<T> displaced = canonicalInstance.put(t, newWeakReference);
             
             /*
              * Because this method is synchronized, it is not possible for another thread to preemptively insert a new
              * canonical instance.
              */
-            assert previousWeakReference == null;
+            assert displaced == null;
             
             return t;
         } else {
@@ -47,7 +47,14 @@ public class WeakCanonicalFactory<T> {
                 /*
                  * The weak reference in the canonical map vanished.  Continue with the newly-created one.
                  */
-                canonicalInstance.put(t, newWeakReference);
+                final WeakReference<T> displaced = canonicalInstance.put(t, newWeakReference);
+                
+                /*
+                 * It is possible that the weak hash map removed the entry because the weak
+                 * reference was cleaned up, so the put could return the same reference or
+                 * it could return null.
+                 */
+                assert displaced == existingWeakReference || displaced == null;
 
                 return t;
             } else {
