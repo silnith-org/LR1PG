@@ -65,6 +65,14 @@ public class Grammar<T extends TerminalSymbol> {
         
     }
     
+    private final ItemFactory itemFactory;
+
+    private final LookaheadItemFactory<T> lookaheadItemFactory;
+
+    private final ParserStateFactory<T> parserStateFactory;
+
+    private final EdgeFactory<T> edgeFactory;
+
     private final SetFactory<T> terminalSetFactory;
     
     private final Set<T> lexicon;
@@ -108,6 +116,10 @@ public class Grammar<T extends TerminalSymbol> {
         if (terminalSetFactory == null) {
             throw new IllegalArgumentException();
         }
+        this.itemFactory = new ItemFactory();
+        this.lookaheadItemFactory = new LookaheadItemFactory<>();
+        this.parserStateFactory = new ParserStateFactory<>();
+        this.edgeFactory = new EdgeFactory<>();
         this.terminalSetFactory = terminalSetFactory;
         this.lexicon = this.terminalSetFactory.getNewSet();
         this.productions = new HashMap<>();
@@ -122,7 +134,8 @@ public class Grammar<T extends TerminalSymbol> {
      * Returns the lexicon for the language.  This is the set of terminal symbols that
      * compose anything written in the language.
      * <p>
-     * In most cases, this will be ASCII or Unicode characters.
+     * There need not be separate terminal symbols for all possible inputs because parsers operate
+     * on streams of tokens, where each token is a terminal symbol coupled with additional data.
      * 
      * @return the language lexicon
      */
@@ -415,10 +428,6 @@ public class Grammar<T extends TerminalSymbol> {
         return firstSet;
     }
     
-    private final ItemFactory itemFactory = new ItemFactory();
-    private final LookaheadItemFactory<T> lookaheadItemFactory = new LookaheadItemFactory<>();
-    private final ParserStateFactory<T> itemSetFactory = new ParserStateFactory<>();
-
     protected ParserState<T> calculateClosure(final Collection<LookaheadItem<T>> items) {
         final Map<Item, Set<T>> itemLookaheadMap = new HashMap<>();
         for (final LookaheadItem<T> lookaheadItem : items) {
@@ -461,7 +470,7 @@ public class Grammar<T extends TerminalSymbol> {
         for (final Map.Entry<Item, Set<T>> entry : itemLookaheadMap.entrySet()) {
             itemSet.add(lookaheadItemFactory.createInstance(entry.getKey(), entry.getValue()));
         }
-        return itemSetFactory.createInstance(itemSet);
+        return parserStateFactory.createInstance(itemSet);
     }
     
     protected ParserState<T> calculateGoto(final Collection<LookaheadItem<T>> itemSet, final Symbol symbol) {
@@ -480,8 +489,6 @@ public class Grammar<T extends TerminalSymbol> {
         }
         return calculateClosure(jset);
     }
-    
-    private final EdgeFactory<T> edgeFactory = new EdgeFactory<>();
     
     /**
      * Creates a parser for the grammar.  This is called after all calls to
@@ -550,10 +557,10 @@ public class Grammar<T extends TerminalSymbol> {
         System.out.print("Look-ahead Item factory instance count: ");
         System.out.println(lookaheadItemFactory.getInstanceCount());
 
-        System.out.print("Item Set factory call count: ");
-        System.out.println(itemSetFactory.getCallCount());
-        System.out.print("Item Set factory instance count: ");
-        System.out.println(itemSetFactory.getInstanceCount());
+        System.out.print("Parser state factory call count: ");
+        System.out.println(parserStateFactory.getCallCount());
+        System.out.print("Parser state factory instance count: ");
+        System.out.println(parserStateFactory.getInstanceCount());
 
         System.out.print("Edge factory call count: ");
         System.out.println(edgeFactory.getCallCount());
