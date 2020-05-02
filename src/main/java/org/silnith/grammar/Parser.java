@@ -22,11 +22,14 @@ public class Parser<T extends TerminalSymbol> {
      */
     private class Accept implements Action {
         
+        private final Parser<T> parser;
+
         /**
          * Creates a new "accept" action.
          */
         public Accept() {
             super();
+            this.parser = Parser.this;
         }
         
         @Override
@@ -36,8 +39,7 @@ public class Parser<T extends TerminalSymbol> {
 
         @Override
         public void perform() {
-            done = true;
-//            System.out.println("Accept.");
+            parser.accept();
         }
         
     }
@@ -47,6 +49,8 @@ public class Parser<T extends TerminalSymbol> {
      */
     private class Goto implements Action {
         
+        private final Parser<T> parser;
+        
         private final ParserState<T> destinationState;
         
         public Goto(final ParserState<T> destinationState) {
@@ -54,6 +58,7 @@ public class Parser<T extends TerminalSymbol> {
             if (destinationState == null) {
                 throw new IllegalArgumentException();
             }
+            this.parser = Parser.this;
             this.destinationState = destinationState;
         }
         
@@ -64,7 +69,7 @@ public class Parser<T extends TerminalSymbol> {
 
         @Override
         public void perform() {
-            currentState = destinationState;
+            parser.goTo(destinationState);
         }
         
     }
@@ -74,6 +79,8 @@ public class Parser<T extends TerminalSymbol> {
      */
     private class Shift implements Action {
         
+        private final Parser<T> parser;
+        
         private final ParserState<T> destinationState;
         
         public Shift(final ParserState<T> destinationState) {
@@ -81,6 +88,7 @@ public class Parser<T extends TerminalSymbol> {
             if (destinationState == null) {
                 throw new IllegalArgumentException();
             }
+            this.parser = Parser.this;
             this.destinationState = destinationState;
         }
         
@@ -91,11 +99,7 @@ public class Parser<T extends TerminalSymbol> {
 
         @Override
         public void perform() {
-            currentState = destinationState;
-            symbolMatchStack.push(nextToken.getSymbol());
-            stateStack.push(currentState);
-            dataStack.push(new DataStackElement(nextToken));
-            nextToken = getNextToken(iterator);
+            parser.shift(destinationState);
         }
         
     }
@@ -105,6 +109,8 @@ public class Parser<T extends TerminalSymbol> {
      */
     private class Reduce implements Action {
         
+        private final Parser<T> parser;
+        
         private final LookaheadItem<T> reduceItem;
         
         public Reduce(final LookaheadItem<T> reduceItem) {
@@ -112,6 +118,7 @@ public class Parser<T extends TerminalSymbol> {
             if (reduceItem == null) {
                 throw new IllegalArgumentException();
             }
+            this.parser = Parser.this;
             this.reduceItem = reduceItem;
         }
         
@@ -122,24 +129,7 @@ public class Parser<T extends TerminalSymbol> {
 
         @Override
         public void perform() {
-            final NonTerminalSymbol targetNonTerminal = reduceItem.getTarget();
-            final Production production = reduceItem.getProduction();
-            final List<DataStackElement> data = new LinkedList<>();
-            for (@SuppressWarnings("unused") final Symbol symbol : production.getSymbols()) {
-                symbolMatchStack.pop();
-                stateStack.pop();
-                final DataStackElement datum = dataStack.pop();
-                data.add(0, datum);
-            }
-            final ProductionHandler handler = production.getProductionHandler();
-            final DataStackElement newDatum = new DataStackElement(handler.handleReduction(data));
-            currentState = stateStack.peek();
-            final Action gotoAction = currentState.getAction(targetNonTerminal);
-            assert gotoAction instanceof Parser.Goto;
-            gotoAction.perform();
-            symbolMatchStack.push(targetNonTerminal);
-            stateStack.push(currentState);
-            dataStack.push(newDatum);
+            parser.reduce(reduceItem);
         }
         
     }
@@ -267,6 +257,44 @@ public class Parser<T extends TerminalSymbol> {
         symbolMatchStack.pop();
         stateStack.pop();
         return dataStack.pop().getAbstractSyntaxTreeElement();
+    }
+
+    private void accept() {
+        done = true;
+//        System.out.println("Accept.");
+    }
+
+    private void goTo(final ParserState<T> destinationState) {
+        currentState = destinationState;
+    }
+
+    private void shift(final ParserState<T> destinationState) {
+        currentState = destinationState;
+        symbolMatchStack.push(nextToken.getSymbol());
+        stateStack.push(currentState);
+        dataStack.push(new DataStackElement(nextToken));
+        nextToken = getNextToken(iterator);
+    }
+
+    private void reduce(final LookaheadItem<T> reduceItem) {
+        final NonTerminalSymbol targetNonTerminal = reduceItem.getTarget();
+        final Production production = reduceItem.getProduction();
+        final List<DataStackElement> data = new LinkedList<>();
+        for (@SuppressWarnings("unused") final Symbol symbol : production.getSymbols()) {
+            symbolMatchStack.pop();
+            stateStack.pop();
+            final DataStackElement datum = dataStack.pop();
+            data.add(0, datum);
+        }
+        final ProductionHandler handler = production.getProductionHandler();
+        final DataStackElement newDatum = new DataStackElement(handler.handleReduction(data));
+        currentState = stateStack.peek();
+        final Action gotoAction = currentState.getAction(targetNonTerminal);
+        assert gotoAction instanceof Parser.Goto;
+        gotoAction.perform();
+        symbolMatchStack.push(targetNonTerminal);
+        stateStack.push(currentState);
+        dataStack.push(newDatum);
     }
     
 }
