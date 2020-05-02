@@ -35,13 +35,13 @@ public class Parser<T extends TerminalSymbol> {
         }
         
         @Override
-        public String toString() {
-            return "Accept";
+        public void perform() {
+            parser.accept();
         }
 
         @Override
-        public void perform() {
-            parser.accept();
+        public String toString() {
+            return "Accept";
         }
         
     }
@@ -65,13 +65,13 @@ public class Parser<T extends TerminalSymbol> {
         }
         
         @Override
-        public String toString() {
-            return "Goto(" + destinationState + ")";
+        public void perform() {
+            parser.goTo(destinationState);
         }
 
         @Override
-        public void perform() {
-            parser.goTo(destinationState);
+        public String toString() {
+            return "Goto(" + destinationState + ")";
         }
         
     }
@@ -95,13 +95,13 @@ public class Parser<T extends TerminalSymbol> {
         }
         
         @Override
-        public String toString() {
-            return "Shift(" + destinationState + ")";
+        public void perform() {
+            parser.shift(destinationState);
         }
 
         @Override
-        public void perform() {
-            parser.shift(destinationState);
+        public String toString() {
+            return "Shift(" + destinationState + ")";
         }
         
     }
@@ -125,13 +125,13 @@ public class Parser<T extends TerminalSymbol> {
         }
         
         @Override
-        public String toString() {
-            return "Reduce(" + reduceItem + ")";
+        public void perform() {
+            parser.reduce(reduceItem);
         }
 
         @Override
-        public void perform() {
-            parser.reduce(reduceItem);
+        public String toString() {
+            return "Reduce(" + reduceItem + ")";
         }
         
     }
