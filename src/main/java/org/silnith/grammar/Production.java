@@ -1,6 +1,7 @@
 package org.silnith.grammar;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,7 +30,7 @@ public class Production {
         	throw new IllegalArgumentException();
         }
         this.productionHandler = productionHandler;
-        this.symbols = Arrays.asList(symbols);
+        this.symbols = Collections.unmodifiableList(Arrays.asList(symbols));
         this.hashCode = Objects.hash(this.symbols);
     }
     

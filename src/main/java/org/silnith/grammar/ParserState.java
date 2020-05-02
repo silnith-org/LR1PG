@@ -1,5 +1,6 @@
 package org.silnith.grammar;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -22,7 +23,7 @@ public class ParserState<T extends TerminalSymbol> {
         if (items == null) {
             throw new IllegalArgumentException();
         }
-        this.itemSet = items;
+        this.itemSet = Collections.unmodifiableSet(items);
         this.hashCode = Objects.hash(this.itemSet);
         /*
          * The parsing table is not part of a state's "identity" and so is not included in the
