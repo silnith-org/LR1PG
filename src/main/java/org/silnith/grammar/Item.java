@@ -10,39 +10,39 @@ import java.util.Objects;
  */
 public class Item {
     
-    private final NonTerminalSymbol leftHandSide;
+    private final NonTerminalSymbol target;
     
-    private final Production rightHandSide;
+    private final Production production;
     
     private final int parserPosition;
     
     private final int hashCode;
     
-    public Item(final NonTerminalSymbol leftHandSide, final Production rightHandSide, final int parserPosition) {
+    public Item(final NonTerminalSymbol target, final Production production, final int parserPosition) {
         super();
-        if (leftHandSide == null || rightHandSide == null) {
+        if (target == null || production == null) {
             throw new IllegalArgumentException();
         }
         if (parserPosition < 0) {
             throw new IllegalArgumentException();
         }
-        if (parserPosition > rightHandSide.getSymbols().size()) {
+        if (parserPosition > production.getSymbols().size()) {
             throw new IllegalArgumentException();
         }
-        this.leftHandSide = leftHandSide;
-        this.rightHandSide = rightHandSide;
+        this.target = target;
+        this.production = production;
         this.parserPosition = parserPosition;
-        this.hashCode = Objects.hash(this.leftHandSide, this.rightHandSide, this.parserPosition);
+        this.hashCode = Objects.hash(this.target, this.production, this.parserPosition);
     }
     
     /**
      * Returns {@code true} if the {@link #getParserPosition() parser position} is beyond all symbols in the
-     * {@link #getRightHandSide() right-hand side}.
+     * {@link #getProduction() right-hand side}.
      * 
      * @return {@code true} if the production is complete
      */
     public boolean isComplete() {
-        return parserPosition == rightHandSide.getSymbols().size();
+        return parserPosition == production.getSymbols().size();
     }
     
     /**
@@ -51,15 +51,15 @@ public class Item {
      * @return the next symbol to be consumed
      */
     public Symbol getNextSymbol() {
-        return rightHandSide.getSymbols().get(parserPosition);
+        return production.getSymbols().get(parserPosition);
     }
     
-    public NonTerminalSymbol getLeftHandSide() {
-        return leftHandSide;
+    public NonTerminalSymbol getTarget() {
+        return target;
     }
     
-    public Production getRightHandSide() {
-        return rightHandSide;
+    public Production getProduction() {
+        return production;
     }
     
     public int getParserPosition() {
@@ -81,7 +81,7 @@ public class Item {
             if (hashCode != other.hashCode) {
                 return false;
             }
-            return leftHandSide.equals(other.leftHandSide) && rightHandSide.equals(other.rightHandSide)
+            return target.equals(other.target) && production.equals(other.production)
                     && parserPosition == other.parserPosition;
         } else {
             return false;
@@ -90,10 +90,10 @@ public class Item {
     
     @Override
     public String toString() {
-        final List<Symbol> symbols = rightHandSide.getSymbols();
+        final List<Symbol> symbols = production.getSymbols();
         final List<Symbol> consumedSymbols = symbols.subList(0, parserPosition);
         final List<Symbol> unconsumedSymbols = symbols.subList(parserPosition, symbols.size());
-        return "{" + leftHandSide + " -> " + consumedSymbols + " . " + unconsumedSymbols + "}";
+        return "{" + target + " -> " + consumedSymbols + " . " + unconsumedSymbols + "}";
     }
     
 }

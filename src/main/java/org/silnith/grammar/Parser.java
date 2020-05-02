@@ -122,8 +122,8 @@ public class Parser<T extends TerminalSymbol> {
 
         @Override
         public void perform() {
-            final NonTerminalSymbol targetNonTerminal = reduceItem.getLeftHandSide();
-            final Production production = reduceItem.getRightHandSide();
+            final NonTerminalSymbol targetNonTerminal = reduceItem.getTarget();
+            final Production production = reduceItem.getProduction();
             final List<DataStackElement> data = new LinkedList<>();
             for (@SuppressWarnings("unused") final Symbol symbol : production.getSymbols()) {
                 symbolMatchStack.pop();

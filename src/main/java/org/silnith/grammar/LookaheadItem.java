@@ -40,12 +40,12 @@ public class LookaheadItem<T extends TerminalSymbol> {
         return item.getNextSymbol();
     }
     
-    public NonTerminalSymbol getLeftHandSide() {
-        return item.getLeftHandSide();
+    public NonTerminalSymbol getTarget() {
+        return item.getTarget();
     }
     
-    public Production getRightHandSide() {
-        return item.getRightHandSide();
+    public Production getProduction() {
+        return item.getProduction();
     }
     
     public int getParserPosition() {

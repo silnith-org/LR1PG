@@ -388,7 +388,7 @@ public class Grammar<T extends TerminalSymbol> {
     }
     
     protected Set<List<Symbol>> getProductionRemainders(final Item item, final Collection<T> lookaheadSet) {
-        final List<Symbol> symbols = item.getRightHandSide().getSymbols();
+        final List<Symbol> symbols = item.getProduction().getSymbols();
         final int secondSymbolIndex = item.getParserPosition() + 1;
         if (secondSymbolIndex < symbols.size()) {
             final List<Symbol> remainder = new ArrayList<>(symbols.subList(secondSymbolIndex, symbols.size()));
@@ -482,7 +482,7 @@ public class Grammar<T extends TerminalSymbol> {
             final Symbol nextSymbol = item.getNextSymbol();
             if (symbol.equals(nextSymbol)) {
                 final Item newItem =
-                        itemFactory.createItem(item.getLeftHandSide(), item.getRightHandSide(), item.getParserPosition() + 1);
+                        itemFactory.createItem(item.getTarget(), item.getProduction(), item.getParserPosition() + 1);
                 final LookaheadItem<T> newLookaheadItem = lookaheadItemFactory.createInstance(newItem, item.getLookaheadSet());
                 jset.add(newLookaheadItem);
             }
