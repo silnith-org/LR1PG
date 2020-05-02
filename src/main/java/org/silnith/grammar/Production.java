@@ -2,6 +2,7 @@ package org.silnith.grammar;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -29,7 +30,7 @@ public class Production {
         }
         this.productionHandler = productionHandler;
         this.symbols = Arrays.asList(symbols);
-        this.hashCode = this.symbols.hashCode();
+        this.hashCode = Objects.hash(this.symbols);
     }
     
     /**
