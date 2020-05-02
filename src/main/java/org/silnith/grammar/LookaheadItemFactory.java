@@ -2,7 +2,7 @@ package org.silnith.grammar;
 
 import java.util.Set;
 
-public class LookaheadItemFactory<T extends TerminalSymbol> extends CanonicalFactory<LookaheadItem<T>> {
+public class LookaheadItemFactory<T extends TerminalSymbol> extends WeakCanonicalFactory<LookaheadItem<T>> {
     
     public LookaheadItemFactory() {
         super();

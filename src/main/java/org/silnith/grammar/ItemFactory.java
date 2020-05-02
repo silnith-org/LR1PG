@@ -1,6 +1,6 @@
 package org.silnith.grammar;
 
-public class ItemFactory extends CanonicalFactory<Item> {
+public class ItemFactory extends WeakCanonicalFactory<Item> {
     
     public ItemFactory() {
         super();

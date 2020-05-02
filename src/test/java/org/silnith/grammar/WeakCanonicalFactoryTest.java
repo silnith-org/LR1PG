@@ -13,7 +13,7 @@ public class WeakCanonicalFactoryTest {
     
     @Test
     public void testValueOf() {
-        final int max = 100000000;
+        final int max = 10000000;
         for (int i = 0; i < max; i++) {
             factory.valueOf(BigInteger.valueOf(i / 1000));
         }
