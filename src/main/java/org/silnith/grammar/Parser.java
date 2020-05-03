@@ -20,7 +20,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * The parser accepts the input as a complete "statement" in the language.
      */
-    private class Accept implements Action {
+    private static class Accept<T extends TerminalSymbol> implements Action {
         
         private final Parser<T> parser;
 
@@ -49,7 +49,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * The parser changes state without otherwise modifying the stack.
      */
-    private class Goto implements Action {
+    private static class Goto<T extends TerminalSymbol> implements Action {
         
         private final Parser<T> parser;
         
@@ -79,7 +79,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * The parser consumes an additional terminal symbol.
      */
-    private class Shift implements Action {
+    private static class Shift<T extends TerminalSymbol> implements Action {
         
         private final Parser<T> parser;
         
@@ -109,7 +109,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * The parser replaces some symbols on the top of the stack with a new symbol.
      */
-    private class Reduce implements Action {
+    private static class Reduce<T extends TerminalSymbol> implements Action {
         
         private final Parser<T> parser;
         
@@ -174,9 +174,9 @@ public class Parser<T extends TerminalSymbol> {
             final ParserState<T> destinationState = edge.getFinalState();
             final Action action;
             if (symbol instanceof TerminalSymbol) {
-                action = new Shift(this, destinationState);
+                action = new Shift<>(this, destinationState);
             } else if (symbol instanceof NonTerminalSymbol) {
-                action = new Goto(this, destinationState);
+                action = new Goto<>(this, destinationState);
             } else {
                 throw new IllegalStateException("Symbol is neither terminal nor non-terminal: " + symbol);
             }
@@ -185,14 +185,14 @@ public class Parser<T extends TerminalSymbol> {
         for (final ParserState<T> parserState : parserStates) {
             for (final LookaheadItem<T> item : parserState.getItems()) {
                 if (item.isComplete()) {
-                    final Reduce action = new Reduce(this, item);
+                    final Action action = new Reduce<>(this, item);
                     for (final T lookahead : item.getLookaheadSet()) {
                         parserState.putAction(lookahead, action);
                     }
                 } else {
                     final Symbol symbol = item.getNextSymbol();
                     if (symbol.equals(endOfFileSymbol)) {
-                        parserState.putAction(symbol, new Accept(this));
+                        parserState.putAction(symbol, new Accept<>(this));
                     }
                 }
             }
