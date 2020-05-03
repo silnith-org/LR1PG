@@ -17,126 +17,7 @@ import java.util.Set;
  */
 public class Parser<T extends TerminalSymbol> {
 
-    /**
-     * The parser accepts the input as a complete "statement" in the language.
-     */
-    private static class Accept<T extends TerminalSymbol> implements Action {
-        
-        private final Parser<T> parser;
-
-        /**
-         * Creates a new "accept" action.
-         * 
-         * @param parser the parser to act upon
-         */
-        public Accept(final Parser<T> parser) {
-            super();
-            this.parser = parser;
-        }
-        
-        @Override
-        public void perform() {
-            parser.accept();
-        }
-
-        @Override
-        public String toString() {
-            return "Accept";
-        }
-        
-    }
-
-    /**
-     * The parser changes state without otherwise modifying the stack.
-     */
-    private static class Goto<T extends TerminalSymbol> implements Action {
-        
-        private final Parser<T> parser;
-        
-        private final ParserState<T> destinationState;
-        
-        public Goto(final Parser<T> parser, final ParserState<T> destinationState) {
-            super();
-            if (destinationState == null) {
-                throw new IllegalArgumentException();
-            }
-            this.parser = parser;
-            this.destinationState = destinationState;
-        }
-        
-        @Override
-        public void perform() {
-            parser.goTo(destinationState);
-        }
-
-        @Override
-        public String toString() {
-            return "Goto(" + destinationState + ")";
-        }
-        
-    }
-
-    /**
-     * The parser consumes an additional terminal symbol.
-     */
-    private static class Shift<T extends TerminalSymbol> implements Action {
-        
-        private final Parser<T> parser;
-        
-        private final ParserState<T> destinationState;
-        
-        public Shift(final Parser<T> parser, final ParserState<T> destinationState) {
-            super();
-            if (destinationState == null) {
-                throw new IllegalArgumentException();
-            }
-            this.parser = parser;
-            this.destinationState = destinationState;
-        }
-        
-        @Override
-        public void perform() {
-            parser.shift(destinationState);
-        }
-
-        @Override
-        public String toString() {
-            return "Shift(" + destinationState + ")";
-        }
-        
-    }
-
-    /**
-     * The parser replaces some symbols on the top of the stack with a new symbol.
-     */
-    private static class Reduce<T extends TerminalSymbol> implements Action {
-        
-        private final Parser<T> parser;
-        
-        private final LookaheadItem<T> reduceItem;
-        
-        public Reduce(final Parser<T> parser, final LookaheadItem<T> reduceItem) {
-            super();
-            if (reduceItem == null) {
-                throw new IllegalArgumentException();
-            }
-            this.parser = parser;
-            this.reduceItem = reduceItem;
-        }
-        
-        @Override
-        public void perform() {
-            parser.reduce(reduceItem);
-        }
-
-        @Override
-        public String toString() {
-            return "Reduce(" + reduceItem + ")";
-        }
-        
-    }
-
-	private final Set<ParserState<T>> parserStates;
+    private final Set<ParserState<T>> parserStates;
 	
     private final Set<Edge<T>> edges;
     
@@ -261,16 +142,16 @@ public class Parser<T extends TerminalSymbol> {
         return dataStack.pop().getAbstractSyntaxTreeElement();
     }
 
-    private void accept() {
+    void accept() {
         done = true;
 //        System.out.println("Accept.");
     }
 
-    private void goTo(final ParserState<T> destinationState) {
+    void goTo(final ParserState<T> destinationState) {
         currentState = destinationState;
     }
 
-    private void shift(final ParserState<T> destinationState) {
+    void shift(final ParserState<T> destinationState) {
         currentState = destinationState;
         symbolMatchStack.push(nextToken.getSymbol());
         stateStack.push(currentState);
@@ -278,7 +159,7 @@ public class Parser<T extends TerminalSymbol> {
         nextToken = getNextToken(iterator);
     }
 
-    private void reduce(final LookaheadItem<T> reduceItem) {
+    void reduce(final LookaheadItem<T> reduceItem) {
         final NonTerminalSymbol targetNonTerminal = reduceItem.getTarget();
         final Production production = reduceItem.getProduction();
         final List<DataStackElement> data = new LinkedList<>();
@@ -292,7 +173,7 @@ public class Parser<T extends TerminalSymbol> {
         final DataStackElement newDatum = new DataStackElement(handler.handleReduction(data));
         currentState = stateStack.peek();
         final Action gotoAction = currentState.getAction(targetNonTerminal);
-        assert gotoAction instanceof Parser.Goto;
+        assert gotoAction instanceof Goto;
         gotoAction.perform();
         symbolMatchStack.push(targetNonTerminal);
         stateStack.push(currentState);
