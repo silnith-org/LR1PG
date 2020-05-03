@@ -3,7 +3,7 @@ package org.silnith.grammar;
 /**
  * An action to take on consuming a symbol.
  */
-public interface Action {
+interface Action {
     
     /**
      * Perform the action on the parser.
