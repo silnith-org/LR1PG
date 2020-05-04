@@ -6,16 +6,16 @@ import java.util.Set;
 /**
  * A factory for instances of sets containing terminal or non-terminal symbols.
  * 
- * @param <V> the type of elements in the set
+ * @param <T> the type of elements in the set
  */
-public interface SetFactory<V> {
+public interface SetFactory<T> {
     
     /**
      * Returns a new empty set instance.
      * 
      * @return a new set
      */
-    Set<V> getNewSet();
+    Set<T> getNewSet();
     
     /**
      * Returns a new set instance containing the provided elements.
@@ -23,6 +23,6 @@ public interface SetFactory<V> {
      * @param c the elements to put into the set
      * @return a new set
      */
-    Set<V> getNewSet(Collection<V> c);
+    Set<T> getNewSet(Collection<T> c);
     
 }
