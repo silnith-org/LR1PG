@@ -2,24 +2,23 @@ package org.silnith.grammar;
 
 /**
  * The parser accepts the input as a complete "statement" in the language.
+ * 
+ * @param <T> the concrete type of terminal symbols
  */
-class Accept<T extends TerminalSymbol> implements Action {
+class Accept<T extends TerminalSymbol> extends AbstractAction<T> {
     
-    private final Parser<T> parser;
-
     /**
      * Creates a new "accept" action.
      * 
      * @param parser the parser to act upon
      */
     public Accept(final Parser<T> parser) {
-        super();
-        this.parser = parser;
+        super(parser);
     }
     
     @Override
     public void perform() {
-        parser.accept();
+        getParser().accept();
     }
 
     @Override

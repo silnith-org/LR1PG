@@ -2,25 +2,24 @@ package org.silnith.grammar;
 
 /**
  * The parser consumes an additional terminal symbol.
+ * 
+ * @param <T> the concrete type of terminal symbols
  */
-class Shift<T extends TerminalSymbol> implements Action {
-    
-    private final Parser<T> parser;
+class Shift<T extends TerminalSymbol> extends AbstractAction<T> {
     
     private final ParserState<T> destinationState;
     
     public Shift(final Parser<T> parser, final ParserState<T> destinationState) {
-        super();
+        super(parser);
         if (destinationState == null) {
             throw new IllegalArgumentException();
         }
-        this.parser = parser;
         this.destinationState = destinationState;
     }
     
     @Override
     public void perform() {
-        parser.shift(destinationState);
+        getParser().shift(destinationState);
     }
 
     @Override
