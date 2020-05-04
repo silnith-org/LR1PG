@@ -26,7 +26,7 @@ public class Production {
      */
     public Production(final ProductionHandler productionHandler, final Symbol... symbols) {
         super();
-        if (productionHandler == null) {
+        if (productionHandler == null || symbols == null) {
         	throw new IllegalArgumentException();
         }
         this.productionHandler = productionHandler;
