@@ -9,6 +9,8 @@ import java.util.Set;
 /**
  * Represents a parser state.  This is a set of items, where each item is a partially-completed production
  * coupled with a look-ahead set.
+ * 
+ * @param <T> the concrete type of terminal symbols
  */
 public class ParserState<T extends TerminalSymbol> {
     
