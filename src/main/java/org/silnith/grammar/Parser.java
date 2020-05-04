@@ -1,9 +1,9 @@
 package org.silnith.grammar;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -25,6 +25,7 @@ public class Parser<T extends TerminalSymbol> {
     
     private final T endOfFileSymbol;
     
+    // TODO: This is not used.  Delete it.
     private final Deque<Symbol> symbolMatchStack;
     
     private final Deque<ParserState<T>> stateStack;
@@ -45,10 +46,10 @@ public class Parser<T extends TerminalSymbol> {
         this.stateStack = new ArrayDeque<>();
         this.dataStack = new ArrayDeque<>();
         
-        this.calculateParseTable();
+        this.calculateParseTable(this.parserStates, this.edges, this.endOfFileSymbol);
     }
     
-    public void calculateParseTable() {
+    private void calculateParseTable(final Set<ParserState<T>> parserStates, final Set<Edge<T>> edges, final T endOfFileSymbol) {
         for (final Edge<T> edge : edges) {
             final ParserState<T> parserState = edge.getInitialState();
             final Symbol symbol = edge.getSymbol();
@@ -142,15 +143,28 @@ public class Parser<T extends TerminalSymbol> {
         return dataStack.pop().getAbstractSyntaxTreeElement();
     }
 
+    /**
+     * Accept the complete language string.
+     */
     void accept() {
         done = true;
 //        System.out.println("Accept.");
     }
 
+    /**
+     * Change to a new parser state.
+     * 
+     * @param destinationState the next parser state
+     */
     void goTo(final ParserState<T> destinationState) {
         currentState = destinationState;
     }
 
+    /**
+     * Read the next token and put it on the stack.
+     * 
+     * @param destinationState the next parser state
+     */
     void shift(final ParserState<T> destinationState) {
         currentState = destinationState;
         symbolMatchStack.push(nextToken.getSymbol());
@@ -159,18 +173,25 @@ public class Parser<T extends TerminalSymbol> {
         nextToken = getNextToken(iterator);
     }
 
+    /**
+     * Apply a production reduction to the stack.  This removes the symbols for each element of the production,
+     * passes them through the production handler, and puts the output of the production handler onto the stack.
+     * 
+     * @param reduceItem the production to reduce
+     */
     void reduce(final LookaheadItem<T> reduceItem) {
         final NonTerminalSymbol targetNonTerminal = reduceItem.getTarget();
         final Production production = reduceItem.getProduction();
-        final List<DataStackElement> data = new LinkedList<>();
-        for (@SuppressWarnings("unused") final Symbol symbol : production.getSymbols()) {
+        final List<Symbol> symbols = production.getSymbols();
+        final Deque<DataStackElement> data = new ArrayDeque<>(symbols.size());
+        for (@SuppressWarnings("unused") final Symbol symbol : symbols) {
             symbolMatchStack.pop();
             stateStack.pop();
             final DataStackElement datum = dataStack.pop();
-            data.add(0, datum);
+            data.addFirst(datum);
         }
         final ProductionHandler handler = production.getProductionHandler();
-        final DataStackElement newDatum = new DataStackElement(handler.handleReduction(data));
+        final DataStackElement newDatum = new DataStackElement(handler.handleReduction(new ArrayList<>(data)));
         currentState = stateStack.peek();
         final Action gotoAction = currentState.getAction(targetNonTerminal);
         assert gotoAction instanceof Goto;
