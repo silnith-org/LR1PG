@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 
 /**
@@ -97,8 +95,6 @@ public class Grammar<T extends TerminalSymbol> {
      */
     private final Map<Symbol, Set<T>> follow;
     
-    private final ConcurrentMap<Edge<T>, Boolean> edges;
-    
     /**
      * Creates a new grammar.
      */
@@ -126,8 +122,6 @@ public class Grammar<T extends TerminalSymbol> {
         this.nullable = new HashSet<>();
         this.first = new HashMap<>();
         this.follow = new HashMap<>();
-        
-        this.edges = new ConcurrentHashMap<>();
     }
     
     /**
@@ -184,8 +178,6 @@ public class Grammar<T extends TerminalSymbol> {
         nullable.clear();
         first.clear();
         follow.clear();
-        
-        edges.clear();
         
     }
     
