@@ -75,6 +75,8 @@ public class Grammar<T extends TerminalSymbol> {
     
     private final Set<T> lexicon;
     
+    private final Set<NonTerminalSymbol> nonTerminalSymbols;
+    
     /**
      * The mapping of non-terminal symbols to productions.
      */
@@ -118,6 +120,7 @@ public class Grammar<T extends TerminalSymbol> {
         this.edgeFactory = new EdgeFactory<>();
         this.terminalSetFactory = terminalSetFactory;
         this.lexicon = this.terminalSetFactory.getNewSet();
+        this.nonTerminalSymbols = new HashSet<>();
         this.productions = new HashMap<>();
         this.nullable = new HashSet<>();
         this.first = new HashMap<>();
@@ -194,22 +197,6 @@ public class Grammar<T extends TerminalSymbol> {
     }
     
     /**
-     * Adds a terminal symbol to the grammar.
-     * <p>
-     * Note that any terminal symbols used in productions are automatically added.
-     * 
-     * @param terminal the terminal symbol to add to the grammar
-     */
-    public void addTerminalSymbol(final T terminal) {
-        lexicon.add(terminal);
-    }
-    
-    @SafeVarargs
-    public final void addTerminalSymbols(final T... terminals) {
-        lexicon.addAll(Arrays.asList(terminals));
-    }
-    
-    /**
      * Adds a production to the grammar.
      * 
      * @param leftHandSide the non-terminal symbol
@@ -221,17 +208,22 @@ public class Grammar<T extends TerminalSymbol> {
         final Production production = new Production(productionHandler, rightHandSide);
         final Set<Production> productionSet = getProductionSet(leftHandSide);
         productionSet.add(production);
-        addTerminalSymbolsInternal(rightHandSide);
+        addSymbols(leftHandSide);
+        addSymbols(rightHandSide);
     }
     
-    private void addTerminalSymbolsInternal(final Symbol... symbols) {
+    private void addSymbols(final Symbol... symbols) {
         for (final Symbol symbol : symbols) {
             if (symbol instanceof TerminalSymbol) {
                 /*
                  * If a client specifies an enum type as T but then calls addProduction with a TerminalSymbol that is
                  * not a member of that enum, this will throw a ClassCastException when the terminal is added.
                  */
-                addTerminalSymbol((T) symbol);
+                lexicon.add((T) symbol);
+            } else if (symbol instanceof NonTerminalSymbol) {
+                nonTerminalSymbols.add((NonTerminalSymbol) symbol);
+            } else {
+                throw new IllegalArgumentException();
             }
         }
     }
@@ -251,6 +243,7 @@ public class Grammar<T extends TerminalSymbol> {
      */
     private void computeNullable() {
         nullable.clear();
+        
         boolean changed;
         do {
             changed = false;
@@ -280,20 +273,16 @@ public class Grammar<T extends TerminalSymbol> {
      * @return the first set for the symbol
      */
     protected Set<T> getFirstSet(final Symbol symbol) {
-        if (first.containsKey(symbol)) {
-            return first.get(symbol);
-        } else {
-            final Set<T> newSet = terminalSetFactory.getNewSet();
-            first.put(symbol, newSet);
-            return newSet;
-        }
+        return first.get(symbol);
     }
     
     private void computeFirst() {
         first.clear();
         for (final T terminalSymbol : lexicon) {
-            final Set<T> firstSet = getFirstSet(terminalSymbol);
-            firstSet.add(terminalSymbol);
+            first.put(terminalSymbol, terminalSetFactory.getNewSet(Collections.singleton(terminalSymbol)));
+        }
+        for (final NonTerminalSymbol nonTerminalSymbol : nonTerminalSymbols) {
+            first.put(nonTerminalSymbol, terminalSetFactory.getNewSet());
         }
         
         boolean changed;
@@ -314,17 +303,18 @@ public class Grammar<T extends TerminalSymbol> {
     }
 
     protected Set<T> getFollowSet(final Symbol symbol) {
-        if (follow.containsKey(symbol)) {
-            return follow.get(symbol);
-        } else {
-            final Set<T> newSet = terminalSetFactory.getNewSet();
-            follow.put(symbol, newSet);
-            return newSet;
-        }
+        return follow.get(symbol);
     }
     
     private void computeFollow() {
         follow.clear();
+        for (final T terminalSymbol : lexicon) {
+            follow.put(terminalSymbol, terminalSetFactory.getNewSet());
+        }
+        for (final NonTerminalSymbol nonTerminalSymbol : nonTerminalSymbols) {
+            follow.put(nonTerminalSymbol, terminalSetFactory.getNewSet());
+        }
+        
         boolean changed;
         do {
             changed = false;
@@ -369,14 +359,6 @@ public class Grammar<T extends TerminalSymbol> {
         computeNullable();
         computeFirst();
         computeFollow();
-    }
-    
-    protected LookaheadItem<T> createInitialProduction(final NonTerminalSymbol symbol, final T endOfFileSymbol) {
-        getFirstSet(endOfFileSymbol).add(endOfFileSymbol);
-        final Item item = itemFactory.createItem(START, new Production(new IdentityProductionHandler(), symbol, endOfFileSymbol), 0);
-        final Set<T> lookaheadSet = terminalSetFactory.getNewSet();
-        lookaheadSet.add(endOfFileSymbol);
-        return lookaheadItemFactory.createInstance(item, lookaheadSet);
     }
     
     protected Set<List<Symbol>> getProductionRemainders(final Item item, final Collection<T> lookaheadSet) {
@@ -493,13 +475,22 @@ public class Grammar<T extends TerminalSymbol> {
      * @return a parser for the language defined by this grammar
      */
     public Parser<T> createParser(final NonTerminalSymbol startSymbol, final T endOfFileSymbol) {
+        addProduction(START, new IdentityProductionHandler(), startSymbol, endOfFileSymbol);
         compute();
         final long startTime = System.currentTimeMillis();
         
         final Set<ParserState<T>> parserStates = new HashSet<>();
         final Set<Edge<T>> edges = new HashSet<>();
-        final LookaheadItem<T> initialProduction = createInitialProduction(startSymbol, endOfFileSymbol);
-        final ParserState<T> startState = calculateClosure(Collections.singleton(initialProduction));
+        
+        final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(endOfFileSymbol));
+        final Set<LookaheadItem<T>> initialItems = new HashSet<>();
+        for (final Production production : getProductionSet(START)) {
+            final Item item = itemFactory.createItem(START, production, 0);
+            final LookaheadItem<T> lookaheadItem = lookaheadItemFactory.createInstance(item, endOfFileSet);
+            initialItems.add(lookaheadItem);
+        }
+        
+        final ParserState<T> startState = calculateClosure(initialItems);
         parserStates.add(startState);
         boolean changed;
         do {
