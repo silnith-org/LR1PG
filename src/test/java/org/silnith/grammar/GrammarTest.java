@@ -176,9 +176,9 @@ public class GrammarTest {
         expectedFollow.put(x, new HashSet<>(Arrays.asList(a, c, d)));
         expectedFollow.put(y, new HashSet<>(Arrays.asList(a, c, d)));
         expectedFollow.put(z, Collections.<TerminalSymbol> emptySet());
-        assertEquals(expectedFollow.get(x), grammar.getFollowSet(x));
-        assertEquals(expectedFollow.get(y), grammar.getFollowSet(y));
-        assertEquals(expectedFollow.get(z), grammar.getFollowSet(z));
+        assertEquals(expectedFollow.get(x), grammar.getFollowSet().get(x));
+        assertEquals(expectedFollow.get(y), grammar.getFollowSet().get(y));
+        assertEquals(expectedFollow.get(z), grammar.getFollowSet().get(z));
     }
     
     @Test
@@ -246,12 +246,12 @@ public class GrammarTest {
                 new HashSet<>(Arrays.asList(rightParenthesis, star, solidus, plusSign, hyphenMinus, eof)));
 //        assertEquals(expectedFollow, grammar.getFollowSet());
 //        assertEquals(expectedFollow.get(num), grammar.getFollowSet(num));
-        assertEquals(expectedFollow.get(s), grammar.getFollowSet(s));
-        assertEquals(expectedFollow.get(e), grammar.getFollowSet(e));
-        assertEquals(expectedFollow.get(ep), grammar.getFollowSet(ep));
-        assertEquals(expectedFollow.get(t), grammar.getFollowSet(t));
-        assertEquals(expectedFollow.get(tp), grammar.getFollowSet(tp));
-        assertEquals(expectedFollow.get(f), grammar.getFollowSet(f));
+        assertEquals(expectedFollow.get(s), grammar.getFollowSet().get(s));
+        assertEquals(expectedFollow.get(e), grammar.getFollowSet().get(e));
+        assertEquals(expectedFollow.get(ep), grammar.getFollowSet().get(ep));
+        assertEquals(expectedFollow.get(t), grammar.getFollowSet().get(t));
+        assertEquals(expectedFollow.get(tp), grammar.getFollowSet().get(tp));
+        assertEquals(expectedFollow.get(f), grammar.getFollowSet().get(f));
     }
     
 //    @Test
@@ -460,9 +460,9 @@ public class GrammarTest {
         
         grammar.compute();
         
-        System.out.println(grammar.getFollowSet(end));
-        System.out.println(grammar.getFollowSet(white_Plus));
-        System.out.println(grammar.getFollowSet(white));
+        System.out.println(grammar.getFollowSet().get(end));
+        System.out.println(grammar.getFollowSet().get(white_Plus));
+        System.out.println(grammar.getFollowSet().get(white));
         
         grammar.createParser(s, eof);
     }
