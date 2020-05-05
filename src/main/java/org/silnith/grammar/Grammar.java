@@ -266,16 +266,6 @@ public class Grammar<T extends TerminalSymbol> {
         } while (changed);
     }
     
-    /**
-     * Returns the first set for the symbol.  This is a live object, modifications will affect the state of the grammar.
-     * 
-     * @param symbol
-     * @return the first set for the symbol
-     */
-    protected Set<T> getFirstSet(final Symbol symbol) {
-        return first.get(symbol);
-    }
-    
     private void computeFirst() {
         first.clear();
         for (final T terminalSymbol : lexicon) {
@@ -290,7 +280,7 @@ public class Grammar<T extends TerminalSymbol> {
             changed = false;
             for (final Map.Entry<NonTerminalSymbol, Set<Production>> entry : productions.entrySet()) {
                 final NonTerminalSymbol leftHandSide = entry.getKey();
-                final Set<T> firstSetForLeftHandSide = getFirstSet(leftHandSide);
+                final Set<T> firstSetForLeftHandSide = first.get(leftHandSide);
                 final Set<Production> productions = entry.getValue();
                 
                 for (final Production production : productions) {
@@ -302,10 +292,6 @@ public class Grammar<T extends TerminalSymbol> {
         } while (changed);
     }
 
-    protected Set<T> getFollowSet(final Symbol symbol) {
-        return follow.get(symbol);
-    }
-    
     private void computeFollow() {
         follow.clear();
         for (final T terminalSymbol : lexicon) {
@@ -320,7 +306,7 @@ public class Grammar<T extends TerminalSymbol> {
             changed = false;
             for (final Map.Entry<NonTerminalSymbol, Set<Production>> entry : productions.entrySet()) {
                 final NonTerminalSymbol leftHandSide = entry.getKey();
-                final Set<T> followSetForLeftHandSide = getFollowSet(leftHandSide);
+                final Set<T> followSetForLeftHandSide = follow.get(leftHandSide);
                 final Set<Production> productions = entry.getValue();
                 
                 for (final Production production : productions) {
@@ -328,7 +314,7 @@ public class Grammar<T extends TerminalSymbol> {
                     final ListIterator<Symbol> revIter = productionSymbols.listIterator(productionSymbols.size());
                     while (revIter.hasPrevious()) {
                         final Symbol symbol = revIter.previous();
-                        final Set<T> followSetForSymbolInProduction = getFollowSet(symbol);
+                        final Set<T> followSetForSymbolInProduction = follow.get(symbol);
                         changed = followSetForSymbolInProduction.addAll(followSetForLeftHandSide) || changed;
                         if (!nullable.contains(symbol)) {
                             break;
@@ -339,11 +325,11 @@ public class Grammar<T extends TerminalSymbol> {
                     while (forwardIter.hasNext()) {
                         final int startIndex = forwardIter.nextIndex();
                         final Symbol startSymbol = forwardIter.next();
-                        final Set<T> followSetForRangeStart = getFollowSet(startSymbol);
+                        final Set<T> followSetForRangeStart = follow.get(startSymbol);
                         final ListIterator<Symbol> innerIter = productionSymbols.listIterator(startIndex + 1);
                         while (innerIter.hasNext()) {
                             final Symbol endSymbol = innerIter.next();
-                            final Set<T> firstSetForRangeEnd = getFirstSet(endSymbol);
+                            final Set<T> firstSetForRangeEnd = first.get(endSymbol);
                             followSetForRangeStart.addAll(firstSetForRangeEnd);
                             if (!nullable.contains(endSymbol)) {
                                 break;
@@ -385,7 +371,7 @@ public class Grammar<T extends TerminalSymbol> {
     private boolean expandFirstSetByProduction(final Set<T> firstSet, final List<Symbol> symbols) {
         boolean changedByProduction = false;
         for (final Symbol symbol : symbols) {
-            final Set<T> firstSetForSymbolInProduction = getFirstSet(symbol);
+            final Set<T> firstSetForSymbolInProduction = first.get(symbol);
             final boolean addedElementsToFirstSet = firstSet.addAll(firstSetForSymbolInProduction);
             changedByProduction = addedElementsToFirstSet || changedByProduction;
             
