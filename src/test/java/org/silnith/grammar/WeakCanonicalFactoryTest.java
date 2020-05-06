@@ -18,9 +18,9 @@ public class WeakCanonicalFactoryTest {
             factory.valueOf(BigInteger.valueOf(i / 1000));
         }
         
-        System.out.println(factory.getCallCount());
+//        System.out.println(factory.getCallCount());
         final long instanceCount = factory.getInstanceCount();
-        System.out.println(instanceCount);
+//        System.out.println(instanceCount);
         assertEquals(max, factory.getCallCount());
         assertTrue(instanceCount < max / 1000);
     }
