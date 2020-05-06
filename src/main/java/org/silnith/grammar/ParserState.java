@@ -49,11 +49,11 @@ public class ParserState<T extends TerminalSymbol> {
         final Action previousAction = parsingTable.put(symbol, action);
         if (previousAction != null) {
             conflictCount++;
-            System.out.println("Action conflict #" + conflictCount);
-            printLong();
-            System.out.println(symbol);
-            System.out.println(previousAction);
-            System.out.println(action);
+//            System.out.println("Action conflict #" + conflictCount);
+//            printLong();
+//            System.out.println(symbol);
+//            System.out.println(previousAction);
+//            System.out.println(action);
             
             throw new IllegalStateException("Conflict between actions " + action + " and " + previousAction);
         }
@@ -62,9 +62,9 @@ public class ParserState<T extends TerminalSymbol> {
     public Action getAction(final Symbol symbol) {
         final Action action = parsingTable.get(symbol);
         if (action == null) {
-            printLong();
-            System.out.print("Next symbol: ");
-            System.out.println(symbol);
+//            printLong();
+//            System.out.print("Next symbol: ");
+//            System.out.println(symbol);
             throw new IllegalStateException(
                     "No parse action for symbol: " + symbol + " and state: " + this);
         }
