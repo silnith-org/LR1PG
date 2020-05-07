@@ -67,7 +67,7 @@ public class Parser<T extends TerminalSymbol> {
                 } else {
                     final Symbol symbol = item.getNextSymbol();
                     if (endOfFileSymbol.equals(symbol)) {
-                        final Accept<T> action = new Accept<>(this);
+                        final Action action = new Accept<>(this);
                         parserState.putAction(symbol, action);
                     }
                 }
