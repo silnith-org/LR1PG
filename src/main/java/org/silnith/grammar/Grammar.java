@@ -691,7 +691,8 @@ public class Grammar<T extends TerminalSymbol> {
     
     protected ParserState<T> calculateGoto(final Collection<LookaheadItem<T>> itemSet, final Symbol symbol) {
         final Set<LookaheadItem<T>> jset = new HashSet<>(itemSet.size());
-        for (final LookaheadItem<T> item : itemSet) {
+        for (final LookaheadItem<T> lookaheadItem : itemSet) {
+            final Item item = lookaheadItem.getItem();
             if (item.isComplete()) {
                 continue;
             }
@@ -699,7 +700,7 @@ public class Grammar<T extends TerminalSymbol> {
             if (symbol.equals(nextSymbol)) {
                 final Item newItem =
                         itemFactory.createItem(item.getTarget(), item.getProduction(), item.getParserPosition() + 1);
-                final LookaheadItem<T> newLookaheadItem = lookaheadItemFactory.createInstance(newItem, item.getLookaheadSet());
+                final LookaheadItem<T> newLookaheadItem = lookaheadItemFactory.createInstance(newItem, lookaheadItem.getLookaheadSet());
                 jset.add(newLookaheadItem);
             }
         }
@@ -724,7 +725,7 @@ public class Grammar<T extends TerminalSymbol> {
     
         @Override
         public Edge<T> call() throws Exception {
-            final Symbol nextSymbol = item.getNextSymbol();
+            final Symbol nextSymbol = item.getItem().getNextSymbol();
             final ParserState<T> newParserState = calculateGoto(stateItems, nextSymbol);
             final Edge<T> newEdge = edgeFactory.createInstance(parserState, nextSymbol, newParserState);
             return newEdge;
@@ -746,7 +747,8 @@ public class Grammar<T extends TerminalSymbol> {
             
             for (final ParserState<T> parserState : parserStates) {
                 final Set<LookaheadItem<T>> stateItems = parserState.getItems();
-                for (final LookaheadItem<T> item : stateItems) {
+                for (final LookaheadItem<T> lookaheadItem : stateItems) {
+                    final Item item = lookaheadItem.getItem();
                     if (item.isComplete()) {
                         continue;
                     }
@@ -754,7 +756,7 @@ public class Grammar<T extends TerminalSymbol> {
                     if (endOfFileSymbol.equals(nextSymbolInProduction)) {
                         continue;
                     }
-                    tasks.add(new ParserStateComputer(parserState, stateItems, item));
+                    tasks.add(new ParserStateComputer(parserState, stateItems, lookaheadItem));
                 }
             }
             
@@ -787,7 +789,8 @@ public class Grammar<T extends TerminalSymbol> {
             
             for (final ParserState<T> parserState : parserStates) {
                 final Set<LookaheadItem<T>> stateItems = parserState.getItems();
-                for (final LookaheadItem<T> item : stateItems) {
+                for (final LookaheadItem<T> lookaheadItem : stateItems) {
+                    final Item item = lookaheadItem.getItem();
                     if (item.isComplete()) {
                         continue;
                     }

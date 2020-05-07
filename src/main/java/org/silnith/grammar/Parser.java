@@ -58,10 +58,11 @@ public class Parser<T extends TerminalSymbol> {
             parserState.putAction(symbol, action);
         }
         for (final ParserState<T> parserState : parserStates) {
-            for (final LookaheadItem<T> item : parserState.getItems()) {
+            for (final LookaheadItem<T> lookaheadItem : parserState.getItems()) {
+                final Item item = lookaheadItem.getItem();
                 if (item.isComplete()) {
-                    final Action action = new Reduce<>(this, item);
-                    for (final T lookahead : item.getLookaheadSet()) {
+                    final Action action = new Reduce<>(this, lookaheadItem);
+                    for (final T lookahead : lookaheadItem.getLookaheadSet()) {
                         parserState.putAction(lookahead, action);
                     }
                 } else {
@@ -139,8 +140,9 @@ public class Parser<T extends TerminalSymbol> {
      * @param reduceItem the production to reduce
      */
     boolean reduce(final LookaheadItem<T> reduceItem) {
-        final NonTerminalSymbol targetNonTerminal = reduceItem.getTarget();
-        final Production production = reduceItem.getProduction();
+        final Item item = reduceItem.getItem();
+        final NonTerminalSymbol targetNonTerminal = item.getTarget();
+        final Production production = item.getProduction();
         final List<Symbol> symbols = production.getSymbols();
         final Deque<DataStackElement> data = new ArrayDeque<>(symbols.size());
         for (@SuppressWarnings("unused") final Symbol symbol : symbols) {

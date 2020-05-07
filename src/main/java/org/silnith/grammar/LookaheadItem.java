@@ -32,26 +32,6 @@ public class LookaheadItem<T extends TerminalSymbol> {
         return item;
     }
     
-    public boolean isComplete() {
-        return getItem().isComplete();
-    }
-    
-    public Symbol getNextSymbol() {
-        return getItem().getNextSymbol();
-    }
-    
-    public NonTerminalSymbol getTarget() {
-        return getItem().getTarget();
-    }
-    
-    public Production getProduction() {
-        return getItem().getProduction();
-    }
-    
-    public int getParserPosition() {
-        return getItem().getParserPosition();
-    }
-    
     public Set<T> getLookaheadSet() {
         return lookaheadSet;
     }
