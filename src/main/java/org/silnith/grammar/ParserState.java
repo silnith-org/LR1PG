@@ -12,7 +12,7 @@ import java.util.Set;
  * 
  * @param <T> the concrete type of terminal symbols
  */
-public class ParserState<T extends TerminalSymbol> {
+class ParserState<T extends TerminalSymbol> {
     
     private final Set<LookaheadItem<T>> itemSet;
     

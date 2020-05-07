@@ -2,7 +2,7 @@ package org.silnith.grammar;
 
 import java.util.Objects;
 
-public class Edge<T extends TerminalSymbol> {
+class Edge<T extends TerminalSymbol> {
     
     private final ParserState<T> initialState;
     
