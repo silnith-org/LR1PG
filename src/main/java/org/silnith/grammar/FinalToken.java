@@ -4,7 +4,7 @@ class FinalToken<T extends TerminalSymbol> implements Token<T> {
     
     private final T endOfFileSymbol;
     
-    FinalToken(final T endOfFileSymbol) {
+    public FinalToken(final T endOfFileSymbol) {
         this.endOfFileSymbol = endOfFileSymbol;
     }
     
