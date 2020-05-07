@@ -16,6 +16,21 @@ import java.util.Set;
  */
 public class Parser<T extends TerminalSymbol> {
     
+    private class FinalToken implements Token<T> {
+        
+        private final T endOfFileSymbol;
+        
+        private FinalToken(final T endOfFileSymbol) {
+            this.endOfFileSymbol = endOfFileSymbol;
+        }
+        
+        @Override
+        public T getSymbol() {
+            return endOfFileSymbol;
+        }
+        
+    }
+
     private final ParserState<T> startState;
     
     private final Token<T> finalToken;
@@ -37,14 +52,7 @@ public class Parser<T extends TerminalSymbol> {
         	throw new IllegalArgumentException();
         }
         this.startState = startState;
-        this.finalToken = new Token<T>() {
-            
-            @Override
-            public T getSymbol() {
-                return endOfFileSymbol;
-            }
-            
-        };
+        this.finalToken = new FinalToken(endOfFileSymbol);
         
         this.stateStack = new ArrayDeque<>();
         this.dataStack = new ArrayDeque<>();
@@ -85,19 +93,19 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * Parses a sequence of terminal symbols and returns an abstract syntax tree.  This runs in {@code O(n)} time.
      * 
-     * @param lexer2 the lexer that generates an input sequence of terminal symbols
+     * @param inputLexer the lexer that generates an input sequence of terminal symbols
      * @return an abstract syntax tree as constructed by the various {@link ProductionHandler} implementations used in
      *         the {@link Grammar}
      */
-    public Object parse(final Lexer<T> lexer2) {
+    public Object parse(final Lexer<T> inputLexer) {
         stateStack.clear();
         dataStack.clear();
         
-        lexer = new TempLexer<>(lexer2.iterator(), finalToken);
+        lexer = new TempLexer<>(inputLexer.iterator(), finalToken);
     	state = startState;
         stateStack.push(state);
-        
         token = lexer.getToken();
+        
         boolean done;
         do {
             final T symbol = token.getSymbol();

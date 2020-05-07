@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 
@@ -107,6 +106,10 @@ public class Grammar<T extends TerminalSymbol> {
      */
     private final Map<Symbol, Set<T>> follow;
     
+    private final Set<ParserState<T>> parserStates;
+
+    private final Set<Edge<T>> edges;
+
     /**
      * Creates a new grammar.
      */
@@ -135,6 +138,8 @@ public class Grammar<T extends TerminalSymbol> {
         this.nullable = new HashSet<>();
         this.first = new HashMap<>();
         this.follow = new HashMap<>();
+        this.parserStates = new HashSet<>();
+        this.edges = new HashSet<>();
     }
     
     /**
@@ -182,15 +187,15 @@ public class Grammar<T extends TerminalSymbol> {
      */
     public void clear() {
         lexicon.clear();
+        nonTerminalSymbols.clear();
         productions.clear();
         
-        uncompute();
-    }
-    
-    private void uncompute() {
         nullable.clear();
         first.clear();
         follow.clear();
+        
+        parserStates.clear();
+        edges.clear();
     }
     
     /**
@@ -208,17 +213,17 @@ public class Grammar<T extends TerminalSymbol> {
     /**
      * Adds a production to the grammar.
      * 
-     * @param leftHandSide the non-terminal symbol
+     * @param nonTerminalSymbol the non-terminal symbol
      * @param productionHandler the handler that performs the reduction for the production
-     * @param rightHandSide the list of symbols that can be reduced to the non-terminal symbol
+     * @param symbols the list of symbols that can be reduced to the non-terminal symbol
      */
-    public void addProduction(final NonTerminalSymbol leftHandSide, final ProductionHandler productionHandler,
-            final Symbol... rightHandSide) {
-        final Production production = new Production(productionHandler, rightHandSide);
-        final Set<Production> productionSet = getProductionSet(leftHandSide);
+    public void addProduction(final NonTerminalSymbol nonTerminalSymbol, final ProductionHandler productionHandler,
+            final Symbol... symbols) {
+        final Production production = new Production(productionHandler, symbols);
+        final Set<Production> productionSet = getProductionSet(nonTerminalSymbol);
         productionSet.add(production);
-        addSymbols(leftHandSide);
-        addSymbols(rightHandSide);
+        addSymbols(nonTerminalSymbol);
+        addSymbols(symbols);
     }
     
     private void addSymbols(final Symbol... symbols) {
@@ -643,6 +648,7 @@ public class Grammar<T extends TerminalSymbol> {
             final Set<T> newSet = terminalSetFactory.getNewSet(lookaheadItem.getLookaheadSet());
             itemLookaheadMap.put(lookaheadItem.getItem(), newSet);
         }
+        
         boolean changed;
         do {
             changed = false;
@@ -675,6 +681,7 @@ public class Grammar<T extends TerminalSymbol> {
                 }
             }
         } while (changed);
+        
         final Set<LookaheadItem<T>> itemSet = new HashSet<>(itemLookaheadMap.size());
         for (final Map.Entry<Item, Set<T>> entry : itemLookaheadMap.entrySet()) {
             itemSet.add(lookaheadItemFactory.createInstance(entry.getKey(), entry.getValue()));
@@ -725,39 +732,54 @@ public class Grammar<T extends TerminalSymbol> {
         
     }
 
-//    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private static final ExecutorService executor = Executors.newFixedThreadPool(8);
-    
-    /**
-     * Creates a parser for the grammar.  This is called after all calls to
-     * {@link #addTerminalSymbol} and
-     * {@link #addProduction}.
-     * 
-     * @param startSymbol the initial non-terminal symbol that the parser will attempt to produce
-     *         from the input stream of terminal symbols
-     * @param endOfFileSymbol the terminal symbol that represents the end of the input
-     * @return a parser for the language defined by this grammar
-     * @throws ExecutionException foo
-     * @throws InterruptedException bar
-     */
-    public Parser<T> createParser(final NonTerminalSymbol startSymbol, final T endOfFileSymbol) {
-        final long startTime = System.currentTimeMillis();
-        addProduction(START, new IdentityProductionHandler(), startSymbol, endOfFileSymbol);
-        compute();
-        
-        final Set<ParserState<T>> parserStates = new HashSet<>();
-        final Set<Edge<T>> edges = new HashSet<>();
-        
-        final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(endOfFileSymbol));
-        final Set<LookaheadItem<T>> initialItems = new HashSet<>();
-        for (final Production production : getProductionSet(START)) {
-            final Item item = itemFactory.createItem(START, production, 0);
-            final LookaheadItem<T> lookaheadItem = lookaheadItemFactory.createInstance(item, endOfFileSet);
-            initialItems.add(lookaheadItem);
-        }
-        
+    private ParserState<T> threadedComputeParseStates(final Set<LookaheadItem<T>> initialItems, final T endOfFileSymbol, final ExecutorService executorService)
+            throws InterruptedException, ExecutionException {
         final ParserState<T> startState = calculateClosure(initialItems);
         parserStates.add(startState);
+        final List<ParserStateComputer> tasks = new ArrayList<>();
+        boolean changed;
+        do {
+            tasks.clear();
+            
+            final Set<ParserState<T>> newParserStates = new HashSet<>();
+            final Set<Edge<T>> newEdges = new HashSet<>();
+            
+            for (final ParserState<T> parserState : parserStates) {
+                final Set<LookaheadItem<T>> stateItems = parserState.getItems();
+                for (final LookaheadItem<T> item : stateItems) {
+                    if (item.isComplete()) {
+                        continue;
+                    }
+                    final Symbol nextSymbolInProduction = item.getNextSymbol();
+                    if (endOfFileSymbol.equals(nextSymbolInProduction)) {
+                        continue;
+                    }
+                    tasks.add(new ParserStateComputer(parserState, stateItems, item));
+                }
+            }
+            
+            final List<Future<Edge<T>>> futures = executorService.invokeAll(tasks);
+            
+            for (final Future<Edge<T>> future : futures) {
+                final Edge<T> newEdge = future.get();
+                final ParserState<T> finalState = newEdge.getFinalState();
+                
+                newParserStates.add(finalState);
+                newEdges.add(newEdge);
+            }
+            
+            final boolean addedParserStates = parserStates.addAll(newParserStates);
+            final boolean addedEdges = edges.addAll(newEdges);
+            changed = addedParserStates || addedEdges;
+        } while (changed);
+        
+        return startState;
+    }
+
+    private ParserState<T> computeParseStates(final Set<LookaheadItem<T>> initialItems, final T endOfFileSymbol) {
+        final ParserState<T> startState = calculateClosure(initialItems);
+        parserStates.add(startState);
+        
         boolean changed;
         do {
             final Set<ParserState<T>> newParserStates = new HashSet<>();
@@ -785,16 +807,54 @@ public class Grammar<T extends TerminalSymbol> {
             changed = addedParserStates || addedEdges;
         } while (changed);
         
+        return startState;
+    }
+
+    private Set<LookaheadItem<T>> createInitialItem(final NonTerminalSymbol startSymbol, final T endOfFileSymbol) {
+        final Set<LookaheadItem<T>> initialItems = new HashSet<>();
+        
+        final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(endOfFileSymbol));
+        
+        addProduction(START, new IdentityProductionHandler(), startSymbol, endOfFileSymbol);
+        
+        for (final Production production : getProductionSet(START)) {
+            final Item item = itemFactory.createItem(START, production, 0);
+            final LookaheadItem<T> lookaheadItem = lookaheadItemFactory.createInstance(item, endOfFileSet);
+            initialItems.add(lookaheadItem);
+        }
+        
+        return initialItems;
+    }
+
+    /**
+     * Creates a parser for the grammar.  This is called after all calls to
+     * {@link #addTerminalSymbol} and
+     * {@link #addProduction}.
+     * 
+     * @param startSymbol the initial non-terminal symbol that the parser will attempt to produce
+     *         from the input stream of terminal symbols
+     * @param endOfFileSymbol the terminal symbol that represents the end of the input
+     * @return a parser for the language defined by this grammar
+     */
+    public Parser<T> createParser(final NonTerminalSymbol startSymbol, final T endOfFileSymbol) {
+        final long startTime = System.currentTimeMillis();
+        
+        final Set<LookaheadItem<T>> initialItems = createInitialItem(startSymbol, endOfFileSymbol);
+
+        compute();
+        
+        final ParserState<T> startState = computeParseStates(initialItems, endOfFileSymbol);
+        
+        final Parser<T> parser = new Parser<>(parserStates, edges, startState, endOfFileSymbol);
+        
         final long endTime = System.currentTimeMillis();
         
         System.out.print("Parser states creation, Duration: ");
         System.out.println(endTime - startTime);
         
-        final Parser<T> parser = new Parser<>(parserStates, edges, startState, endOfFileSymbol);
-        
         return parser;
     }
-    
+
     /**
      * Creates a parser for the grammar.  This is called after all calls to
      * {@link #addTerminalSymbol} and
@@ -807,67 +867,21 @@ public class Grammar<T extends TerminalSymbol> {
      * @throws ExecutionException foo
      * @throws InterruptedException bar
      */
-    public Parser<T> threadedCreateParser(final NonTerminalSymbol startSymbol, final T endOfFileSymbol) throws InterruptedException, ExecutionException {
+    public Parser<T> threadedCreateParser(final NonTerminalSymbol startSymbol, final T endOfFileSymbol, final ExecutorService executorService) throws InterruptedException, ExecutionException {
         final long startTime = System.currentTimeMillis();
-        addProduction(START, new IdentityProductionHandler(), startSymbol, endOfFileSymbol);
-        threadedCompute(executor);
         
-        final Set<ParserState<T>> parserStates = new HashSet<>();
-        final Set<Edge<T>> edges = new HashSet<>();
+        final Set<LookaheadItem<T>> initialItems = createInitialItem(startSymbol, endOfFileSymbol);
+
+        threadedCompute(executorService);
         
-        final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(endOfFileSymbol));
-        final Set<LookaheadItem<T>> initialItems = new HashSet<>();
-        for (final Production production : getProductionSet(START)) {
-            final Item item = itemFactory.createItem(START, production, 0);
-            final LookaheadItem<T> lookaheadItem = lookaheadItemFactory.createInstance(item, endOfFileSet);
-            initialItems.add(lookaheadItem);
-        }
+        final ParserState<T> startState = threadedComputeParseStates(initialItems, endOfFileSymbol, executorService);
         
-        final ParserState<T> startState = calculateClosure(initialItems);
-        parserStates.add(startState);
-        final List<ParserStateComputer> tasks = new ArrayList<>();
-        boolean changed;
-        do {
-            tasks.clear();
-            
-            final Set<ParserState<T>> newParserStates = new HashSet<>();
-            final Set<Edge<T>> newEdges = new HashSet<>();
-            
-            for (final ParserState<T> parserState : parserStates) {
-                final Set<LookaheadItem<T>> stateItems = parserState.getItems();
-                for (final LookaheadItem<T> item : stateItems) {
-                    if (item.isComplete()) {
-                        continue;
-                    }
-                    final Symbol nextSymbolInProduction = item.getNextSymbol();
-                    if (endOfFileSymbol.equals(nextSymbolInProduction)) {
-                        continue;
-                    }
-                    tasks.add(new ParserStateComputer(parserState, stateItems, item));
-                }
-            }
-            
-            final List<Future<Edge<T>>> futures = executor.invokeAll(tasks);
-            
-            for (final Future<Edge<T>> future : futures) {
-                final Edge<T> newEdge = future.get();
-                final ParserState<T> finalState = newEdge.getFinalState();
-                
-                newParserStates.add(finalState);
-                newEdges.add(newEdge);
-            }
-            
-            final boolean addedParserStates = parserStates.addAll(newParserStates);
-            final boolean addedEdges = edges.addAll(newEdges);
-            changed = addedParserStates || addedEdges;
-        } while (changed);
+        final Parser<T> parser = new Parser<>(parserStates, edges, startState, endOfFileSymbol);
         
         final long endTime = System.currentTimeMillis();
         
         System.out.print("Parser states creation, Duration: ");
         System.out.println(endTime - startTime);
-        
-        final Parser<T> parser = new Parser<>(parserStates, edges, startState, endOfFileSymbol);
         
         return parser;
     }
