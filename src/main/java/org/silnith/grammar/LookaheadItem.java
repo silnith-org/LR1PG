@@ -10,7 +10,7 @@ import java.util.Set;
  * 
  * @param <T> the concrete type of terminal symbols
  */
-public class LookaheadItem<T extends TerminalSymbol> {
+class LookaheadItem<T extends TerminalSymbol> {
     
     private final Item item;
     

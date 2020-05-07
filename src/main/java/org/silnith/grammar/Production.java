@@ -10,7 +10,7 @@ import java.util.Objects;
  * A sequence of symbols that can be reduced.  This contains only the symbols that can be reduced as well as the handler
  * that performs the reduction.  This does not contain the type of non-terminal that will replace the symbols reduced.
  */
-public class Production {
+class Production {
     
     private final ProductionHandler productionHandler;
     
@@ -26,7 +26,7 @@ public class Production {
      */
     public Production(final ProductionHandler productionHandler, final Symbol... symbols) {
         super();
-        if (productionHandler == null) {
+        if (productionHandler == null || symbols == null) {
         	throw new IllegalArgumentException();
         }
         this.productionHandler = productionHandler;

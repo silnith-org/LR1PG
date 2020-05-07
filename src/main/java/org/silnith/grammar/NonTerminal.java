@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * An implementation of {@link NonTerminalSymbol}.  Clients of the API should prefer {@link Grammar#getNonTerminalSymbol(String)}.
  */
-public class NonTerminal implements NonTerminalSymbol {
+class NonTerminal implements NonTerminalSymbol {
 
     private final String name;
 

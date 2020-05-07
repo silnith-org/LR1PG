@@ -32,6 +32,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,6 +52,8 @@ import org.silnith.grammar.uri.token.UriTerminalType;
 
 public class UrlParserTest {
 
+    private static final ExecutorService executor = Executors.newFixedThreadPool(8);
+    
     private static final String all = "%00abyz0189-._~:/?#[]@!$&'()*+,;=%ff";
     private static final String unreserved = "abyz0189-._~";
     private static final String genDelims = ":/?#[]@";
@@ -56,7 +61,6 @@ public class UrlParserTest {
     private static final String pchar = "abyz0189-._~:@!$&'()*+,;=";
     private static final String nonPchar = "/?#[]";
     
-    private Parser<UriTerminalType> parser;
     private Grammar<UriTerminalType> grammar;
     private NonTerminalSymbol uriReference;
     private NonTerminalSymbol relativeRef;
@@ -71,7 +75,7 @@ public class UrlParserTest {
     private NonTerminalSymbol segmentSequence;
     private NonTerminalSymbol query;
     private NonTerminalSymbol fragment;
-
+    
     @Test
     @Ignore
     public void testRegularExpression() {
@@ -352,14 +356,19 @@ public class UrlParserTest {
         // URI-reference = URI / relative-ref
         grammar.addProduction(uriReference, new TestProductionHandler("URI-reference"), uri);
         grammar.addProduction(uriReference, new TestProductionHandler("URI-reference"), relativeRef);
-        
-//        parser = grammar.createParser(uriReference, TestLexer.endOfFileSymbol);
     }
     
     @Test
-    public void testPercentEncoded() {
-        parser = grammar.createParser(pctEncoded, EndOfFile);
-        
+    public void testPercentEncodedSerial() {
+        testPercentEncoded(grammar.createParser(pctEncoded, EndOfFile));
+    }
+    
+    @Test
+    public void testPercentEncodedParallel() throws InterruptedException, ExecutionException {
+        testPercentEncoded(grammar.threadedCreateParser(pctEncoded, EndOfFile, executor));
+    }
+    
+    private void testPercentEncoded(final Parser<UriTerminalType> parser) {
         for (int b = 0; b < 256; b++) {
             final Object ast = parser.parse(new UriLexer(String.format(Locale.ROOT, "%%%02X", b)));
             Assert.assertNotNull(ast);
@@ -372,10 +381,18 @@ public class UrlParserTest {
             // pass
         }
     }
-
+    
     @Test
-    public void testScheme() {
-        parser = grammar.createParser(scheme, EndOfFile);
+    public void testSchemeSerial() {
+        testScheme(grammar.createParser(scheme, EndOfFile));
+    }
+    
+    @Test
+    public void testSchemeParallel() throws InterruptedException, ExecutionException {
+        testScheme(grammar.threadedCreateParser(scheme, EndOfFile, executor));
+    }
+    
+    private void testScheme(final Parser<UriTerminalType> parser) {
         Object ast;
         
         ast = parser.parse(new UriLexer("http"));
@@ -413,10 +430,18 @@ public class UrlParserTest {
             // pass
         }
     }
-
+    
     @Test
-    public void testUserinfo() {
-        parser = grammar.createParser(userinfo, EndOfFile);
+    public void testUserinfoSerial() {
+        testUserinfo(grammar.createParser(userinfo, EndOfFile));
+    }
+    
+    @Test
+    public void testUserinfoParallel() throws InterruptedException, ExecutionException {
+        testUserinfo(grammar.threadedCreateParser(userinfo, EndOfFile, executor));
+    }
+    
+    private void testUserinfo(final Parser<UriTerminalType> parser) {
         Object ast;
         
         ast = parser.parse(new UriLexer(""));
@@ -436,10 +461,18 @@ public class UrlParserTest {
             }
         }
     }
-
+    
     @Test
-    public void testHost() {
-        parser = grammar.createParser(host, EndOfFile);
+    public void testHostSerial() {
+        testHost(grammar.createParser(host, EndOfFile));
+    }
+    
+    @Test
+    public void testHostParallel() throws InterruptedException, ExecutionException {
+        testHost(grammar.threadedCreateParser(host, EndOfFile, executor));
+    }
+    
+    private void testHost(final Parser<UriTerminalType> parser) {
         Object ast;
         
         ast = parser.parse(new UriLexer(""));
@@ -460,10 +493,18 @@ public class UrlParserTest {
             }
         }
     }
-
+    
     @Test
-    public void testPort() {
-        parser = grammar.createParser(port, EndOfFile);
+    public void testPortSerial() {
+        testPort(grammar.createParser(port, EndOfFile));
+    }
+    
+    @Test
+    public void testPortParallel() throws InterruptedException, ExecutionException {
+        testPort(grammar.threadedCreateParser(port, EndOfFile, executor));
+    }
+
+    private void testPort(final Parser<UriTerminalType> parser) {
         Object ast;
         
         ast = parser.parse(new UriLexer(""));
@@ -489,10 +530,18 @@ public class UrlParserTest {
             // pass
         }
     }
-
+    
     @Test
-    public void testAuthority() {
-        parser = grammar.createParser(authority, EndOfFile);
+    public void testAuthoritySerial() {
+        testAuthority(grammar.createParser(authority, EndOfFile));
+    }
+    
+    @Test
+    public void testAuthorityParallel() throws InterruptedException, ExecutionException {
+        testAuthority(grammar.threadedCreateParser(authority, EndOfFile, executor));
+    }
+    
+    private void testAuthority(final Parser<UriTerminalType> parser) {
         Object ast;
 
         ast = parser.parse(new UriLexer(""));
@@ -525,8 +574,16 @@ public class UrlParserTest {
     }
     
     @Test
-    public void testSegment() {
-        parser = grammar.createParser(segment, EndOfFile);
+    public void testSegmentSerial() {
+        testSegment(grammar.createParser(segment, EndOfFile));
+    }
+    
+    @Test
+    public void testSegmentParallel() throws InterruptedException, ExecutionException {
+        testSegment(grammar.threadedCreateParser(segment, EndOfFile, executor));
+    }
+    
+    private void testSegment(final Parser<UriTerminalType> parser) {
         Object ast;
         
         ast = parser.parse(new UriLexer(""));
@@ -545,8 +602,16 @@ public class UrlParserTest {
     }
     
     @Test
-    public void testSegmentSequence() {
-        parser = grammar.createParser(segmentSequence, EndOfFile);
+    public void testSegmentSequenceSerial() {
+        testSegmentSequence(grammar.createParser(segmentSequence, EndOfFile));
+    }
+    
+    @Test
+    public void testSegmentSequenceParallel() throws InterruptedException, ExecutionException {
+        testSegmentSequence(grammar.threadedCreateParser(segmentSequence, EndOfFile, executor));
+    }
+    
+    private void testSegmentSequence(final Parser<UriTerminalType> parser) {
         Object ast;
         
         ast = parser.parse(new UriLexer(""));
@@ -554,10 +619,18 @@ public class UrlParserTest {
         ast = parser.parse(new UriLexer("/abyz0189%2F-._~:@!$&'()*+,;=/abyz0189%2F-._~:@!$&'()*+,;="));
         ast = parser.parse(new UriLexer("/abyz0189%2F-._~:@!$&'()*+,;=/abyz0189%2F-._~:@!$&'()*+,;=/abyz0189%2F-._~:@!$&'()*+,;="));
     }
-
+    
     @Test
-    public void testQuery() {
-        parser = grammar.createParser(query, EndOfFile);
+    public void testQuerySerial() {
+        testQuery(grammar.createParser(query, EndOfFile));
+    }
+    
+    @Test
+    public void testQueryParallel() throws InterruptedException, ExecutionException {
+        testQuery(grammar.threadedCreateParser(query, EndOfFile, executor));
+    }
+
+    private void testQuery(final Parser<UriTerminalType> parser) {
         Object ast;
         
         ast = parser.parse(new UriLexer(""));
@@ -576,8 +649,16 @@ public class UrlParserTest {
     }
     
     @Test
-    public void testFragment() {
-        parser = grammar.createParser(fragment, EndOfFile);
+    public void testFragmentSerial() {
+        testFragment(grammar.createParser(fragment, EndOfFile));
+    }
+    
+    @Test
+    public void testFragmentParallel() throws InterruptedException, ExecutionException {
+        testFragment(grammar.threadedCreateParser(fragment, EndOfFile, executor));
+    }
+    
+    private void testFragment(final Parser<UriTerminalType> parser) {
         Object ast;
         
         ast = parser.parse(new UriLexer(""));
@@ -595,10 +676,19 @@ public class UrlParserTest {
         }
     }
 
-    @Test
     @Ignore
-    public void testRelativeRef() {
-        parser = grammar.createParser(relativeRef, EndOfFile);
+    @Test
+    public void testRelativeRefSerial() {
+        testRelativeRef(grammar.createParser(relativeRef, EndOfFile));
+    }
+
+    @Ignore
+    @Test
+    public void testRelativeRefParallel() throws InterruptedException, ExecutionException {
+        testRelativeRef(grammar.threadedCreateParser(relativeRef, EndOfFile, executor));
+    }
+
+    private void testRelativeRef(final Parser<UriTerminalType> parser) {
         Object ast;
         
         ast = parser.parse(new UriLexer("//foo.bar.com"));
@@ -610,11 +700,20 @@ public class UrlParserTest {
         ast = parser.parse(new UriLexer("//foo.bar.com/bar/baz?abc"));
         ast = parser.parse(new UriLexer("//foo.bar.com/bar/baz#abc"));
     }
-    
-    @Test
+
     @Ignore
-    public void testURI() {
-        parser = grammar.createParser(uri, EndOfFile);
+    @Test
+    public void testURISerial() {
+        testURI(grammar.createParser(uri, EndOfFile));
+    }
+
+    @Ignore
+    @Test
+    public void testURIParallel() throws InterruptedException, ExecutionException {
+        testURI(grammar.threadedCreateParser(uri, EndOfFile, executor));
+    }
+    
+    private void testURI(final Parser<UriTerminalType> parser) {
         Object ast;
         
         ast = parser.parse(new UriLexer("https://foo.bar.com"));

@@ -8,7 +8,7 @@ import java.util.Objects;
  * <abbr title="non-deterministic finite state automata">NFA</abbr>.  A node in the
  * <abbr title="deterministic finite state automata">DFA</abbr> is composed of a set of these.
  */
-public class Item {
+class Item {
     
     private final NonTerminalSymbol target;
     

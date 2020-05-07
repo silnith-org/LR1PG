@@ -2,7 +2,7 @@ package org.silnith.grammar;
 
 import java.util.Iterator;
 
-public class TempLexer<T extends TerminalSymbol> {
+class TempLexer<T extends TerminalSymbol> {
 
     private final Iterator<Token<T>> iterator;
     

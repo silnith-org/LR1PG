@@ -3,7 +3,7 @@ package org.silnith.grammar;
 // TODO: parameterize this type
 public class DataStackElement {
     
-    final Object abstractSyntaxTree;
+    private final Object abstractSyntaxTree;
     
     public DataStackElement(final Object abstractSyntaxTree) {
         super();
