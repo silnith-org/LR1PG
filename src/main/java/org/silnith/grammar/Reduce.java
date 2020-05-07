@@ -18,8 +18,8 @@ class Reduce<T extends TerminalSymbol> extends AbstractAction<T> {
     }
     
     @Override
-    public void perform() {
-        getParser().reduce(reduceItem);
+    public boolean perform() {
+        return getParser().reduce(reduceItem);
     }
 
     @Override

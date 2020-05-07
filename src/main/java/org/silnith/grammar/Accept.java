@@ -17,8 +17,8 @@ class Accept<T extends TerminalSymbol> extends AbstractAction<T> {
     }
     
     @Override
-    public void perform() {
-        getParser().accept();
+    public boolean perform() {
+        return getParser().accept();
     }
 
     @Override

@@ -3,7 +3,6 @@ package org.silnith.grammar;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -16,44 +15,38 @@ import java.util.Set;
  * @author <a href="mailto:silnith@gmail.com">Kent Rosenkoetter</a>
  */
 public class Parser<T extends TerminalSymbol> {
-
-    private final Set<ParserState<T>> parserStates;
-	
-    private final Set<Edge<T>> edges;
     
     private final ParserState<T> startState;
     
-    private final T endOfFileSymbol;
-    
-    // TODO: This is not used.  Delete it.
-    private final Deque<Symbol> symbolMatchStack;
-    
+    private final Token<T> finalToken;
+
     private final Deque<ParserState<T>> stateStack;
     
     private final Deque<DataStackElement> dataStack;
     
+    private TempLexer<T> lexer;
+
+    private Token<T> token;
+
+    private ParserState<T> state;
+
     public Parser(final Set<ParserState<T>> parserStates, final Set<Edge<T>> edges, final ParserState<T> startState,
             final T endOfFileSymbol) {
         super();
         if (parserStates == null || edges == null || startState == null || endOfFileSymbol == null) {
         	throw new IllegalArgumentException();
         }
-        this.parserStates = parserStates;
-        this.edges = edges;
         this.startState = startState;
-        this.endOfFileSymbol = endOfFileSymbol;
-        this.symbolMatchStack = new ArrayDeque<>();
+        this.finalToken = new FinalToken<>(endOfFileSymbol);
+        
         this.stateStack = new ArrayDeque<>();
         this.dataStack = new ArrayDeque<>();
         
-        this.calculateParseTable(this.parserStates, this.edges, this.endOfFileSymbol);
-    }
-    
-    private void calculateParseTable(final Set<ParserState<T>> parserStates, final Set<Edge<T>> edges, final T endOfFileSymbol) {
         for (final Edge<T> edge : edges) {
             final ParserState<T> parserState = edge.getInitialState();
             final Symbol symbol = edge.getSymbol();
             final ParserState<T> destinationState = edge.getFinalState();
+            
             final Action action;
             if (symbol instanceof TerminalSymbol) {
                 action = new Shift<>(this, destinationState);
@@ -73,82 +66,47 @@ public class Parser<T extends TerminalSymbol> {
                     }
                 } else {
                     final Symbol symbol = item.getNextSymbol();
-                    if (symbol.equals(endOfFileSymbol)) {
-                        parserState.putAction(symbol, new Accept<>(this));
+                    if (endOfFileSymbol.equals(symbol)) {
+                        final Accept<T> action = new Accept<>(this);
+                        parserState.putAction(symbol, action);
                     }
                 }
             }
         }
-//        parsingTable.printTableLong();
-    }
-    
-    private Token<T> currentToken;
-    
-    private Token<T> lookaheadToken;
-
-    private boolean done;
-
-    private ParserState<T> currentState;
-
-    private Token<T> nextToken;
-
-    private Iterator<Token<T>> iterator;
-    
-    protected Token<T> getNextToken(final Iterator<Token<T>> iterator) {
-        if (currentToken == null) {
-            currentToken = iterator.next();
-        } else {
-            currentToken = lookaheadToken;
-        }
-        if (iterator.hasNext()) {
-            lookaheadToken = iterator.next();
-        } else {
-            lookaheadToken = new Token<T>() {
-                
-                @Override
-                public T getSymbol() {
-                    return endOfFileSymbol;
-                }
-                
-            };
-        }
-        return currentToken;
     }
     
     /**
      * Parses a sequence of terminal symbols and returns an abstract syntax tree.  This runs in {@code O(n)} time.
      * 
-     * @param lexer the lexer that generates an input sequence of terminal symbols
+     * @param inputLexer the lexer that generates an input sequence of terminal symbols
      * @return an abstract syntax tree as constructed by the various {@link ProductionHandler} implementations used in
      *         the {@link Grammar}
      */
-    public Object parse(final Lexer<T> lexer) {
-        symbolMatchStack.clear();
+    public Object parse(final Lexer<T> inputLexer) {
         stateStack.clear();
         dataStack.clear();
-    	currentToken = null;
-    	lookaheadToken = null;
-        currentState = startState;
-        stateStack.push(currentState);
-        iterator = lexer.iterator();
-        nextToken = getNextToken(iterator);
-        done = false;
+        
+        lexer = new TempLexer<>(inputLexer.iterator(), finalToken);
+    	state = startState;
+        stateStack.push(state);
+        token = lexer.getToken();
+        
+        boolean done;
         do {
-            final T symbol = nextToken.getSymbol();
-            final Action action = currentState.getAction(symbol);
-            action.perform();
+            final T symbol = token.getSymbol();
+            final Action action = state.getAction(symbol);
+            done = action.perform();
         } while ( !done);
-        symbolMatchStack.pop();
         stateStack.pop();
-        return dataStack.pop().getAbstractSyntaxTreeElement();
+        final DataStackElement datum = dataStack.pop();
+        return datum.getAbstractSyntaxTreeElement();
     }
 
     /**
      * Accept the complete language string.
      */
-    void accept() {
-        done = true;
-//        System.out.println("Accept.");
+    boolean accept() {
+        return true;
     }
 
     /**
@@ -156,8 +114,9 @@ public class Parser<T extends TerminalSymbol> {
      * 
      * @param destinationState the next parser state
      */
-    void goTo(final ParserState<T> destinationState) {
-        currentState = destinationState;
+    boolean goTo(final ParserState<T> destinationState) {
+        state = destinationState;
+        return false;
     }
 
     /**
@@ -165,12 +124,12 @@ public class Parser<T extends TerminalSymbol> {
      * 
      * @param destinationState the next parser state
      */
-    void shift(final ParserState<T> destinationState) {
-        currentState = destinationState;
-        symbolMatchStack.push(nextToken.getSymbol());
-        stateStack.push(currentState);
-        dataStack.push(new DataStackElement(nextToken));
-        nextToken = getNextToken(iterator);
+    boolean shift(final ParserState<T> destinationState) {
+        state = destinationState;
+        stateStack.push(state);
+        dataStack.push(new DataStackElement(token));
+        token = lexer.getToken();
+        return false;
     }
 
     /**
@@ -179,26 +138,25 @@ public class Parser<T extends TerminalSymbol> {
      * 
      * @param reduceItem the production to reduce
      */
-    void reduce(final LookaheadItem<T> reduceItem) {
+    boolean reduce(final LookaheadItem<T> reduceItem) {
         final NonTerminalSymbol targetNonTerminal = reduceItem.getTarget();
         final Production production = reduceItem.getProduction();
         final List<Symbol> symbols = production.getSymbols();
         final Deque<DataStackElement> data = new ArrayDeque<>(symbols.size());
         for (@SuppressWarnings("unused") final Symbol symbol : symbols) {
-            symbolMatchStack.pop();
             stateStack.pop();
             final DataStackElement datum = dataStack.pop();
             data.addFirst(datum);
         }
         final ProductionHandler handler = production.getProductionHandler();
         final DataStackElement newDatum = new DataStackElement(handler.handleReduction(new ArrayList<>(data)));
-        currentState = stateStack.peek();
-        final Action gotoAction = currentState.getAction(targetNonTerminal);
+        state = stateStack.peek();
+        final Action gotoAction = state.getAction(targetNonTerminal);
         assert gotoAction instanceof Goto;
         gotoAction.perform();
-        symbolMatchStack.push(targetNonTerminal);
-        stateStack.push(currentState);
+        stateStack.push(state);
         dataStack.push(newDatum);
+        return false;
     }
     
 }

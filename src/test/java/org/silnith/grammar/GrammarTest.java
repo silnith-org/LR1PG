@@ -17,14 +17,14 @@ public class GrammarTest {
 
 //    @Test
 //    public void testGetProductionRemainder() {
-//        final Grammar grammar = new Grammar();
+//        final Grammar<CharacterLiteral> grammar = new Grammar<>();
 //
 //        final NonTerminal left = new NonTerminal("lhs");
 //        final NonTerminal a = new NonTerminal("a");
 //        final NonTerminal b = new NonTerminal("b");
 //        final Production production = new Production(a, b);
-//        final Terminal x = new CharacterLiteral('x');
-//        final LookaheadItem<Terminal> item = new LookaheadItem<>(left,
+//        final CharacterLiteral x = new CharacterLiteral('x');
+//        final LookaheadItem<CharacterLiteral> item = new LookaheadItem<>(left,
 //                production, 2, x);
 //
 //        grammar.addProduction(a, x);
@@ -37,7 +37,7 @@ public class GrammarTest {
     
     @Test
     public void testGrammar3point1() {
-        final Grammar grammar = new Grammar();
+        final Grammar<CharacterLiteral> grammar = new Grammar<>();
         
         final TerminalSymbol semicolon = new CharacterLiteral(";", ';');
         final TerminalSymbol leftParenthesis = new CharacterLiteral("(", '(');
@@ -76,7 +76,7 @@ public class GrammarTest {
     
     @Test
     public void testGrammar3point8() {
-        final Grammar grammar = new Grammar();
+        final Grammar<CharacterLiteral> grammar = new Grammar<>();
         
         final TerminalSymbol plusSign = new CharacterLiteral("+", '+');
         final TerminalSymbol hyphenMinus = new CharacterLiteral("-", '-');
@@ -106,7 +106,7 @@ public class GrammarTest {
     
     @Test
     public void testGrammar3point10() {
-        final Grammar grammar = new Grammar();
+        final Grammar<CharacterLiteral> grammar = new Grammar<>();
         
         final TerminalSymbol plusSign = new CharacterLiteral("+", '+');
         final TerminalSymbol hyphenMinus = new CharacterLiteral("-", '-');
@@ -138,7 +138,7 @@ public class GrammarTest {
     
     @Test
     public void testGrammar3point12() {
-        final Grammar grammar = new Grammar();
+        final Grammar<CharacterLiteral> grammar = new Grammar<>();
         
         final TerminalSymbol a = new CharacterLiteral('a');
         final TerminalSymbol c = new CharacterLiteral('c');
@@ -176,14 +176,14 @@ public class GrammarTest {
         expectedFollow.put(x, new HashSet<>(Arrays.asList(a, c, d)));
         expectedFollow.put(y, new HashSet<>(Arrays.asList(a, c, d)));
         expectedFollow.put(z, Collections.<TerminalSymbol> emptySet());
-        assertEquals(expectedFollow.get(x), grammar.getFollowSet(x));
-        assertEquals(expectedFollow.get(y), grammar.getFollowSet(y));
-        assertEquals(expectedFollow.get(z), grammar.getFollowSet(z));
+        assertEquals(expectedFollow.get(x), grammar.getFollowSet().get(x));
+        assertEquals(expectedFollow.get(y), grammar.getFollowSet().get(y));
+        assertEquals(expectedFollow.get(z), grammar.getFollowSet().get(z));
     }
     
     @Test
     public void testGrammar3point15() {
-        final Grammar grammar = new Grammar();
+        final Grammar<CharacterLiteral> grammar = new Grammar<>();
         
         final TerminalSymbol plusSign = new CharacterLiteral("+", '+');
         final TerminalSymbol hyphenMinus = new CharacterLiteral("-", '-');
@@ -246,17 +246,17 @@ public class GrammarTest {
                 new HashSet<>(Arrays.asList(rightParenthesis, star, solidus, plusSign, hyphenMinus, eof)));
 //        assertEquals(expectedFollow, grammar.getFollowSet());
 //        assertEquals(expectedFollow.get(num), grammar.getFollowSet(num));
-        assertEquals(expectedFollow.get(s), grammar.getFollowSet(s));
-        assertEquals(expectedFollow.get(e), grammar.getFollowSet(e));
-        assertEquals(expectedFollow.get(ep), grammar.getFollowSet(ep));
-        assertEquals(expectedFollow.get(t), grammar.getFollowSet(t));
-        assertEquals(expectedFollow.get(tp), grammar.getFollowSet(tp));
-        assertEquals(expectedFollow.get(f), grammar.getFollowSet(f));
+        assertEquals(expectedFollow.get(s), grammar.getFollowSet().get(s));
+        assertEquals(expectedFollow.get(e), grammar.getFollowSet().get(e));
+        assertEquals(expectedFollow.get(ep), grammar.getFollowSet().get(ep));
+        assertEquals(expectedFollow.get(t), grammar.getFollowSet().get(t));
+        assertEquals(expectedFollow.get(tp), grammar.getFollowSet().get(tp));
+        assertEquals(expectedFollow.get(f), grammar.getFollowSet().get(f));
     }
     
 //    @Test
     public void testGrammar3point20() {
-        final Grammar grammar = new Grammar();
+        final Grammar<CharacterLiteral> grammar = new Grammar<>();
         
         final TerminalSymbol x = new CharacterLiteral('x');
         final TerminalSymbol leftParen = new CharacterLiteral('(');
@@ -327,7 +327,7 @@ public class GrammarTest {
     
 //    @Test
     public void testGrammar3point23() {
-        final Grammar grammar = new Grammar();
+        final Grammar<CharacterLiteral> grammar = new Grammar<>();
         
         final TerminalSymbol x = new CharacterLiteral('x');
         final TerminalSymbol plus = new CharacterLiteral('+');
@@ -384,11 +384,11 @@ public class GrammarTest {
     
     @Test
     public void testLeftRecursion() {
-        final Grammar grammar = new Grammar();
+        final Grammar<CharacterLiteral> grammar = new Grammar<>();
         
-        final TerminalSymbol space = new CharacterLiteral(' ');
-        final TerminalSymbol x = new CharacterLiteral('x');
-        final TerminalSymbol eof = new CharacterLiteral('$');
+        final CharacterLiteral space = new CharacterLiteral(' ');
+        final CharacterLiteral x = new CharacterLiteral('x');
+        final CharacterLiteral eof = new CharacterLiteral('$');
         
         final NonTerminalSymbol s = grammar.getNonTerminalSymbol("s");
         final NonTerminalSymbol white = grammar.getNonTerminalSymbol("white");
@@ -412,11 +412,11 @@ public class GrammarTest {
     
     @Test
     public void testRightRecursion() {
-        final Grammar grammar = new Grammar();
+        final Grammar<CharacterLiteral> grammar = new Grammar<>();
         
-        final TerminalSymbol space = new CharacterLiteral(' ');
-        final TerminalSymbol x = new CharacterLiteral('x');
-        final TerminalSymbol eof = new CharacterLiteral('$');
+        final CharacterLiteral space = new CharacterLiteral(' ');
+        final CharacterLiteral x = new CharacterLiteral('x');
+        final CharacterLiteral eof = new CharacterLiteral('$');
         
         final NonTerminalSymbol s = grammar.getNonTerminalSymbol("s");
         final NonTerminalSymbol white = grammar.getNonTerminalSymbol("white");
@@ -440,11 +440,11 @@ public class GrammarTest {
     
     @Test
     public void testFixFollowSets() {
-        final Grammar grammar = new Grammar();
+        final Grammar<CharacterLiteral> grammar = new Grammar<>();
         
-        final TerminalSymbol space = new CharacterLiteral(' ');
-        final TerminalSymbol x = new CharacterLiteral('x');
-        final TerminalSymbol eof = new CharacterLiteral('$');
+        final CharacterLiteral space = new CharacterLiteral(' ');
+        final CharacterLiteral x = new CharacterLiteral('x');
+        final CharacterLiteral eof = new CharacterLiteral('$');
         
         final NonTerminalSymbol s = grammar.getNonTerminalSymbol("s");
         final NonTerminalSymbol white = grammar.getNonTerminalSymbol("white");
@@ -460,9 +460,9 @@ public class GrammarTest {
         
         grammar.compute();
         
-        System.out.println(grammar.getFollowSet(end));
-        System.out.println(grammar.getFollowSet(white_Plus));
-        System.out.println(grammar.getFollowSet(white));
+//        System.out.println(grammar.getFollowSet().get(end));
+//        System.out.println(grammar.getFollowSet().get(white_Plus));
+//        System.out.println(grammar.getFollowSet().get(white));
         
         grammar.createParser(s, eof);
     }
