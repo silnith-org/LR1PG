@@ -360,7 +360,7 @@ public class Grammar<T extends TerminalSymbol> {
         final Production production = new Production(productionHandler, symbols);
         final Set<Production> productionSet = getProductionSet(nonTerminalSymbol);
         productionSet.add(production);
-        addSymbols(nonTerminalSymbol);
+        nonTerminalSymbols.add(nonTerminalSymbol);
         addSymbols(symbols);
     }
     
