@@ -178,6 +178,32 @@ public class Grammar<T extends TerminalSymbol> {
         
     }
 
+    private class ParserStateComputer implements Callable<Edge<T>> {
+        
+        private final ParserState<T> parserState;
+        
+        private final Set<LookaheadItem<T>> stateItems;
+        
+        private final LookaheadItem<T> item;
+    
+        public ParserStateComputer(final ParserState<T> parserState, final Set<LookaheadItem<T>> stateItems,
+                final LookaheadItem<T> item) {
+            super();
+            this.parserState = parserState;
+            this.stateItems = stateItems;
+            this.item = item;
+        }
+    
+        @Override
+        public Edge<T> call() throws Exception {
+            final Symbol nextSymbol = item.getNextSymbol();
+            final ParserState<T> newParserState = calculateGoto(stateItems, nextSymbol);
+            final Edge<T> newEdge = edgeFactory.createInstance(parserState, nextSymbol, newParserState);
+            return newEdge;
+        }
+        
+    }
+
     private final ItemFactory itemFactory;
 
     private final LookaheadItemFactory<T> lookaheadItemFactory;
@@ -706,32 +732,6 @@ public class Grammar<T extends TerminalSymbol> {
         return calculateClosure(jset);
     }
     
-    private class ParserStateComputer implements Callable<Edge<T>> {
-        
-        private final ParserState<T> parserState;
-        
-        private final Set<LookaheadItem<T>> stateItems;
-        
-        private final LookaheadItem<T> item;
-    
-        public ParserStateComputer(final ParserState<T> parserState, final Set<LookaheadItem<T>> stateItems,
-                final LookaheadItem<T> item) {
-            super();
-            this.parserState = parserState;
-            this.stateItems = stateItems;
-            this.item = item;
-        }
-    
-        @Override
-        public Edge<T> call() throws Exception {
-            final Symbol nextSymbol = item.getNextSymbol();
-            final ParserState<T> newParserState = calculateGoto(stateItems, nextSymbol);
-            final Edge<T> newEdge = edgeFactory.createInstance(parserState, nextSymbol, newParserState);
-            return newEdge;
-        }
-        
-    }
-
     private ParserState<T> threadedComputeParseStates(final Set<LookaheadItem<T>> initialItems, final T endOfFileSymbol, final ExecutorService executorService)
             throws InterruptedException, ExecutionException {
         final ParserState<T> startState = calculateClosure(initialItems);
