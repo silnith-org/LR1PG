@@ -16,21 +16,6 @@ import java.util.Set;
  */
 public class Parser<T extends TerminalSymbol> {
     
-    private class FinalToken implements Token<T> {
-        
-        private final T endOfFileSymbol;
-        
-        private FinalToken(final T endOfFileSymbol) {
-            this.endOfFileSymbol = endOfFileSymbol;
-        }
-        
-        @Override
-        public T getSymbol() {
-            return endOfFileSymbol;
-        }
-        
-    }
-
     private final ParserState<T> startState;
     
     private final Token<T> finalToken;
@@ -52,7 +37,7 @@ public class Parser<T extends TerminalSymbol> {
         	throw new IllegalArgumentException();
         }
         this.startState = startState;
-        this.finalToken = new FinalToken(endOfFileSymbol);
+        this.finalToken = new FinalToken<>(endOfFileSymbol);
         
         this.stateStack = new ArrayDeque<>();
         this.dataStack = new ArrayDeque<>();
