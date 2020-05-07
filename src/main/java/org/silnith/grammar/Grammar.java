@@ -846,12 +846,13 @@ public class Grammar<T extends TerminalSymbol> {
             changed = false;
             
             for (final Future<Edge<T>> future : futures) {
-                final Edge<T> newEdge = future.get();
-                final ParserState<T> finalState = newEdge.getFinalState();
+                final Edge<T> edge = future.get();
+                final ParserState<T> state = edge.getFinalState();
                 
-                final boolean itWasANewEdge = edges.add(newEdge);
-                final boolean itWasANewState = parserStates.add(finalState);
-                changed = itWasANewEdge || itWasANewState || changed;
+                final boolean newEdge = edges.add(edge);
+                final boolean newState = parserStates.add(state);
+                
+                changed = newEdge || newState || changed;
             }
         } while (changed);
         
