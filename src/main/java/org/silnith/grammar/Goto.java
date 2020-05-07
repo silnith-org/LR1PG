@@ -19,8 +19,8 @@ class Goto<T extends TerminalSymbol> implements Action {
     }
     
     @Override
-    public void perform() {
-        parser.goTo(destinationState);
+    public boolean perform() {
+        return parser.goTo(destinationState);
     }
 
     @Override

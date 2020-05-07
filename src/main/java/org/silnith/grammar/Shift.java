@@ -19,8 +19,8 @@ class Shift<T extends TerminalSymbol> implements Action {
     }
     
     @Override
-    public void perform() {
-        parser.shift(destinationState);
+    public boolean perform() {
+        return parser.shift(destinationState);
     }
 
     @Override

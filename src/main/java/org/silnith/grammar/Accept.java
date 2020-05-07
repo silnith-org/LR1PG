@@ -18,8 +18,8 @@ class Accept<T extends TerminalSymbol> implements Action {
     }
     
     @Override
-    public void perform() {
-        parser.accept();
+    public boolean perform() {
+        return parser.accept();
     }
 
     @Override

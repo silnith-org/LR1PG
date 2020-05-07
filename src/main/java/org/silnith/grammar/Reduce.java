@@ -19,8 +19,8 @@ class Reduce<T extends TerminalSymbol> implements Action {
     }
     
     @Override
-    public void perform() {
-        parser.reduce(reduceItem);
+    public boolean perform() {
+        return parser.reduce(reduceItem);
     }
 
     @Override
