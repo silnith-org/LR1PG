@@ -405,7 +405,7 @@ public class Grammar<T extends TerminalSymbol> {
     }
     
     /**
-     * Compute the nullable set for each symbol.
+     * Compute the nullable set.
      */
     private void computeNullable() {
         nullable.clear();
@@ -432,6 +432,9 @@ public class Grammar<T extends TerminalSymbol> {
         } while (changed);
     }
     
+    /**
+     * Compute the first set for each symbol.
+     */
     private void computeFirst() {
         first.clear();
         for (final T terminalSymbol : lexicon) {
@@ -458,6 +461,9 @@ public class Grammar<T extends TerminalSymbol> {
         } while (changed);
     }
     
+    /**
+     * Compute the follow set for each symbol.
+     */
     private void computeFollow() {
         follow.clear();
         for (final T terminalSymbol : lexicon) {
@@ -683,66 +689,55 @@ public class Grammar<T extends TerminalSymbol> {
     
     private ParserState<T> computeParseStates(final Set<LookaheadItem<T>> initialItems, final T endOfFileSymbol) {
         final ParserState<T> startState = calculateClosure(initialItems);
-        parserStates.add(startState);
         /*
          * Start with just the initial state.
          */
         
-        boolean changed;
-        do {
+        Set<ParserState<T>> pending = Collections.singleton(startState);
+        
+        while ( !pending.isEmpty()) {
             final Set<ParserState<T>> newParserStates = new HashSet<>();
             final Set<Edge<T>> newEdges = new HashSet<>();
             
-            final Set<ParserState<T>> visitedParserStates = new HashSet<>();
-            /*
-             * Go through all the existing parser states.
-             */
-            for (final ParserState<T> parserState : parserStates) {
-                if (visitedParserStates.contains(parserState)) {
-                    continue;
-                }
-                visitedParserStates.add(parserState);
-                
+            for (final ParserState<T> parserState : pending) {
                 final Set<LookaheadItem<T>> stateItems = parserState.getItems();
                 
-                final Set<Symbol> visitedSymbols = new HashSet<>();
-                visitedSymbols.add(endOfFileSymbol);
                 /*
                  * For each production + parse position + lookahead in the parser state...
                  */
+                final Set<Symbol> relevantSymbols = new HashSet<>();
                 for (final LookaheadItem<T> lookaheadItem : stateItems) {
                     final Item item = lookaheadItem.getItem();
                     if (item.isComplete()) {
                         continue;
                     }
                     
-                    final Symbol nextSymbolInProduction = item.getNextSymbol();
-//                    if (endOfFileSymbol.equals(nextSymbolInProduction)) {
-//                        continue;
-//                    }
-                    if (visitedSymbols.contains(nextSymbolInProduction)) {
-                        continue;
-                    }
+                    final Symbol nextSymbol = item.getNextSymbol();
                     
-                    visitedSymbols.add(nextSymbolInProduction);
+                    relevantSymbols.add(nextSymbol);
+                }
+                relevantSymbols.remove(endOfFileSymbol);
+                for (final Symbol symbol : relevantSymbols) {
                     /*
                      * Find the closure of all items that would be advanced by the next symbol in the current item.
                      */
-                    final ParserState<T> newParserState = calculateGoto(stateItems, nextSymbolInProduction);
+                    final ParserState<T> newParserState = calculateGoto(stateItems, symbol);
                     /*
                      * Create an edge from the existing state to the new state.
                      */
-                    final Edge<T> newEdge = edgeFactory.createInstance(parserState, nextSymbolInProduction, newParserState);
+                    final Edge<T> newEdge = edgeFactory.createInstance(parserState, symbol, newParserState);
                     
                     newParserStates.add(newParserState);
                     newEdges.add(newEdge);
                 }
             }
             
-            final boolean addedParserStates = parserStates.addAll(newParserStates);
-            final boolean addedEdges = edges.addAll(newEdges);
-            changed = addedParserStates || addedEdges;
-        } while (changed);
+            parserStates.addAll(pending);
+            edges.addAll(newEdges);
+            
+            pending = newParserStates;
+            pending.removeAll(parserStates);
+        }
         
         return startState;
     }
