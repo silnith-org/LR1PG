@@ -138,6 +138,10 @@ public class Grammar<T extends TerminalSymbol> {
             
             followSetAdditions.put(nonTerminalSymbol, terminalSetFactory.getNewSet());
             for (final Symbol symbol : production.getSymbols()) {
+                /*
+                 * If the same symbol appears more than once in the production this will overwrite the previous set.
+                 * Don't care.
+                 */
                 followSetAdditions.put(symbol, terminalSetFactory.getNewSet());
             }
             
