@@ -597,45 +597,66 @@ public class Grammar<T extends TerminalSymbol> {
     }
     
     private ParserState<T> calculateGoto(final Collection<LookaheadItem<T>> itemSet, final Symbol symbol) {
-        final Set<LookaheadItem<T>> jset = new HashSet<>(itemSet.size());
+        final Set<LookaheadItem<T>> newItemSet = new HashSet<>(itemSet.size());
+        
         for (final LookaheadItem<T> lookaheadItem : itemSet) {
             final Item item = lookaheadItem.getItem();
             if (item.isComplete()) {
                 continue;
             }
+            
             final Symbol nextSymbol = item.getNextSymbol();
             if (symbol.equals(nextSymbol)) {
-                final Item newItem =
-                        itemFactory.createItem(item.getTarget(), item.getProduction(), item.getParserPosition() + 1);
+                final Item newItem = itemFactory.createItem(item.getTarget(), item.getProduction(), item.getParserPosition() + 1);
                 final LookaheadItem<T> newLookaheadItem = lookaheadItemFactory.createInstance(newItem, lookaheadItem.getLookaheadSet());
-                jset.add(newLookaheadItem);
+                newItemSet.add(newLookaheadItem);
             }
         }
-        return calculateClosure(jset);
+        
+        return calculateClosure(newItemSet);
     }
     
     private ParserState<T> computeParseStates(final Set<LookaheadItem<T>> initialItems, final T endOfFileSymbol) {
         final ParserState<T> startState = calculateClosure(initialItems);
         parserStates.add(startState);
+        /*
+         * Start with just the initial state.
+         */
         
         boolean changed;
         do {
             final Set<ParserState<T>> newParserStates = new HashSet<>();
             final Set<Edge<T>> newEdges = new HashSet<>();
             
+            /*
+             * Go through all the existing parser states.
+             */
             for (final ParserState<T> parserState : parserStates) {
                 final Set<LookaheadItem<T>> stateItems = parserState.getItems();
+                
+                /*
+                 * For each production + parse position + lookahead in the parser state...
+                 */
                 for (final LookaheadItem<T> lookaheadItem : stateItems) {
                     final Item item = lookaheadItem.getItem();
                     if (item.isComplete()) {
                         continue;
                     }
+                    
                     final Symbol nextSymbolInProduction = item.getNextSymbol();
                     if (endOfFileSymbol.equals(nextSymbolInProduction)) {
                         continue;
                     }
+                    
+                    /*
+                     * Find the closure of all items that would be advanced by the next symbol in the current item.
+                     */
                     final ParserState<T> newParserState = calculateGoto(stateItems, nextSymbolInProduction);
+                    /*
+                     * Create an edge from the existing state to the new state.
+                     */
                     final Edge<T> newEdge = edgeFactory.createInstance(parserState, nextSymbolInProduction, newParserState);
+                    
                     newParserStates.add(newParserState);
                     newEdges.add(newEdge);
                 }
