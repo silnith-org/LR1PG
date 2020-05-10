@@ -405,7 +405,7 @@ public class Grammar<T extends TerminalSymbol> {
     }
     
     /**
-     * Compute the nullable set for each symbol.
+     * Compute the nullable set.
      */
     private void computeNullable() {
         nullable.clear();
@@ -432,6 +432,9 @@ public class Grammar<T extends TerminalSymbol> {
         } while (changed);
     }
     
+    /**
+     * Compute the first set for each symbol.
+     */
     private void computeFirst() {
         first.clear();
         for (final T terminalSymbol : lexicon) {
@@ -458,6 +461,9 @@ public class Grammar<T extends TerminalSymbol> {
         } while (changed);
     }
     
+    /**
+     * Compute the follow set for each symbol.
+     */
     private void computeFollow() {
         follow.clear();
         for (final T terminalSymbol : lexicon) {
@@ -515,29 +521,50 @@ public class Grammar<T extends TerminalSymbol> {
     
     private Set<List<Symbol>> getProductionRemainders(final Item item, final Collection<T> lookaheadSet) {
         final List<Symbol> symbols = item.getProduction().getSymbols();
-        final int secondSymbolIndex = item.getParserPosition() + 1;
-        if (secondSymbolIndex < symbols.size()) {
-            final List<Symbol> remainder = new ArrayList<>(symbols.subList(secondSymbolIndex, symbols.size()));
+        
+        final int nextSymbolIndex = item.getParserPosition() + 1;
+        
+        if (nextSymbolIndex < symbols.size()) {
+            final List<Symbol> remainder = symbols.subList(nextSymbolIndex, symbols.size());
+            
             final Set<List<Symbol>> productionRemainders = new HashSet<>();
+            
             for (final T lookahead : lookaheadSet) {
                 final List<Symbol> listCopy = new ArrayList<>(remainder);
                 listCopy.add(lookahead);
                 productionRemainders.add(listCopy);
             }
+            
             return productionRemainders;
         } else {
+            /*
+             * The production is completed.  Return the look-aheads.
+             */
             final Set<List<Symbol>> productionRemainders = new HashSet<>();
+            
             for (final T lookahead : lookaheadSet) {
                 productionRemainders.add(Collections.<Symbol>singletonList(lookahead));
             }
+            
             return productionRemainders;
         }
     }
     
+    /**
+     * Finds the first set for a sequence of symbols.  This checks for symbols that are
+     * nullable and walks the list of symbols coalescing first sets until it encounters
+     * a symbol that is not nullable, or the list ends.
+     * 
+     * @param firstSet the set that receives the results
+     * @param symbols the list of symbols
+     * @return {@code true} if {@code firstSet} was modified by this method
+     */
     private boolean expandFirstSetByProduction(final Set<T> firstSet, final List<Symbol> symbols) {
         boolean changedByProduction = false;
+        
         for (final Symbol symbol : symbols) {
             final Set<T> firstSetForSymbolInProduction = first.get(symbol);
+            
             final boolean addedElementsToFirstSet = firstSet.addAll(firstSetForSymbolInProduction);
             changedByProduction = addedElementsToFirstSet || changedByProduction;
             
@@ -545,60 +572,104 @@ public class Grammar<T extends TerminalSymbol> {
                 break;
             }
         }
+        
         return changedByProduction;
     }
 
     private ParserState<T> calculateClosure(final Collection<LookaheadItem<T>> items) {
+        /*
+         * The canonical algorithm creates look-ahead items that are composed of a single item
+         * and a single look-ahead terminal.  This modifies the classic algorithm by consolidating
+         * identical items to a single item with a set of look-ahead terminals.
+         */
         final Map<Item, Set<T>> itemLookaheadMap = new HashMap<>();
         for (final LookaheadItem<T> lookaheadItem : items) {
             final Set<T> newSet = terminalSetFactory.getNewSet(lookaheadItem.getLookaheadSet());
             itemLookaheadMap.put(lookaheadItem.getItem(), newSet);
         }
+
+        final Map<Item, Set<T>> additions = new HashMap<Item, Set<T>>();
         
         boolean changed;
         do {
-            changed = false;
-            // Copy the item set because we are going to modify it in the loop.
-            // Without the copy this throws ConcurrentModificationExceptions.
-            for (final Item item : new ArrayList<>(itemLookaheadMap.keySet())) {
+            additions.clear();
+            
+            for (final Map.Entry<Item, Set<T>> entry : itemLookaheadMap.entrySet()) {
+                final Item item = entry.getKey();
+                final Set<T> value = entry.getValue();
+                
                 if (item.isComplete()) {
                     continue;
-                } else {
-                    final Symbol nextSymbol = item.getNextSymbol();
-                    final Set<List<Symbol>> remainderList = getProductionRemainders(item, itemLookaheadMap.get(item));
-                    for (final List<Symbol> remainder : remainderList) {
-                        final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
-                        expandFirstSetByProduction(firstSetOfRemainder, remainder);
-                        if (nextSymbol instanceof NonTerminalSymbol) {
-                            final NonTerminalSymbol nextNonTerminalSymbol = (NonTerminalSymbol) nextSymbol;
-                            final Set<Production> productionsForNextSymbol = productions.get(nextNonTerminalSymbol);
-                            for (final Production production : productionsForNextSymbol) {
-                                final Item newItem = itemFactory.createItem(nextNonTerminalSymbol, production, 0);
-                                final Set<T> lookaheadSet = itemLookaheadMap.get(newItem);
-                                if (lookaheadSet == null) {
-                                    final Set<T> newSet = terminalSetFactory.getNewSet(firstSetOfRemainder);
-                                    itemLookaheadMap.put(newItem, newSet);
-                                    changed = true;
-                                } else {
-                                    changed = lookaheadSet.addAll(firstSetOfRemainder) || changed;
-                                }
-                            }
+                }
+                
+                final Symbol nextSymbol = item.getNextSymbol();
+                if (!(nextSymbol instanceof NonTerminalSymbol)) {
+                    continue;
+                }
+                
+                final NonTerminalSymbol nextNonTerminalSymbol = (NonTerminalSymbol) nextSymbol;
+                final Set<Production> productionsForNextSymbol = productions.get(nextNonTerminalSymbol);
+                
+                final Set<Item> newItems = new HashSet<>();
+                for (final Production production : productionsForNextSymbol) {
+                    final Item newItem = itemFactory.createItem(nextNonTerminalSymbol, production, 0);
+                    newItems.add(newItem);
+                }
+                
+                final Set<List<Symbol>> remainderList = getProductionRemainders(item, value);
+                for (final List<Symbol> remainder : remainderList) {
+                    final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
+                    expandFirstSetByProduction(firstSetOfRemainder, remainder);
+                    
+                    for (final Item newItem : newItems) {
+                        final Set<T> lookaheadSet = additions.get(newItem);
+                        if (lookaheadSet == null) {
+                            additions.put(newItem, terminalSetFactory.getNewSet(firstSetOfRemainder));
+                        } else {
+                            lookaheadSet.addAll(firstSetOfRemainder);
                         }
                     }
+                }
+            }
+            
+            changed = false;
+            
+            for (final Map.Entry<Item, Set<T>> entry : additions.entrySet()) {
+                final Item item = entry.getKey();
+                final Set<T> lookahead = entry.getValue();
+                
+                final Set<T> set = itemLookaheadMap.get(item);
+                if (set == null) {
+                    itemLookaheadMap.put(item, lookahead);
+                    
+                    changed = true;
+                } else {
+                    final boolean b = set.addAll(lookahead);
+                    
+                    changed = b || changed;
                 }
             }
         } while (changed);
         
         final Set<LookaheadItem<T>> itemSet = new HashSet<>(itemLookaheadMap.size());
         for (final Map.Entry<Item, Set<T>> entry : itemLookaheadMap.entrySet()) {
-            itemSet.add(lookaheadItemFactory.createInstance(entry.getKey(), entry.getValue()));
+            final Item item = entry.getKey();
+            final Set<T> lookaheadSet = entry.getValue();
+            
+            final LookaheadItem<T> lookaheadItem = lookaheadItemFactory.createInstance(item, lookaheadSet);
+            itemSet.add(lookaheadItem);
         }
+        
         return parserStateFactory.createInstance(itemSet);
     }
     
     private ParserState<T> calculateGoto(final Collection<LookaheadItem<T>> itemSet, final Symbol symbol) {
         final Set<LookaheadItem<T>> newItemSet = new HashSet<>(itemSet.size());
         
+        /*
+         * Go through the look-ahead item set, find the items that would be advanced by the given symbol.
+         * Create new items for each of those that are advanced by one parse position.
+         */
         for (final LookaheadItem<T> lookaheadItem : itemSet) {
             final Item item = lookaheadItem.getItem();
             if (item.isComplete()) {
@@ -618,54 +689,55 @@ public class Grammar<T extends TerminalSymbol> {
     
     private ParserState<T> computeParseStates(final Set<LookaheadItem<T>> initialItems, final T endOfFileSymbol) {
         final ParserState<T> startState = calculateClosure(initialItems);
-        parserStates.add(startState);
         /*
          * Start with just the initial state.
          */
         
-        boolean changed;
-        do {
+        Set<ParserState<T>> pending = Collections.singleton(startState);
+        
+        while ( !pending.isEmpty()) {
             final Set<ParserState<T>> newParserStates = new HashSet<>();
             final Set<Edge<T>> newEdges = new HashSet<>();
             
-            /*
-             * Go through all the existing parser states.
-             */
-            for (final ParserState<T> parserState : parserStates) {
+            for (final ParserState<T> parserState : pending) {
                 final Set<LookaheadItem<T>> stateItems = parserState.getItems();
                 
                 /*
                  * For each production + parse position + lookahead in the parser state...
                  */
+                final Set<Symbol> relevantSymbols = new HashSet<>();
                 for (final LookaheadItem<T> lookaheadItem : stateItems) {
                     final Item item = lookaheadItem.getItem();
                     if (item.isComplete()) {
                         continue;
                     }
                     
-                    final Symbol nextSymbolInProduction = item.getNextSymbol();
-                    if (endOfFileSymbol.equals(nextSymbolInProduction)) {
-                        continue;
-                    }
+                    final Symbol nextSymbol = item.getNextSymbol();
                     
+                    relevantSymbols.add(nextSymbol);
+                }
+                relevantSymbols.remove(endOfFileSymbol);
+                for (final Symbol symbol : relevantSymbols) {
                     /*
                      * Find the closure of all items that would be advanced by the next symbol in the current item.
                      */
-                    final ParserState<T> newParserState = calculateGoto(stateItems, nextSymbolInProduction);
+                    final ParserState<T> newParserState = calculateGoto(stateItems, symbol);
                     /*
                      * Create an edge from the existing state to the new state.
                      */
-                    final Edge<T> newEdge = edgeFactory.createInstance(parserState, nextSymbolInProduction, newParserState);
+                    final Edge<T> newEdge = edgeFactory.createInstance(parserState, symbol, newParserState);
                     
                     newParserStates.add(newParserState);
                     newEdges.add(newEdge);
                 }
             }
             
-            final boolean addedParserStates = parserStates.addAll(newParserStates);
-            final boolean addedEdges = edges.addAll(newEdges);
-            changed = addedParserStates || addedEdges;
-        } while (changed);
+            parserStates.addAll(pending);
+            edges.addAll(newEdges);
+            
+            pending = newParserStates;
+            pending.removeAll(parserStates);
+        }
         
         return startState;
     }
@@ -709,6 +781,8 @@ public class Grammar<T extends TerminalSymbol> {
         
         System.out.print("Parser states creation, Duration: ");
         System.out.println(endTime - startTime);
+        
+        printStatistics();
         
         return parser;
     }
@@ -911,7 +985,25 @@ public class Grammar<T extends TerminalSymbol> {
         System.out.print("Parser states creation, Duration: ");
         System.out.println(endTime - startTime);
         
+        printStatistics();
+        
         return parser;
+    }
+    
+    private void printFactoryStatistics(final String name, final WeakCanonicalFactory<?> factory) {
+        System.out.print(name);
+        System.out.print(" calls: ");
+        System.out.println(factory.getCallCount());
+        System.out.print(name);
+        System.out.print(" instances: ");
+        System.out.println(factory.getInstanceCount());
+    }
+    
+    public void printStatistics() {
+        printFactoryStatistics("Item factory", itemFactory);
+        printFactoryStatistics("Look-ahead factory", lookaheadItemFactory);
+        printFactoryStatistics("State factory", parserStateFactory);
+        printFactoryStatistics("Edge factory", edgeFactory);
     }
     
 }
