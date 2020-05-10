@@ -3,6 +3,7 @@ package org.silnith.grammar;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.silnith.grammar.example.ExampleGrammar;
 import org.silnith.grammar.example.Terminals;
 
 /**
@@ -14,7 +15,7 @@ public class LALRGrammarTest {
 	
 	@Before
 	public void setUp() {
-        final Grammar<Terminals> grammar = new Grammar<Terminals>();
+        final Grammar<Terminals> grammar = new Grammar<Terminals>(new ExampleGrammar.TerminalSetFactory());
         
         final NonTerminalSymbol nonTerminalS = grammar.getNonTerminalSymbol("S");
         final NonTerminalSymbol nonTerminalE = grammar.getNonTerminalSymbol("E");

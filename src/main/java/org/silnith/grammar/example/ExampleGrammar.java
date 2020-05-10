@@ -43,7 +43,11 @@ public class ExampleGrammar {
         
         @Override
         public Set<Terminals> getNewSet(final Collection<Terminals> c) {
-            return EnumSet.copyOf(c);
+            if (c.isEmpty()) {
+                return EnumSet.noneOf(Terminals.class);
+            } else {
+                return EnumSet.copyOf(c);
+            }
         }
         
     }

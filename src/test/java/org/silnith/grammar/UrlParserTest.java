@@ -31,7 +31,9 @@ import static org.silnith.grammar.uri.token.UriTerminalType.Underscore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -90,9 +92,28 @@ public class UrlParserTest {
         }
     }
     
+    private static class UriTerminalSetFactory implements SetFactory<UriTerminalType> {
+
+        @Override
+        public Set<UriTerminalType> getNewSet() {
+            return EnumSet.noneOf(UriTerminalType.class);
+        }
+
+        @Override
+        public Set<UriTerminalType> getNewSet(final Collection<UriTerminalType> c) {
+            if (c.isEmpty()) {
+                return EnumSet.noneOf(UriTerminalType.class);
+            } else {
+                return EnumSet.copyOf(c);
+            }
+        }
+        
+    }
+    
     @Before
     public void setUp() {
-        grammar = new Grammar<UriTerminalType>();
+//        grammar = new Grammar<UriTerminalType>();
+        grammar = new Grammar<UriTerminalType>(new UriTerminalSetFactory());
         
         pctEncoded = grammar.getNonTerminalSymbol("pct-encoded");
 //        final NonTerminalSymbol unreserved = grammar.getNonTerminalSymbol("unreserved");
