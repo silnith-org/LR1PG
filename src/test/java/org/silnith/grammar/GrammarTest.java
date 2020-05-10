@@ -37,7 +37,7 @@ public class GrammarTest {
     
     @Test
     public void testGrammar3point1() {
-        final Grammar<CharacterLiteral> grammar = new Grammar<>();
+        final Grammar<CharacterLiteral, NonTerminalSymbol> grammar = new Grammar<>();
         
         final TerminalSymbol semicolon = new CharacterLiteral(";", ';');
         final TerminalSymbol leftParenthesis = new CharacterLiteral("(", '(');
@@ -50,10 +50,10 @@ public class GrammarTest {
         final TerminalSymbol print = new Identifier("print");
         final TerminalSymbol eof = new Identifier("$");
         
-        final NonTerminalSymbol sp = grammar.getNonTerminalSymbol("S'");
-        final NonTerminalSymbol s = grammar.getNonTerminalSymbol("S");
-        final NonTerminalSymbol e = grammar.getNonTerminalSymbol("E");
-        final NonTerminalSymbol l = grammar.getNonTerminalSymbol("L");
+        final NonTerminalSymbol sp = new NonTerminal("S'");
+        final NonTerminalSymbol s = new NonTerminal("S");
+        final NonTerminalSymbol e = new NonTerminal("E");
+        final NonTerminalSymbol l = new NonTerminal("L");
         
         grammar.addProduction(sp, new TestProductionHandler("S'"), s, eof);
         grammar.addProduction(s, new TestProductionHandler("S"), s, semicolon, s);
@@ -76,7 +76,7 @@ public class GrammarTest {
     
     @Test
     public void testGrammar3point8() {
-        final Grammar<CharacterLiteral> grammar = new Grammar<>();
+        final Grammar<CharacterLiteral, NonTerminalSymbol> grammar = new Grammar<>();
         
         final TerminalSymbol plusSign = new CharacterLiteral("+", '+');
         final TerminalSymbol hyphenMinus = new CharacterLiteral("-", '-');
@@ -85,9 +85,9 @@ public class GrammarTest {
         final TerminalSymbol leftParenthesis = new CharacterLiteral("(", '(');
         final TerminalSymbol rightParenthesis = new CharacterLiteral(")", ')');
         
-        final NonTerminalSymbol e = grammar.getNonTerminalSymbol("E");
-        final NonTerminalSymbol t = grammar.getNonTerminalSymbol("T");
-        final NonTerminalSymbol f = grammar.getNonTerminalSymbol("F");
+        final NonTerminalSymbol e = new NonTerminal("E");
+        final NonTerminalSymbol t = new NonTerminal("T");
+        final NonTerminalSymbol f = new NonTerminal("F");
         
         grammar.addProduction(e, new TestProductionHandler("E"), e, plusSign, t);
         grammar.addProduction(e, new TestProductionHandler("E"), e, hyphenMinus, t);
@@ -106,7 +106,7 @@ public class GrammarTest {
     
     @Test
     public void testGrammar3point10() {
-        final Grammar<CharacterLiteral> grammar = new Grammar<>();
+        final Grammar<CharacterLiteral, NonTerminalSymbol> grammar = new Grammar<>();
         
         final TerminalSymbol plusSign = new CharacterLiteral("+", '+');
         final TerminalSymbol hyphenMinus = new CharacterLiteral("-", '-');
@@ -115,10 +115,10 @@ public class GrammarTest {
         final TerminalSymbol leftParenthesis = new CharacterLiteral("(", '(');
         final TerminalSymbol rightParenthesis = new CharacterLiteral(")", ')');
         
-        final NonTerminalSymbol s = grammar.getNonTerminalSymbol("S");
-        final NonTerminalSymbol e = grammar.getNonTerminalSymbol("E");
-        final NonTerminalSymbol t = grammar.getNonTerminalSymbol("T");
-        final NonTerminalSymbol f = grammar.getNonTerminalSymbol("F");
+        final NonTerminalSymbol s = new NonTerminal("S");
+        final NonTerminalSymbol e = new NonTerminal("E");
+        final NonTerminalSymbol t = new NonTerminal("T");
+        final NonTerminalSymbol f = new NonTerminal("F");
         
         grammar.addProduction(s, new TestProductionHandler("S"), e, new CharacterLiteral('$'));
         grammar.addProduction(e, new TestProductionHandler("E"), e, plusSign, t);
@@ -138,15 +138,15 @@ public class GrammarTest {
     
     @Test
     public void testGrammar3point12() {
-        final Grammar<CharacterLiteral> grammar = new Grammar<>();
+        final Grammar<CharacterLiteral, NonTerminalSymbol> grammar = new Grammar<>();
         
         final TerminalSymbol a = new CharacterLiteral('a');
         final TerminalSymbol c = new CharacterLiteral('c');
         final TerminalSymbol d = new CharacterLiteral('d');
         
-        final NonTerminalSymbol z = grammar.getNonTerminalSymbol("Z");
-        final NonTerminalSymbol y = grammar.getNonTerminalSymbol("Y");
-        final NonTerminalSymbol x = grammar.getNonTerminalSymbol("X");
+        final NonTerminalSymbol z = new NonTerminal("Z");
+        final NonTerminalSymbol y = new NonTerminal("Y");
+        final NonTerminalSymbol x = new NonTerminal("X");
         
         grammar.addProduction(z, new TestProductionHandler("Z"), d);
         grammar.addProduction(z, new TestProductionHandler("Z"), x, y, z);
@@ -183,7 +183,7 @@ public class GrammarTest {
     
     @Test
     public void testGrammar3point15() {
-        final Grammar<CharacterLiteral> grammar = new Grammar<>();
+        final Grammar<CharacterLiteral, NonTerminalSymbol> grammar = new Grammar<>();
         
         final TerminalSymbol plusSign = new CharacterLiteral("+", '+');
         final TerminalSymbol hyphenMinus = new CharacterLiteral("-", '-');
@@ -195,12 +195,12 @@ public class GrammarTest {
         final TerminalSymbol id = new Identifier("id");
         final TerminalSymbol num = new Identifier("num");
         
-        final NonTerminalSymbol s = grammar.getNonTerminalSymbol("S");
-        final NonTerminalSymbol e = grammar.getNonTerminalSymbol("E");
-        final NonTerminalSymbol ep = grammar.getNonTerminalSymbol("E'");
-        final NonTerminalSymbol t = grammar.getNonTerminalSymbol("T");
-        final NonTerminalSymbol tp = grammar.getNonTerminalSymbol("T'");
-        final NonTerminalSymbol f = grammar.getNonTerminalSymbol("F");
+        final NonTerminalSymbol s = new NonTerminal("S");
+        final NonTerminalSymbol e = new NonTerminal("E");
+        final NonTerminalSymbol ep = new NonTerminal("E'");
+        final NonTerminalSymbol t = new NonTerminal("T");
+        final NonTerminalSymbol tp = new NonTerminal("T'");
+        final NonTerminalSymbol f = new NonTerminal("F");
         
         grammar.addProduction(s, new TestProductionHandler("S"), e, eof);
         grammar.addProduction(e, new TestProductionHandler("E"), t, ep);
@@ -256,7 +256,7 @@ public class GrammarTest {
     
 //    @Test
     public void testGrammar3point20() {
-        final Grammar<CharacterLiteral> grammar = new Grammar<>();
+        final Grammar<CharacterLiteral, NonTerminalSymbol> grammar = new Grammar<>();
         
         final TerminalSymbol x = new CharacterLiteral('x');
         final TerminalSymbol leftParen = new CharacterLiteral('(');
@@ -264,9 +264,9 @@ public class GrammarTest {
         final TerminalSymbol comma = new CharacterLiteral(',');
         final TerminalSymbol eof = new CharacterLiteral('$');
         
-        final NonTerminalSymbol s = grammar.getNonTerminalSymbol("S");
-        final NonTerminalSymbol sp = grammar.getNonTerminalSymbol("S'");
-        final NonTerminalSymbol l = grammar.getNonTerminalSymbol("L");
+        final NonTerminalSymbol s = new NonTerminal("S");
+        final NonTerminalSymbol sp = new NonTerminal("S'");
+        final NonTerminalSymbol l = new NonTerminal("L");
         
         grammar.addProduction(sp, new TestProductionHandler("S'"), s, eof);
         grammar.addProduction(s, new TestProductionHandler("S"), leftParen, l, rightParen);
@@ -327,15 +327,15 @@ public class GrammarTest {
     
 //    @Test
     public void testGrammar3point23() {
-        final Grammar<CharacterLiteral> grammar = new Grammar<>();
+        final Grammar<CharacterLiteral, NonTerminalSymbol> grammar = new Grammar<>();
         
         final TerminalSymbol x = new CharacterLiteral('x');
         final TerminalSymbol plus = new CharacterLiteral('+');
         final TerminalSymbol eof = new CharacterLiteral('$');
         
-        final NonTerminalSymbol s = grammar.getNonTerminalSymbol("S");
-        final NonTerminalSymbol e = grammar.getNonTerminalSymbol("E");
-        final NonTerminalSymbol t = grammar.getNonTerminalSymbol("T");
+        final NonTerminalSymbol s = new NonTerminal("S");
+        final NonTerminalSymbol e = new NonTerminal("E");
+        final NonTerminalSymbol t = new NonTerminal("T");
         
         grammar.addProduction(s, new TestProductionHandler("S"), e, eof);
         grammar.addProduction(e, new TestProductionHandler("E"), t, plus, e);
@@ -384,16 +384,16 @@ public class GrammarTest {
     
     @Test
     public void testLeftRecursion() {
-        final Grammar<CharacterLiteral> grammar = new Grammar<>();
+        final Grammar<CharacterLiteral, NonTerminalSymbol> grammar = new Grammar<>();
         
         final CharacterLiteral space = new CharacterLiteral(' ');
         final CharacterLiteral x = new CharacterLiteral('x');
         final CharacterLiteral eof = new CharacterLiteral('$');
         
-        final NonTerminalSymbol s = grammar.getNonTerminalSymbol("s");
-        final NonTerminalSymbol white = grammar.getNonTerminalSymbol("white");
-        final NonTerminalSymbol white_Kleene = grammar.getNonTerminalSymbol("white*");
-        final NonTerminalSymbol end = grammar.getNonTerminalSymbol("end");
+        final NonTerminalSymbol s = new NonTerminal("s");
+        final NonTerminalSymbol white = new NonTerminal("white");
+        final NonTerminalSymbol white_Kleene = new NonTerminal("white*");
+        final NonTerminalSymbol end = new NonTerminal("end");
         
         grammar.addProduction(s, new TestProductionHandler("s"), end, white_Kleene, end);
         grammar.addProduction(end, new TestProductionHandler("end"), x);
@@ -412,16 +412,16 @@ public class GrammarTest {
     
     @Test
     public void testRightRecursion() {
-        final Grammar<CharacterLiteral> grammar = new Grammar<>();
+        final Grammar<CharacterLiteral, NonTerminalSymbol> grammar = new Grammar<>();
         
         final CharacterLiteral space = new CharacterLiteral(' ');
         final CharacterLiteral x = new CharacterLiteral('x');
         final CharacterLiteral eof = new CharacterLiteral('$');
         
-        final NonTerminalSymbol s = grammar.getNonTerminalSymbol("s");
-        final NonTerminalSymbol white = grammar.getNonTerminalSymbol("white");
-        final NonTerminalSymbol white_Kleene = grammar.getNonTerminalSymbol("white*");
-        final NonTerminalSymbol end = grammar.getNonTerminalSymbol("end");
+        final NonTerminalSymbol s = new NonTerminal("s");
+        final NonTerminalSymbol white = new NonTerminal("white");
+        final NonTerminalSymbol white_Kleene = new NonTerminal("white*");
+        final NonTerminalSymbol end = new NonTerminal("end");
         
         grammar.addProduction(s, new TestProductionHandler("s"), end, white_Kleene, end);
         grammar.addProduction(end, new TestProductionHandler("end"), x);
@@ -440,16 +440,16 @@ public class GrammarTest {
     
     @Test
     public void testFixFollowSets() {
-        final Grammar<CharacterLiteral> grammar = new Grammar<>();
+        final Grammar<CharacterLiteral, NonTerminalSymbol> grammar = new Grammar<>();
         
         final CharacterLiteral space = new CharacterLiteral(' ');
         final CharacterLiteral x = new CharacterLiteral('x');
         final CharacterLiteral eof = new CharacterLiteral('$');
         
-        final NonTerminalSymbol s = grammar.getNonTerminalSymbol("s");
-        final NonTerminalSymbol white = grammar.getNonTerminalSymbol("white");
-        final NonTerminalSymbol white_Plus = grammar.getNonTerminalSymbol("white+");
-        final NonTerminalSymbol end = grammar.getNonTerminalSymbol("end");
+        final NonTerminalSymbol s = new NonTerminal("s");
+        final NonTerminalSymbol white = new NonTerminal("white");
+        final NonTerminalSymbol white_Plus = new NonTerminal("white+");
+        final NonTerminalSymbol end = new NonTerminal("end");
         
         grammar.addProduction(s, new TestProductionHandler("s"), end, end);
         grammar.addProduction(s, new TestProductionHandler("s"), end, white_Plus, end);

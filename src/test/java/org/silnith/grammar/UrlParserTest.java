@@ -61,7 +61,7 @@ public class UrlParserTest {
     private static final String pchar = "abyz0189-._~:@!$&'()*+,;=";
     private static final String nonPchar = "/?#[]";
     
-    private Grammar<UriTerminalType> grammar;
+    private Grammar<UriTerminalType, NonTerminalSymbol> grammar;
     private NonTerminalSymbol uriReference;
     private NonTerminalSymbol relativeRef;
     private NonTerminalSymbol uri;
@@ -98,52 +98,52 @@ public class UrlParserTest {
     @Before
     public void setUp() {
 //        grammar = new Grammar<UriTerminalType>();
-        grammar = new Grammar<UriTerminalType>(new UriTerminalSetFactory());
+        grammar = new Grammar<UriTerminalType, NonTerminalSymbol>(new UriTerminalSetFactory());
         
-        pctEncoded = grammar.getNonTerminalSymbol("pct-encoded");
+        pctEncoded = new NonTerminal("pct-encoded");
 //        final NonTerminalSymbol unreserved = grammar.getNonTerminalSymbol("unreserved");
 
-        uri = grammar.getNonTerminalSymbol("URI");
-        scheme = grammar.getNonTerminalSymbol("scheme");
-        final NonTerminalSymbol hierPart = grammar.getNonTerminalSymbol("hier-part");
-        query = grammar.getNonTerminalSymbol("query");
-        fragment = grammar.getNonTerminalSymbol("fragment");
+        uri = new NonTerminal("URI");
+        scheme = new NonTerminal("scheme");
+        final NonTerminalSymbol hierPart = new NonTerminal("hier-part");
+        query = new NonTerminal("query");
+        fragment = new NonTerminal("fragment");
 
-        authority = grammar.getNonTerminalSymbol("authority");
-        pathAbEmpty = grammar.getNonTerminalSymbol("path-abempty");
-        pathAbsolute = grammar.getNonTerminalSymbol("path-absolute");
-        pathRootless = grammar.getNonTerminalSymbol("path-rootless");
-        pathEmpty = grammar.getNonTerminalSymbol("path-empty");
+        authority = new NonTerminal("authority");
+        pathAbEmpty = new NonTerminal("path-abempty");
+        pathAbsolute = new NonTerminal("path-absolute");
+        pathRootless = new NonTerminal("path-rootless");
+        pathEmpty = new NonTerminal("path-empty");
 
-        userinfo = grammar.getNonTerminalSymbol("userinfo");
-        host = grammar.getNonTerminalSymbol("host");
-        port = grammar.getNonTerminalSymbol("port");
+        userinfo = new NonTerminal("userinfo");
+        host = new NonTerminal("host");
+        port = new NonTerminal("port");
 
-        final NonTerminalSymbol ipLiteral = grammar.getNonTerminalSymbol("IP-literal");
-        final NonTerminalSymbol ipv4address = grammar.getNonTerminalSymbol("IPv4address");
-        final NonTerminalSymbol regName = grammar.getNonTerminalSymbol("reg-name");
+        final NonTerminalSymbol ipLiteral = new NonTerminal("IP-literal");
+        final NonTerminalSymbol ipv4address = new NonTerminal("IPv4address");
+        final NonTerminalSymbol regName = new NonTerminal("reg-name");
         
-        final NonTerminalSymbol ipv6address = grammar.getNonTerminalSymbol("IPv6address");
-        final NonTerminalSymbol ipFuture = grammar.getNonTerminalSymbol("IPvFuture");
+        final NonTerminalSymbol ipv6address = new NonTerminal("IPv6address");
+        final NonTerminalSymbol ipFuture = new NonTerminal("IPvFuture");
 
-        final NonTerminalSymbol ipFutureVersion = grammar.getNonTerminalSymbol("IPvFuture-version");
-        final NonTerminalSymbol ipFutureContent = grammar.getNonTerminalSymbol("IPvFuture-content");
+        final NonTerminalSymbol ipFutureVersion = new NonTerminal("IPvFuture-version");
+        final NonTerminalSymbol ipFutureContent = new NonTerminal("IPvFuture-content");
 
-        final NonTerminalSymbol decOctet = grammar.getNonTerminalSymbol("dec-octet");
+        final NonTerminalSymbol decOctet = new NonTerminal("dec-octet");
         
-        final NonTerminalSymbol path = grammar.getNonTerminalSymbol("path");
-        final NonTerminalSymbol pathNoScheme = grammar.getNonTerminalSymbol("path-noscheme");
-        segment = grammar.getNonTerminalSymbol("segment");
-        final NonTerminalSymbol segmentNz = grammar.getNonTerminalSymbol("segment-nz");
-        final NonTerminalSymbol segmentNzNc = grammar.getNonTerminalSymbol("segment-nz-nc");
+        final NonTerminalSymbol path = new NonTerminal("path");
+        final NonTerminalSymbol pathNoScheme = new NonTerminal("path-noscheme");
+        segment = new NonTerminal("segment");
+        final NonTerminalSymbol segmentNz = new NonTerminal("segment-nz");
+        final NonTerminalSymbol segmentNzNc = new NonTerminal("segment-nz-nc");
         
-        segmentSequence = grammar.getNonTerminalSymbol("segment-sequence");
+        segmentSequence = new NonTerminal("segment-sequence");
         
-        uriReference = grammar.getNonTerminalSymbol("URI-reference");
-        relativeRef = grammar.getNonTerminalSymbol("relative-ref");
-        final NonTerminalSymbol relativePart = grammar.getNonTerminalSymbol("relative-part");
+        uriReference = new NonTerminal("URI-reference");
+        relativeRef = new NonTerminal("relative-ref");
+        final NonTerminalSymbol relativePart = new NonTerminal("relative-part");
 
-        final NonTerminalSymbol absoluteUri = grammar.getNonTerminalSymbol("absolute-URI");
+        final NonTerminalSymbol absoluteUri = new NonTerminal("absolute-URI");
         
         // gen-delims = ":" / "/" / "?" / "#" / "[" / "]" / "@"
         final Collection<UriTerminalType> genDelims = new ArrayList<>(7);

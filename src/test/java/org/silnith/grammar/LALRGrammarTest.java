@@ -15,11 +15,11 @@ public class LALRGrammarTest {
 	
 	@Before
 	public void setUp() {
-        final Grammar<Terminals> grammar = new Grammar<Terminals>(new ExampleGrammar.TerminalSetFactory());
+        final Grammar<Terminals, NonTerminalSymbol> grammar = new Grammar<>(new ExampleGrammar.TerminalSetFactory());
         
-        final NonTerminalSymbol nonTerminalS = grammar.getNonTerminalSymbol("S");
-        final NonTerminalSymbol nonTerminalE = grammar.getNonTerminalSymbol("E");
-        final NonTerminalSymbol nonTerminalF = grammar.getNonTerminalSymbol("F");
+        final NonTerminalSymbol nonTerminalS = new NonTerminal("S");
+        final NonTerminalSymbol nonTerminalE = new NonTerminal("E");
+        final NonTerminalSymbol nonTerminalF = new NonTerminal("F");
 
 		grammar.addProduction(nonTerminalS, new TestProductionHandler("S"), Terminals.A, nonTerminalE, Terminals.C);
 		grammar.addProduction(nonTerminalS, new TestProductionHandler("S"), Terminals.A, nonTerminalF, Terminals.D);

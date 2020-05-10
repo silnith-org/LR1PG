@@ -15,10 +15,10 @@ public class SLRGrammarTest {
 	
 	@Before
 	public void setUp() {
-        final Grammar<Terminals> grammar = new Grammar<Terminals>(new ExampleGrammar.TerminalSetFactory());
+        final Grammar<Terminals, NonTerminalSymbol> grammar = new Grammar<>(new ExampleGrammar.TerminalSetFactory());
         
-        final NonTerminalSymbol nonTerminalA = grammar.getNonTerminalSymbol("A");
-        final NonTerminalSymbol nonTerminalS = grammar.getNonTerminalSymbol("S");
+        final NonTerminalSymbol nonTerminalA = new NonTerminal("A");
+        final NonTerminalSymbol nonTerminalS = new NonTerminal("S");
         
 		grammar.addProduction(nonTerminalA, new TestProductionHandler("A"), Terminals.D);
 		

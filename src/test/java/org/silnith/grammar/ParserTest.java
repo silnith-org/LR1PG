@@ -7,16 +7,16 @@ public class ParserTest {
     
     @Test
     public void testParse() {
-        final Grammar<CharacterLiteral> grammar = new Grammar<>();
+        final Grammar<CharacterLiteral, NonTerminalSymbol> grammar = new Grammar<>();
         
         final CharacterLiteral eq = new CharacterLiteral("=", '=');
         final CharacterLiteral x = new CharacterLiteral("x", 'x');
         final CharacterLiteral star = new CharacterLiteral("*", '*');
         final CharacterLiteral eof = new CharacterLiteral("$", '$');
         
-        final NonTerminalSymbol s = grammar.getNonTerminalSymbol("S");
-        final NonTerminalSymbol v = grammar.getNonTerminalSymbol("V");
-        final NonTerminalSymbol e = grammar.getNonTerminalSymbol("E");
+        final NonTerminalSymbol s = new NonTerminal("S");
+        final NonTerminalSymbol v = new NonTerminal("V");
+        final NonTerminalSymbol e = new NonTerminal("E");
         
         grammar.addProduction(s, new TestProductionHandler("S"), v, eq, e);
         grammar.addProduction(s, new TestProductionHandler("S"), e);
