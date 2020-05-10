@@ -75,6 +75,11 @@ public class UrlParserTest {
     private NonTerminalSymbol segmentSequence;
     private NonTerminalSymbol query;
     private NonTerminalSymbol fragment;
+
+    private NonTerminalSymbol pathAbEmpty;
+    private NonTerminalSymbol pathAbsolute;
+    private NonTerminalSymbol pathRootless;
+    private NonTerminalSymbol pathEmpty;
     
     @Test
     @Ignore
@@ -105,10 +110,10 @@ public class UrlParserTest {
         fragment = grammar.getNonTerminalSymbol("fragment");
 
         authority = grammar.getNonTerminalSymbol("authority");
-        final NonTerminalSymbol pathAbEmpty = grammar.getNonTerminalSymbol("path-abempty");
-        final NonTerminalSymbol pathAbsolute = grammar.getNonTerminalSymbol("path-absolute");
-        final NonTerminalSymbol pathRootless = grammar.getNonTerminalSymbol("path-rootless");
-        final NonTerminalSymbol pathEmpty = grammar.getNonTerminalSymbol("path-empty");
+        pathAbEmpty = grammar.getNonTerminalSymbol("path-abempty");
+        pathAbsolute = grammar.getNonTerminalSymbol("path-absolute");
+        pathRootless = grammar.getNonTerminalSymbol("path-rootless");
+        pathEmpty = grammar.getNonTerminalSymbol("path-empty");
 
         userinfo = grammar.getNonTerminalSymbol("userinfo");
         host = grammar.getNonTerminalSymbol("host");
@@ -599,6 +604,20 @@ public class UrlParserTest {
             } catch (final RuntimeException e) {
                 // pass
             }
+            try {
+                final String s = "foo" + String.valueOf(c);
+                parser.parse(new UriLexer(s));
+                Assert.fail(s);
+            } catch (final RuntimeException e) {
+                // pass
+            }
+            try {
+                final String s = String.valueOf(c) + "foo";
+                parser.parse(new UriLexer(s));
+                Assert.fail(s);
+            } catch (final RuntimeException e) {
+                // pass
+            }
         }
     }
     
@@ -616,6 +635,9 @@ public class UrlParserTest {
         Object ast;
         
         ast = parser.parse(new UriLexer(""));
+        ast = parser.parse(new UriLexer("/"));
+        ast = parser.parse(new UriLexer("//"));
+        ast = parser.parse(new UriLexer("///"));
         ast = parser.parse(new UriLexer("/abyz0189%2F-._~:@!$&'()*+,;="));
         ast = parser.parse(new UriLexer("/abyz0189%2F-._~:@!$&'()*+,;=/abyz0189%2F-._~:@!$&'()*+,;="));
         ast = parser.parse(new UriLexer("/abyz0189%2F-._~:@!$&'()*+,;=/abyz0189%2F-._~:@!$&'()*+,;=/abyz0189%2F-._~:@!$&'()*+,;="));
@@ -725,6 +747,64 @@ public class UrlParserTest {
         ast = parser.parse(new UriLexer("https://foo.bar.com/bar/baz"));
         ast = parser.parse(new UriLexer("https://foo.bar.com/bar/baz?abc"));
         ast = parser.parse(new UriLexer("https://foo.bar.com/bar/baz#abc"));
+    }
+    
+    @Test
+    public void testPathEmptySerial() {
+        testPathEmpty(grammar.createParser(pathEmpty, EndOfFile));
+    }
+    
+    @Test
+    public void testPathEmptyParallel() throws InterruptedException, ExecutionException {
+        testPathEmpty(grammar.threadedCreateParser(pathEmpty, EndOfFile, executor));
+    }
+    
+    private void testPathEmpty(final Parser<UriTerminalType> parser) {
+        Object ast;
+        
+        ast = parser.parse(new UriLexer(""));
+        
+        try {
+            ast = parser.parse(new UriLexer("foo"));
+            Assert.fail();
+        } catch (final RuntimeException e) {
+            // pass
+        }
+    }
+    
+    @Test
+    public void testPathAbEmptySerial() {
+        testPathAbEmpty(grammar.createParser(pathAbEmpty, EndOfFile));
+    }
+    
+    @Test
+    public void testAbPathEmptyParallel() throws InterruptedException, ExecutionException {
+        testPathAbEmpty(grammar.threadedCreateParser(pathAbEmpty, EndOfFile, executor));
+    }
+    
+    private void testPathAbEmpty(final Parser<UriTerminalType> parser) {
+        Object ast;
+        
+        ast = parser.parse(new UriLexer(""));
+        ast = parser.parse(new UriLexer("/"));
+        ast = parser.parse(new UriLexer("//"));
+        ast = parser.parse(new UriLexer("///"));
+        ast = parser.parse(new UriLexer("/abyz0189%2F-._~:@!$&'()*+,;="));
+        ast = parser.parse(new UriLexer("/abyz0189%2F-._~:@!$&'()*+,;=/abyz0189%2F-._~:@!$&'()*+,;="));
+        ast = parser.parse(new UriLexer("/abyz0189%2F-._~:@!$&'()*+,;=/abyz0189%2F-._~:@!$&'()*+,;=/abyz0189%2F-._~:@!$&'()*+,;="));
+        
+        try {
+            ast = parser.parse(new UriLexer("foo"));
+            Assert.fail();
+        } catch (final RuntimeException e) {
+            // pass
+        }
+        try {
+            ast = parser.parse(new UriLexer("foo/"));
+            Assert.fail();
+        } catch (final RuntimeException e) {
+            // pass
+        }
     }
 
 }
