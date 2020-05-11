@@ -469,6 +469,11 @@ public class Grammar<T extends TerminalSymbol> {
                 for (final Production production : productions.get(nextNonTerminalSymbol)) {
                     final Item newItem = itemFactory.createItem(nextNonTerminalSymbol, production, 0);
                     
+                    /*
+                     * The new items added need look-ahead sets.  The look-ahead for each item is
+                     * the first set of everything that comes after the next symbol in the item.
+                     */
+                    
                     if (!additions.containsKey(newItem)) {
                         additions.put(newItem, terminalSetFactory.getNewSet());
                     }
@@ -479,11 +484,6 @@ public class Grammar<T extends TerminalSymbol> {
                         additions.get(newItem).addAll(lookaheadSet);
                     }
                 }
-                
-                /*
-                 * The new items added need look-ahead sets.  The look-ahead for each item is
-                 * the first set of everything that comes after the next symbol in the item.
-                 */
             }
             
             changed = false;
