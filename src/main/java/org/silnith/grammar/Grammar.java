@@ -491,10 +491,11 @@ public class Grammar<T extends TerminalSymbol> {
                         final List<Symbol> remainder = Collections.<Symbol>singletonList(lookahead);
                         
                         productionRemainders.add(remainder);
+                        
+                        extracted(additions, newItems, remainder);
                     }
                     
                     for (final List<Symbol> remainder : productionRemainders) {
-                        extracted(additions, newItems, remainder);
                     }
                 }
                 
