@@ -360,10 +360,10 @@ public class Grammar<T extends TerminalSymbol> {
                         }
                     }
                     
-                    final ListIterator<Symbol> forwardIter = productionSymbols.listIterator();
-                    while (forwardIter.hasNext()) {
-                        final int startIndex = forwardIter.nextIndex();
-                        final Symbol startSymbol = forwardIter.next();
+                    final ListIterator<Symbol> rangeStartIter = productionSymbols.listIterator();
+                    while (rangeStartIter.hasNext()) {
+                        final int startIndex = rangeStartIter.nextIndex();
+                        final Symbol startSymbol = rangeStartIter.next();
                         
                         final Set<T> followSetForRangeStart = follow.get(startSymbol);
                         final ListIterator<Symbol> innerIter = productionSymbols.listIterator(startIndex + 1);
