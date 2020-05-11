@@ -510,9 +510,7 @@ public class Grammar<T extends TerminalSymbol> {
                             final Set<T> newSet = terminalSetFactory.getNewSet();
                             additions.put(newItem, newSet);
                         }
-                        for (final T lookahead : lookaheadSet) {
-                            additions.get(newItem).add(lookahead);
-                        }
+                        additions.get(newItem).addAll(lookaheadSet);
                     }
                 }
                 
