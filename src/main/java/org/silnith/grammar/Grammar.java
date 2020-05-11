@@ -353,7 +353,8 @@ public class Grammar<T extends TerminalSymbol> {
                     while (revIter.hasPrevious()) {
                         final Symbol symbol = revIter.previous();
                         final Set<T> followSetForSymbolInProduction = follow.get(symbol);
-                        changed = followSetForSymbolInProduction.addAll(followSetForLeftHandSide) || changed;
+                        final boolean b = followSetForSymbolInProduction.addAll(followSetForLeftHandSide);
+                        changed = b || changed;
                         if (!nullable.contains(symbol)) {
                             break;
                         }
