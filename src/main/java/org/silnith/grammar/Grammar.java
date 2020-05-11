@@ -309,7 +309,19 @@ public class Grammar<T extends TerminalSymbol> {
                 final Set<T> firstSetForLeftHandSide = first.get(leftHandSide);
                 for (final Production production : productions) {
                     final List<Symbol> symbols = production.getSymbols();
-                    boolean changedByProduction = expandFirstSetByProduction(firstSetForLeftHandSide, symbols);
+                    boolean changedByProduction = false;
+                    
+                    for (final Symbol symbol : symbols) {
+                        final Set<T> firstSetForSymbolInProduction = first.get(symbol);
+                        
+                        final boolean addedElementsToFirstSet = firstSetForLeftHandSide.addAll(firstSetForSymbolInProduction);
+                        changedByProduction = addedElementsToFirstSet || changedByProduction;
+                        
+                        if (!nullable.contains(symbol)) {
+                            break;
+                        }
+                    }
+                    
                     changed = changedByProduction || changed;
                 }
             }
@@ -372,32 +384,6 @@ public class Grammar<T extends TerminalSymbol> {
         computeNullable();
         computeFirst();
         computeFollow();
-    }
-    
-    /**
-     * Finds the first set for a sequence of symbols.  This checks for symbols that are
-     * nullable and walks the list of symbols coalescing first sets until it encounters
-     * a symbol that is not nullable, or the list ends.
-     * 
-     * @param firstSet the set that receives the results
-     * @param symbols the list of symbols
-     * @return {@code true} if {@code firstSet} was modified by this method
-     */
-    private boolean expandFirstSetByProduction(final Set<T> firstSet, final List<Symbol> symbols) {
-        boolean changedByProduction = false;
-        
-        for (final Symbol symbol : symbols) {
-            final Set<T> firstSetForSymbolInProduction = first.get(symbol);
-            
-            final boolean addedElementsToFirstSet = firstSet.addAll(firstSetForSymbolInProduction);
-            changedByProduction = addedElementsToFirstSet || changedByProduction;
-            
-            if (!nullable.contains(symbol)) {
-                break;
-            }
-        }
-        
-        return changedByProduction;
     }
     
     private ParserState<T> calculateClosure(final Collection<LookaheadItem<T>> items) {
