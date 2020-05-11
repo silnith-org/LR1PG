@@ -451,16 +451,17 @@ public class Grammar<T extends TerminalSymbol> {
                 final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
                 
                 boolean remainderIsNullable = true;
-                if (nextSymbolIndex < symbols.size()) {
-                    for (final Symbol symbol : symbols.subList(nextSymbolIndex, symbols.size())) {
-                        final Set<T> firstSetForSymbolInProduction = first.get(symbol);
-                        
-                        firstSetOfRemainder.addAll(firstSetForSymbolInProduction);
-                        
-                        if (!nullable.contains(symbol)) {
-                            remainderIsNullable = false;
-                            break;
-                        }
+                /*
+                 * The subList may be an empty list.
+                 */
+                for (final Symbol symbol : symbols.subList(nextSymbolIndex, symbols.size())) {
+                    final Set<T> firstSetForSymbolInProduction = first.get(symbol);
+
+                    firstSetOfRemainder.addAll(firstSetForSymbolInProduction);
+
+                    if (!nullable.contains(symbol)) {
+                        remainderIsNullable = false;
+                        break;
                     }
                 }
 
