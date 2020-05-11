@@ -502,9 +502,7 @@ public class Grammar<T extends TerminalSymbol> {
                      */
                     
                     for (final T lookahead : lookaheadSet) {
-                        final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
-                        
-                        firstSetOfRemainder.add(lookahead);
+                        final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet(Collections.singleton(lookahead));
                         
                         for (final Item newItem : newItems) {
                             final Set<T> lookaheadAdditions = additions.get(newItem);
