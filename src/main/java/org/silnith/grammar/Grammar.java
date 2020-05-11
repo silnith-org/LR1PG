@@ -294,6 +294,7 @@ public class Grammar<T extends TerminalSymbol> {
         first.clear();
         for (final T terminalSymbol : lexicon) {
             final Set<T> newSet = terminalSetFactory.getNewSet(Collections.singleton(terminalSymbol));
+            newSet.add(terminalSymbol);
             first.put(terminalSymbol, newSet);
         }
         for (final NonTerminalSymbol nonTerminalSymbol : nonTerminalSymbols) {
