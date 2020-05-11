@@ -492,7 +492,7 @@ public class Grammar<T extends TerminalSymbol> {
                 final Set<T> lookahead = entry.getValue();
                 
                 final Set<T> set = itemLookaheadMap.get(item);
-                if (set == null) {
+                if (!itemLookaheadMap.containsKey(item)) {
                     itemLookaheadMap.put(item, lookahead);
                     
                     changed = true;
