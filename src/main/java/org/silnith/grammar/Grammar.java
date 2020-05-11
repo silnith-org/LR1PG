@@ -387,31 +387,28 @@ public class Grammar<T extends TerminalSymbol> {
         final List<Symbol> symbols = item.getProduction().getSymbols();
         
         final int nextSymbolIndex = item.getParserPosition() + 1;
+
+        final Set<List<Symbol>> productionRemainders = new HashSet<>();
         
         if (nextSymbolIndex < symbols.size()) {
             final List<Symbol> remainder = symbols.subList(nextSymbolIndex, symbols.size());
-            
-            final Set<List<Symbol>> productionRemainders = new HashSet<>();
             
             for (final T lookahead : lookaheadSet) {
                 final List<Symbol> listCopy = new ArrayList<>(remainder);
                 listCopy.add(lookahead);
                 productionRemainders.add(listCopy);
             }
-            
-            return productionRemainders;
         } else {
             /*
              * The production is completed.  Return the look-aheads.
              */
-            final Set<List<Symbol>> productionRemainders = new HashSet<>();
             
             for (final T lookahead : lookaheadSet) {
                 productionRemainders.add(Collections.<Symbol>singletonList(lookahead));
             }
-            
-            return productionRemainders;
         }
+        
+        return productionRemainders;
     }
     
     /**
@@ -504,6 +501,7 @@ public class Grammar<T extends TerminalSymbol> {
                  * the first set of everything that comes after the next symbol in the item.
                  */
                 final Set<List<Symbol>> remainderList = getProductionRemainders(item, lookaheadSet);
+                
                 for (final List<Symbol> remainder : remainderList) {
                     final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
                     expandFirstSetByProduction(firstSetOfRemainder, remainder);
