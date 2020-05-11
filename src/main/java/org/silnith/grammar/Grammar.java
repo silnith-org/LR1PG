@@ -375,43 +375,6 @@ public class Grammar<T extends TerminalSymbol> {
     }
     
     /**
-     * Given an item and a look-ahead set, get all possible sequences of symbols that could follow
-     * the current symbol in the item.  This is the production from after the current symbol to
-     * the end, appended by each symbol in the look-ahead set.
-     * 
-     * @param item
-     * @param lookaheadSet
-     * @return
-     */
-    private Set<List<Symbol>> getProductionRemainders(final Item item, final Collection<T> lookaheadSet) {
-        final List<Symbol> symbols = item.getProduction().getSymbols();
-        
-        final int nextSymbolIndex = item.getParserPosition() + 1;
-
-        final Set<List<Symbol>> productionRemainders = new HashSet<>();
-        
-        if (nextSymbolIndex < symbols.size()) {
-            final List<Symbol> remainder = symbols.subList(nextSymbolIndex, symbols.size());
-            
-            for (final T lookahead : lookaheadSet) {
-                final List<Symbol> listCopy = new ArrayList<>(remainder);
-                listCopy.add(lookahead);
-                productionRemainders.add(listCopy);
-            }
-        } else {
-            /*
-             * The production is completed.  Return the look-aheads.
-             */
-            
-            for (final T lookahead : lookaheadSet) {
-                productionRemainders.add(Collections.<Symbol>singletonList(lookahead));
-            }
-        }
-        
-        return productionRemainders;
-    }
-    
-    /**
      * Finds the first set for a sequence of symbols.  This checks for symbols that are
      * nullable and walks the list of symbols coalescing first sets until it encounters
      * a symbol that is not nullable, or the list ends.
@@ -497,10 +460,39 @@ public class Grammar<T extends TerminalSymbol> {
                 }
                 
                 /*
+                 * Given an item and a look-ahead set, get all possible sequences of symbols that could follow
+                 * the current symbol in the item.  This is the production from after the current symbol to
+                 * the end, appended by each symbol in the look-ahead set.
+                 */
+                final List<Symbol> symbols = item.getProduction().getSymbols();
+                
+                final int nextSymbolIndex = item.getParserPosition() + 1;
+                
+                final Set<List<Symbol>> productionRemainders = new HashSet<>();
+                
+                if (nextSymbolIndex < symbols.size()) {
+                    final List<Symbol> remainder1 = symbols.subList(nextSymbolIndex, symbols.size());
+                    
+                    for (final T lookahead : lookaheadSet) {
+                        final List<Symbol> listCopy = new ArrayList<>(remainder1);
+                        listCopy.add(lookahead);
+                        productionRemainders.add(listCopy);
+                    }
+                } else {
+                    /*
+                     * The production is completed.  Return the look-aheads.
+                     */
+                    
+                    for (final T lookahead : lookaheadSet) {
+                        productionRemainders.add(Collections.<Symbol>singletonList(lookahead));
+                    }
+                }
+                
+                /*
                  * The new items added need look-ahead sets.  The look-ahead for each item is
                  * the first set of everything that comes after the next symbol in the item.
                  */
-                final Set<List<Symbol>> remainderList = getProductionRemainders(item, lookaheadSet);
+                final Set<List<Symbol>> remainderList = productionRemainders;
                 
                 for (final List<Symbol> remainder : remainderList) {
                     final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
