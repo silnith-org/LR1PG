@@ -480,9 +480,6 @@ public class Grammar<T extends TerminalSymbol> {
                         
                         extracted(additions, newItems, remainder);
                     }
-                    
-                    for (final List<Symbol> remainder : productionRemainders) {
-                    }
                 } else {
                     /*
                      * The production is completed.  Return the look-aheads.
