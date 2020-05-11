@@ -508,10 +508,6 @@ public class Grammar<T extends TerminalSymbol> {
                         
                         firstSetOfRemainder.addAll(firstSetForSymbolInProduction);
                         
-                        if (!nullable.contains(lookahead)) {
-                            break;
-                        }
-                        
                         for (final Item newItem : newItems) {
                             final Set<T> lookaheadAdditions = additions.get(newItem);
                             if (lookaheadAdditions == null) {
