@@ -507,7 +507,7 @@ public class Grammar<T extends TerminalSymbol> {
                             if (lookaheadAdditions == null) {
                                 additions.put(newItem, terminalSetFactory.getNewSet(Collections.singleton(lookahead)));
                             } else {
-                                lookaheadAdditions.addAll(Collections.singleton(lookahead));
+                                lookaheadAdditions.add(lookahead);
                             }
                         }
                     }
