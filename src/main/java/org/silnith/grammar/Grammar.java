@@ -312,9 +312,7 @@ public class Grammar<T extends TerminalSymbol> {
                     boolean changedByProduction = false;
                     
                     for (final Symbol symbol : symbols) {
-                        final Set<T> firstSetForSymbolInProduction = first.get(symbol);
-                        
-                        final boolean addedElementsToFirstSet = firstSetForNonTerminal.addAll(firstSetForSymbolInProduction);
+                        final boolean addedElementsToFirstSet = firstSetForNonTerminal.addAll(first.get(symbol));
                         changedByProduction = addedElementsToFirstSet || changedByProduction;
                         
                         if (!nullable.contains(symbol)) {
