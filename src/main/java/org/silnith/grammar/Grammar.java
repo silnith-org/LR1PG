@@ -487,8 +487,7 @@ public class Grammar<T extends TerminalSymbol> {
 
                     for (final Item newItem : newItems) {
                         if (!additions.containsKey(newItem)) {
-                            final Set<T> copy = terminalSetFactory.getNewSet();
-                            additions.put(newItem, copy);
+                            additions.put(newItem, terminalSetFactory.getNewSet());
                         }
 
                         additions.get(newItem).addAll(firstSetOfRemainder);
@@ -504,8 +503,7 @@ public class Grammar<T extends TerminalSymbol> {
                     
                     for (final Item newItem : newItems) {
                         if (!additions.containsKey(newItem)) {
-                            final Set<T> newSet = terminalSetFactory.getNewSet();
-                            additions.put(newItem, newSet);
+                            additions.put(newItem, terminalSetFactory.getNewSet());
                         }
                         
                         if (allNullable) {
