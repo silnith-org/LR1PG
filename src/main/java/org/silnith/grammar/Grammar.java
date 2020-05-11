@@ -491,13 +491,12 @@ public class Grammar<T extends TerminalSymbol> {
                 final Item item = entry.getKey();
                 final Set<T> lookahead = entry.getValue();
                 
-                final Set<T> set = itemLookaheadMap.get(item);
                 if (!itemLookaheadMap.containsKey(item)) {
                     itemLookaheadMap.put(item, lookahead);
                     
                     changed = true;
                 } else {
-                    final boolean b = set.addAll(lookahead);
+                    final boolean b = itemLookaheadMap.get(item).addAll(lookahead);
                     
                     changed = b || changed;
                 }
