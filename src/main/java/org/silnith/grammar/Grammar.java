@@ -470,22 +470,22 @@ public class Grammar<T extends TerminalSymbol> {
                 
                 if (nextSymbolIndex < symbols.size()) {
                     final List<Symbol> remainder1 = symbols.subList(nextSymbolIndex, symbols.size());
+
+                    final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
+                    
+                    boolean allNullable = true;
+                    for (final Symbol symbol : remainder1) {
+                        final Set<T> firstSetForSymbolInProduction = first.get(symbol);
+                        
+                        firstSetOfRemainder.addAll(firstSetForSymbolInProduction);
+                        
+                        if (!nullable.contains(symbol)) {
+                            allNullable = false;
+                            break;
+                        }
+                    }
                     
                     for (final T lookahead : lookaheadSet) {
-                        final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
-                        
-                        boolean allNullable = true;
-                        for (final Symbol symbol : remainder1) {
-                            final Set<T> firstSetForSymbolInProduction = first.get(symbol);
-                            
-                            firstSetOfRemainder.addAll(firstSetForSymbolInProduction);
-                            
-                            if (!nullable.contains(symbol)) {
-                                allNullable = false;
-                                break;
-                            }
-                        }
-                        
                         final Set<T> copy = terminalSetFactory.getNewSet(firstSetOfRemainder);
                         
                         if (allNullable) {
