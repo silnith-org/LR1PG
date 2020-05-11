@@ -345,7 +345,7 @@ public class Grammar<T extends TerminalSymbol> {
                 final NonTerminalSymbol nonTerminal = entry.getKey();
                 final Set<Production> productions = entry.getValue();
                 
-                final Set<T> followSetForLeftHandSide = follow.get(nonTerminal);
+                final Set<T> nonTerminalFollowSet = follow.get(nonTerminal);
                 
                 for (final Production production : productions) {
                     final List<Symbol> productionSymbols = production.getSymbols();
@@ -353,7 +353,7 @@ public class Grammar<T extends TerminalSymbol> {
                     while (revIter.hasPrevious()) {
                         final Symbol symbol = revIter.previous();
                         final Set<T> followSetForSymbolInProduction = follow.get(symbol);
-                        final boolean b = followSetForSymbolInProduction.addAll(followSetForLeftHandSide);
+                        final boolean b = followSetForSymbolInProduction.addAll(nonTerminalFollowSet);
                         changed = b || changed;
                         if (!nullable.contains(symbol)) {
                             break;
