@@ -490,7 +490,17 @@ public class Grammar<T extends TerminalSymbol> {
                      */
                 }
 
-                extracted(additions, lookaheadSet, newItems, firstSetOfRemainder, allNullable);
+                for (final Item newItem : newItems) {
+                    if (!additions.containsKey(newItem)) {
+                        additions.put(newItem, terminalSetFactory.getNewSet());
+                    }
+                
+                    additions.get(newItem).addAll(firstSetOfRemainder);
+                
+                    if (allNullable) {
+                        additions.get(newItem).addAll(lookaheadSet);
+                    }
+                }
                 
                 /*
                  * The new items added need look-ahead sets.  The look-ahead for each item is
@@ -527,21 +537,6 @@ public class Grammar<T extends TerminalSymbol> {
         }
         
         return parserStateFactory.createInstance(itemSet);
-    }
-
-    private void extracted(final Map<Item, Set<T>> additions, final Set<T> lookaheadSet, final Set<Item> newItems,
-            final Set<T> firstSetOfRemainder, boolean allNullable) {
-        for (final Item newItem : newItems) {
-            if (!additions.containsKey(newItem)) {
-                additions.put(newItem, terminalSetFactory.getNewSet());
-            }
-
-            additions.get(newItem).addAll(firstSetOfRemainder);
-
-            if (allNullable) {
-                additions.get(newItem).addAll(lookaheadSet);
-            }
-        }
     }
 
     /**
