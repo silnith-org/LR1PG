@@ -492,7 +492,6 @@ public class Grammar<T extends TerminalSymbol> {
                         }
                         
                         for (final T lookahead : lookaheadSet) {
-                            final Set<T> newSet = terminalSetFactory.getNewSet();
                             additions.get(newItem).addAll(firstSetOfRemainder);
                             
                             if (allNullable) {
