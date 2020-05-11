@@ -455,9 +455,7 @@ public class Grammar<T extends TerminalSymbol> {
                  * The subList may be an empty list.
                  */
                 for (final Symbol symbol : symbols.subList(nextSymbolIndex, symbols.size())) {
-                    final Set<T> firstSetForSymbolInProduction = first.get(symbol);
-
-                    firstSetOfRemainder.addAll(firstSetForSymbolInProduction);
+                    firstSetOfRemainder.addAll(first.get(symbol));
 
                     if (!nullable.contains(symbol)) {
                         remainderIsNullable = false;
