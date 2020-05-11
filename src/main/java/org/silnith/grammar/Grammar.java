@@ -479,7 +479,28 @@ public class Grammar<T extends TerminalSymbol> {
                         productionRemainders.add(listCopy);
                     }
                     
-                    extracted(additions, newItems, productionRemainders);
+                    for (final List<Symbol> remainder : productionRemainders) {
+                        final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
+                        
+                        for (final Symbol symbol : remainder) {
+                            final Set<T> firstSetForSymbolInProduction = first.get(symbol);
+                            
+                            firstSetOfRemainder.addAll(firstSetForSymbolInProduction);
+                            
+                            if (!nullable.contains(symbol)) {
+                                break;
+                            }
+                        }
+                        
+                        for (final Item newItem : newItems) {
+                            final Set<T> lookaheadAdditions = additions.get(newItem);
+                            if (lookaheadAdditions == null) {
+                                additions.put(newItem, terminalSetFactory.getNewSet(firstSetOfRemainder));
+                            } else {
+                                lookaheadAdditions.addAll(firstSetOfRemainder);
+                            }
+                        }
+                    }
                 } else {
                     /*
                      * The production is completed.  Return the look-aheads.
@@ -489,7 +510,28 @@ public class Grammar<T extends TerminalSymbol> {
                         productionRemainders.add(Collections.<Symbol>singletonList(lookahead));
                     }
                     
-                    extracted(additions, newItems, productionRemainders);
+                    for (final List<Symbol> remainder : productionRemainders) {
+                        final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
+                        
+                        for (final Symbol symbol : remainder) {
+                            final Set<T> firstSetForSymbolInProduction = first.get(symbol);
+                            
+                            firstSetOfRemainder.addAll(firstSetForSymbolInProduction);
+                            
+                            if (!nullable.contains(symbol)) {
+                                break;
+                            }
+                        }
+                        
+                        for (final Item newItem : newItems) {
+                            final Set<T> lookaheadAdditions = additions.get(newItem);
+                            if (lookaheadAdditions == null) {
+                                additions.put(newItem, terminalSetFactory.getNewSet(firstSetOfRemainder));
+                            } else {
+                                lookaheadAdditions.addAll(firstSetOfRemainder);
+                            }
+                        }
+                    }
                 }
                 
                 /*
@@ -529,32 +571,6 @@ public class Grammar<T extends TerminalSymbol> {
         return parserStateFactory.createInstance(itemSet);
     }
 
-    private void extracted(final Map<Item, Set<T>> additions, final Set<Item> newItems,
-            final Set<List<Symbol>> productionRemainders) {
-        for (final List<Symbol> remainder : productionRemainders) {
-            final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
-            
-            for (final Symbol symbol : remainder) {
-                final Set<T> firstSetForSymbolInProduction = first.get(symbol);
-                
-                firstSetOfRemainder.addAll(firstSetForSymbolInProduction);
-                
-                if (!nullable.contains(symbol)) {
-                    break;
-                }
-            }
-            
-            for (final Item newItem : newItems) {
-                final Set<T> lookaheadAdditions = additions.get(newItem);
-                if (lookaheadAdditions == null) {
-                    additions.put(newItem, terminalSetFactory.getNewSet(firstSetOfRemainder));
-                } else {
-                    lookaheadAdditions.addAll(firstSetOfRemainder);
-                }
-            }
-        }
-    }
-    
     /**
      * Calculates a new parser state by taking an existing state and one symbol, finding all items in the state that
      * would be advanced by that symbol, and for those items creating new items that are advanced by that one symbol.
