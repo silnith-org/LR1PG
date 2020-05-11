@@ -293,7 +293,7 @@ public class Grammar<T extends TerminalSymbol> {
     private void computeFirst() {
         first.clear();
         for (final T terminalSymbol : lexicon) {
-            final Set<T> newSet = terminalSetFactory.getNewSet(Collections.singleton(terminalSymbol));
+            final Set<T> newSet = terminalSetFactory.getNewSet();
             newSet.add(terminalSymbol);
             first.put(terminalSymbol, newSet);
         }
