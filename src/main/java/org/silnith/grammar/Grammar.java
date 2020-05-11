@@ -503,6 +503,10 @@ public class Grammar<T extends TerminalSymbol> {
             }
         } while (changed);
         
+        /*
+         * The closure is complete.  Convert it to a proper parser state.
+         */
+        
         final Set<LookaheadItem<T>> itemSet = new HashSet<>(itemLookaheadMap.size());
         for (final Map.Entry<Item, Set<T>> entry : itemLookaheadMap.entrySet()) {
             final Item item = entry.getKey();
