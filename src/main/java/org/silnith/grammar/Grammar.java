@@ -484,15 +484,13 @@ public class Grammar<T extends TerminalSymbol> {
                             break;
                         }
                     }
-
-                    extracted(additions, lookaheadSet, newItems, firstSetOfRemainder, allNullable);
                 } else {
                     /*
                      * The production is completed.  Return the look-aheads.
                      */
-
-                    extracted(additions, lookaheadSet, newItems, firstSetOfRemainder, allNullable);
                 }
+
+                extracted(additions, lookaheadSet, newItems, firstSetOfRemainder, allNullable);
                 
                 /*
                  * The new items added need look-ahead sets.  The look-ahead for each item is
