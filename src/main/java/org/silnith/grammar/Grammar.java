@@ -494,7 +494,7 @@ public class Grammar<T extends TerminalSymbol> {
                             }
                             
                             final Set<T> lookaheadAdditions = additions.get(newItem);
-                            if (lookaheadAdditions == null) {
+                            if (!additions.containsKey(newItem)) {
                                 additions.put(newItem, newSet);
                             } else {
                                 lookaheadAdditions.addAll(newSet);
@@ -509,7 +509,7 @@ public class Grammar<T extends TerminalSymbol> {
                     for (final Item newItem : newItems) {
                         for (final T lookahead : lookaheadSet) {
                             final Set<T> lookaheadAdditions = additions.get(newItem);
-                            if (lookaheadAdditions == null) {
+                            if (!additions.containsKey(newItem)) {
                                 final Set<T> newSet = terminalSetFactory.getNewSet(Collections.singleton(lookahead));
                                 additions.put(newItem, newSet);
                             } else {
