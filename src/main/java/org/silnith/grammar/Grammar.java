@@ -309,18 +309,15 @@ public class Grammar<T extends TerminalSymbol> {
                 final Set<T> firstSetForNonTerminal = first.get(nonTerminal);
                 for (final Production production : productions) {
                     final List<Symbol> symbols = production.getSymbols();
-                    boolean changedByProduction = false;
                     
                     for (final Symbol symbol : symbols) {
                         final boolean addedElementsToFirstSet = firstSetForNonTerminal.addAll(first.get(symbol));
-                        changedByProduction = addedElementsToFirstSet || changedByProduction;
+                        changed = addedElementsToFirstSet || changed;
                         
                         if (!nullable.contains(symbol)) {
                             break;
                         }
                     }
-                    
-                    changed = changedByProduction || changed;
                 }
             }
         } while (changed);
