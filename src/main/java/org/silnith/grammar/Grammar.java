@@ -507,6 +507,8 @@ public class Grammar<T extends TerminalSymbol> {
                         if (!additions.containsKey(newItem)) {
                             additions.put(newItem, terminalSetFactory.getNewSet());
                         }
+
+                        additions.get(newItem).addAll(firstSetOfRemainder);
                         
                         if (allNullable) {
                             additions.get(newItem).addAll(lookaheadSet);
