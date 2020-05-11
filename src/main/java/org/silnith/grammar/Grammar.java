@@ -488,7 +488,9 @@ public class Grammar<T extends TerminalSymbol> {
                      */
                     
                     for (final T lookahead : lookaheadSet) {
-                        productionRemainders.add(Collections.<Symbol>singletonList(lookahead));
+                        final List<Symbol> remainder = Collections.<Symbol>singletonList(lookahead);
+                        
+                        productionRemainders.add(remainder);
                     }
                     
                     for (final List<Symbol> remainder : productionRemainders) {
