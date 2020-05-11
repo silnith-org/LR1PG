@@ -303,10 +303,10 @@ public class Grammar<T extends TerminalSymbol> {
         do {
             changed = false;
             for (final Map.Entry<NonTerminalSymbol, Set<Production>> entry : productions.entrySet()) {
-                final NonTerminalSymbol leftHandSide = entry.getKey();
+                final NonTerminalSymbol nonTerminal = entry.getKey();
                 final Set<Production> productions = entry.getValue();
                 
-                final Set<T> firstSetForLeftHandSide = first.get(leftHandSide);
+                final Set<T> firstSetForLeftHandSide = first.get(nonTerminal);
                 for (final Production production : productions) {
                     final List<Symbol> symbols = production.getSymbols();
                     boolean changedByProduction = false;
