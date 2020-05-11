@@ -504,7 +504,7 @@ public class Grammar<T extends TerminalSymbol> {
                     for (final T lookahead : lookaheadSet) {
                         final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
                         
-                        final Set<T> firstSetForSymbolInProduction = first.get(lookahead);
+                        final Set<T> firstSetForSymbolInProduction = Collections.singleton(lookahead);
                         
                         firstSetOfRemainder.addAll(firstSetForSymbolInProduction);
                         
