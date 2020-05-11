@@ -352,8 +352,8 @@ public class Grammar<T extends TerminalSymbol> {
                     final ListIterator<Symbol> revIter = productionSymbols.listIterator(productionSymbols.size());
                     while (revIter.hasPrevious()) {
                         final Symbol symbol = revIter.previous();
-                        final Set<T> followSetForSymbolInProduction = follow.get(symbol);
-                        final boolean b = followSetForSymbolInProduction.addAll(nonTerminalFollowSet);
+                        
+                        final boolean b = follow.get(symbol).addAll(nonTerminalFollowSet);
                         changed = b || changed;
                         if (!nullable.contains(symbol)) {
                             break;
