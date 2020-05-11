@@ -495,7 +495,8 @@ public class Grammar<T extends TerminalSymbol> {
                             }
                             
                             if (!additions.containsKey(newItem)) {
-                                final Set<T> copy = terminalSetFactory.getNewSet(newSet);
+                                final Set<T> copy = terminalSetFactory.getNewSet();
+                                copy.addAll(newSet);
                                 additions.put(newItem, copy);
                             } else {
                                 additions.get(newItem).addAll(newSet);
