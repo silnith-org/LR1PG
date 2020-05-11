@@ -494,9 +494,7 @@ public class Grammar<T extends TerminalSymbol> {
                         additions.get(newItem).addAll(firstSetOfRemainder);
 
                         if (allNullable) {
-                            for (final T lookahead : lookaheadSet) {
-                                additions.get(newItem).add(lookahead);
-                            }
+                            additions.get(newItem).addAll(lookaheadSet);
                         }
                     }
                 } else {
