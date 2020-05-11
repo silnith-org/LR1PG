@@ -484,9 +484,7 @@ public class Grammar<T extends TerminalSymbol> {
                 for (final Production production : productionsForNextSymbol) {
                     final Item newItem = itemFactory.createItem(nextNonTerminalSymbol, production, 0);
                     newItems.add(newItem);
-                }
-                
-                for (final Item newItem : newItems) {
+                    
                     if (!additions.containsKey(newItem)) {
                         additions.put(newItem, terminalSetFactory.getNewSet());
                     }
