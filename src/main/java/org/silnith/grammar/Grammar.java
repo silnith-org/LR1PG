@@ -486,18 +486,20 @@ public class Grammar<T extends TerminalSymbol> {
                             }
                         }
                         
+                        final Set<T> copy = firstSetOfRemainder;
+                        
                         if (allNullable) {
                             final Set<T> firstSetForSymbolInProduction = first.get(lookahead);
                             
-                            firstSetOfRemainder.addAll(firstSetForSymbolInProduction);
+                            copy.addAll(firstSetForSymbolInProduction);
                         }
                         
                         for (final Item newItem : newItems) {
                             final Set<T> lookaheadAdditions = additions.get(newItem);
                             if (lookaheadAdditions == null) {
-                                additions.put(newItem, terminalSetFactory.getNewSet(firstSetOfRemainder));
+                                additions.put(newItem, terminalSetFactory.getNewSet(copy));
                             } else {
-                                lookaheadAdditions.addAll(firstSetOfRemainder);
+                                lookaheadAdditions.addAll(copy);
                             }
                         }
                     }
