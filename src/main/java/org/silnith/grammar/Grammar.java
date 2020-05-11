@@ -473,15 +473,14 @@ public class Grammar<T extends TerminalSymbol> {
                      * The new items added need look-ahead sets.  The look-ahead for each item is
                      * the first set of everything that comes after the next symbol in the item.
                      */
-                    
                     if (!additions.containsKey(newItem)) {
                         additions.put(newItem, terminalSetFactory.getNewSet());
                     }
-                
-                    additions.get(newItem).addAll(firstSetOfRemainder);
-                
+                    final Set<T> newItemLookahead = additions.get(newItem);
+                    
+                    newItemLookahead.addAll(firstSetOfRemainder);
                     if (remainderIsNullable) {
-                        additions.get(newItem).addAll(lookaheadSet);
+                        newItemLookahead.addAll(lookaheadSet);
                     }
                 }
             }
