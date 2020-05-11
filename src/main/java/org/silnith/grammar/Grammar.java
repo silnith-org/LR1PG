@@ -467,13 +467,13 @@ public class Grammar<T extends TerminalSymbol> {
                 final List<Symbol> symbols = item.getProduction().getSymbols();
                 
                 final int nextSymbolIndex = item.getParserPosition() + 1;
-                
+
+                boolean allNullable = true;
                 if (nextSymbolIndex < symbols.size()) {
                     final List<Symbol> remainder1 = symbols.subList(nextSymbolIndex, symbols.size());
 
                     final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
                     
-                    boolean allNullable = true;
                     for (final Symbol symbol : remainder1) {
                         final Set<T> firstSetForSymbolInProduction = first.get(symbol);
                         
