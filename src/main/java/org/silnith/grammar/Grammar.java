@@ -478,6 +478,8 @@ public class Grammar<T extends TerminalSymbol> {
                         listCopy.add(lookahead);
                         productionRemainders.add(listCopy);
                     }
+                    
+                    extracted(additions, newItems, productionRemainders);
                 } else {
                     /*
                      * The production is completed.  Return the look-aheads.
@@ -486,13 +488,14 @@ public class Grammar<T extends TerminalSymbol> {
                     for (final T lookahead : lookaheadSet) {
                         productionRemainders.add(Collections.<Symbol>singletonList(lookahead));
                     }
+                    
+                    extracted(additions, newItems, productionRemainders);
                 }
                 
                 /*
                  * The new items added need look-ahead sets.  The look-ahead for each item is
                  * the first set of everything that comes after the next symbol in the item.
                  */
-                extracted(additions, newItems, productionRemainders);
             }
             
             changed = false;
