@@ -311,8 +311,8 @@ public class Grammar<T extends TerminalSymbol> {
                 final Set<T> firstSet = first.get(nonTerminal);
                 for (final Production production : productions) {
                     for (final Symbol symbol : production.getSymbols()) {
-                        final boolean addedElementsToFirstSet = firstSet.addAll(first.get(symbol));
-                        changed = addedElementsToFirstSet || changed;
+                        final boolean addedElements = firstSet.addAll(first.get(symbol));
+                        changed = addedElements || changed;
                         
                         if (!nullable.contains(symbol)) {
                             /*
