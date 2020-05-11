@@ -475,7 +475,26 @@ public class Grammar<T extends TerminalSymbol> {
                         final List<Symbol> remainder = new ArrayList<>(remainder1);
                         remainder.add(lookahead);
                         
-                        extracted(additions, newItems, remainder);
+                        final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
+                        
+                        for (final Symbol symbol : remainder) {
+                            final Set<T> firstSetForSymbolInProduction = first.get(symbol);
+                            
+                            firstSetOfRemainder.addAll(firstSetForSymbolInProduction);
+                            
+                            if (!nullable.contains(symbol)) {
+                                break;
+                            }
+                        }
+                        
+                        for (final Item newItem : newItems) {
+                            final Set<T> lookaheadAdditions = additions.get(newItem);
+                            if (lookaheadAdditions == null) {
+                                additions.put(newItem, terminalSetFactory.getNewSet(firstSetOfRemainder));
+                            } else {
+                                lookaheadAdditions.addAll(firstSetOfRemainder);
+                            }
+                        }
                     }
                 } else {
                     /*
@@ -485,7 +504,26 @@ public class Grammar<T extends TerminalSymbol> {
                     for (final T lookahead : lookaheadSet) {
                         final List<Symbol> remainder = Collections.<Symbol>singletonList(lookahead);
                         
-                        extracted(additions, newItems, remainder);
+                        final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
+                        
+                        for (final Symbol symbol : remainder) {
+                            final Set<T> firstSetForSymbolInProduction = first.get(symbol);
+                            
+                            firstSetOfRemainder.addAll(firstSetForSymbolInProduction);
+                            
+                            if (!nullable.contains(symbol)) {
+                                break;
+                            }
+                        }
+                        
+                        for (final Item newItem : newItems) {
+                            final Set<T> lookaheadAdditions = additions.get(newItem);
+                            if (lookaheadAdditions == null) {
+                                additions.put(newItem, terminalSetFactory.getNewSet(firstSetOfRemainder));
+                            } else {
+                                lookaheadAdditions.addAll(firstSetOfRemainder);
+                            }
+                        }
                     }
                 }
                 
@@ -524,29 +562,6 @@ public class Grammar<T extends TerminalSymbol> {
         }
         
         return parserStateFactory.createInstance(itemSet);
-    }
-
-    private void extracted(final Map<Item, Set<T>> additions, final Set<Item> newItems, final List<Symbol> remainder) {
-        final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
-        
-        for (final Symbol symbol : remainder) {
-            final Set<T> firstSetForSymbolInProduction = first.get(symbol);
-            
-            firstSetOfRemainder.addAll(firstSetForSymbolInProduction);
-            
-            if (!nullable.contains(symbol)) {
-                break;
-            }
-        }
-        
-        for (final Item newItem : newItems) {
-            final Set<T> lookaheadAdditions = additions.get(newItem);
-            if (lookaheadAdditions == null) {
-                additions.put(newItem, terminalSetFactory.getNewSet(firstSetOfRemainder));
-            } else {
-                lookaheadAdditions.addAll(firstSetOfRemainder);
-            }
-        }
     }
 
     /**
