@@ -484,10 +484,6 @@ public class Grammar<T extends TerminalSymbol> {
                             break;
                         }
                     }
-                } else {
-                    /*
-                     * The production is completed.  Return the look-aheads.
-                     */
                 }
 
                 for (final Item newItem : newItems) {
