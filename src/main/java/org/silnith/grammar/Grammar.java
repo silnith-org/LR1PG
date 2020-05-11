@@ -402,13 +402,14 @@ public class Grammar<T extends TerminalSymbol> {
         /*
          * Copy the items in the input set to a new map keyed by item
          * where the value is the look-ahead set for that item.
+         * These look-ahead sets will be for the new state and are modified in this method.
+         * Therefore, allocate new sets initialized to the existing sets.
          */
         for (final LookaheadItem<T> lookaheadItem : items) {
             final Item item = lookaheadItem.getItem();
             final Set<T> lookaheadSet = lookaheadItem.getLookaheadSet();
             
-            final Set<T> newSet = terminalSetFactory.getNewSet(lookaheadSet);
-            itemLookaheadMap.put(item, newSet);
+            itemLookaheadMap.put(item, terminalSetFactory.getNewSet(lookaheadSet));
         }
 
         final Map<Item, Set<T>> additions = new HashMap<Item, Set<T>>();
