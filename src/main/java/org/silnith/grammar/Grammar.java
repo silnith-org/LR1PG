@@ -310,13 +310,14 @@ public class Grammar<T extends TerminalSymbol> {
                 
                 final Set<T> firstSetForNonTerminal = first.get(nonTerminal);
                 for (final Production production : productions) {
-                    final List<Symbol> symbols = production.getSymbols();
-                    
-                    for (final Symbol symbol : symbols) {
+                    for (final Symbol symbol : production.getSymbols()) {
                         final boolean addedElementsToFirstSet = firstSetForNonTerminal.addAll(first.get(symbol));
                         changed = addedElementsToFirstSet || changed;
                         
                         if (!nullable.contains(symbol)) {
+                            /*
+                             * Break inner loop only, continue outer loop.
+                             */
                             break;
                         }
                     }
