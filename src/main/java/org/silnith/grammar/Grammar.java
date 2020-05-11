@@ -364,12 +364,13 @@ public class Grammar<T extends TerminalSymbol> {
                     while (forwardIter.hasNext()) {
                         final int startIndex = forwardIter.nextIndex();
                         final Symbol startSymbol = forwardIter.next();
+                        
                         final Set<T> followSetForRangeStart = follow.get(startSymbol);
                         final ListIterator<Symbol> innerIter = productionSymbols.listIterator(startIndex + 1);
                         while (innerIter.hasNext()) {
                             final Symbol endSymbol = innerIter.next();
-                            final Set<T> firstSetForRangeEnd = first.get(endSymbol);
-                            followSetForRangeStart.addAll(firstSetForRangeEnd);
+                            
+                            followSetForRangeStart.addAll(first.get(endSymbol));
                             if (!nullable.contains(endSymbol)) {
                                 break;
                             }
