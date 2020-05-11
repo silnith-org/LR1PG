@@ -477,10 +477,11 @@ public class Grammar<T extends TerminalSymbol> {
                         final List<Symbol> remainder = new ArrayList<>(remainder1);
                         remainder.add(lookahead);
                         productionRemainders.add(remainder);
+                        
+                        extracted(additions, newItems, remainder);
                     }
                     
                     for (final List<Symbol> remainder : productionRemainders) {
-                        extracted(additions, newItems, remainder);
                     }
                 } else {
                     /*
