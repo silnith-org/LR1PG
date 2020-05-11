@@ -308,10 +308,10 @@ public class Grammar<T extends TerminalSymbol> {
                 final NonTerminalSymbol nonTerminal = entry.getKey();
                 final Set<Production> productions = entry.getValue();
                 
-                final Set<T> firstSetForNonTerminal = first.get(nonTerminal);
+                final Set<T> firstSet = first.get(nonTerminal);
                 for (final Production production : productions) {
                     for (final Symbol symbol : production.getSymbols()) {
-                        final boolean addedElementsToFirstSet = firstSetForNonTerminal.addAll(first.get(symbol));
+                        final boolean addedElementsToFirstSet = firstSet.addAll(first.get(symbol));
                         changed = addedElementsToFirstSet || changed;
                         
                         if (!nullable.contains(symbol)) {
