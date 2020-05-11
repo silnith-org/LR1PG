@@ -370,7 +370,7 @@ public class Grammar<T extends TerminalSymbol> {
                         while (rangeEndIter.hasNext()) {
                             final Symbol endSymbol = rangeEndIter.next();
                             
-                            followSet.addAll(first.get(endSymbol));
+                            final boolean b = followSet.addAll(first.get(endSymbol));
                             if (!nullable.contains(endSymbol)) {
                                 break;
                             }
