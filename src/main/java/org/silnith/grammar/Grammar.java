@@ -343,8 +343,9 @@ public class Grammar<T extends TerminalSymbol> {
             changed = false;
             for (final Map.Entry<NonTerminalSymbol, Set<Production>> entry : productions.entrySet()) {
                 final NonTerminalSymbol nonTerminal = entry.getKey();
-                final Set<T> followSetForLeftHandSide = follow.get(nonTerminal);
                 final Set<Production> productions = entry.getValue();
+                
+                final Set<T> followSetForLeftHandSide = follow.get(nonTerminal);
                 
                 for (final Production production : productions) {
                     final List<Symbol> productionSymbols = production.getSymbols();
