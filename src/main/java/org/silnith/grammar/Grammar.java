@@ -493,13 +493,11 @@ public class Grammar<T extends TerminalSymbol> {
                         
                         for (final T lookahead : lookaheadSet) {
                             final Set<T> newSet = terminalSetFactory.getNewSet();
-                            newSet.addAll(firstSetOfRemainder);
+                            additions.get(newItem).addAll(firstSetOfRemainder);
                             
                             if (allNullable) {
-                                newSet.add(lookahead);
+                                additions.get(newItem).add(lookahead);
                             }
-                            
-                            additions.get(newItem).addAll(newSet);
                         }
                     }
                 } else {
