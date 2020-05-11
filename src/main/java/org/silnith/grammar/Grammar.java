@@ -371,6 +371,7 @@ public class Grammar<T extends TerminalSymbol> {
                             final Symbol endSymbol = rangeEndIter.next();
                             
                             final boolean b = followSet.addAll(first.get(endSymbol));
+                            changed = b || changed;
                             if (!nullable.contains(endSymbol)) {
                                 break;
                             }
