@@ -474,9 +474,9 @@ public class Grammar<T extends TerminalSymbol> {
                     final List<Symbol> remainder1 = symbols.subList(nextSymbolIndex, symbols.size());
                     
                     for (final T lookahead : lookaheadSet) {
-                        final List<Symbol> listCopy = new ArrayList<>(remainder1);
-                        listCopy.add(lookahead);
-                        productionRemainders.add(listCopy);
+                        final List<Symbol> remainder = new ArrayList<>(remainder1);
+                        remainder.add(lookahead);
+                        productionRemainders.add(remainder);
                     }
                     
                     for (final List<Symbol> remainder : productionRemainders) {
