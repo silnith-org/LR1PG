@@ -492,9 +492,7 @@ public class Grammar<T extends TerminalSymbol> {
                  * The new items added need look-ahead sets.  The look-ahead for each item is
                  * the first set of everything that comes after the next symbol in the item.
                  */
-                final Set<List<Symbol>> remainderList = productionRemainders;
-                
-                for (final List<Symbol> remainder : remainderList) {
+                for (final List<Symbol> remainder : productionRemainders) {
                     final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
                     
                     for (final Symbol symbol : remainder) {
