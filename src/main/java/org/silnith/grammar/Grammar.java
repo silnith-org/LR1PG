@@ -486,6 +486,11 @@ public class Grammar<T extends TerminalSymbol> {
                     }
 
                     for (final Item newItem : newItems) {
+                        if (!additions.containsKey(newItem)) {
+                            final Set<T> copy = terminalSetFactory.getNewSet();
+                            additions.put(newItem, copy);
+                        }
+                        
                         for (final T lookahead : lookaheadSet) {
                             final Set<T> newSet = terminalSetFactory.getNewSet();
                             newSet.addAll(firstSetOfRemainder);
@@ -494,10 +499,6 @@ public class Grammar<T extends TerminalSymbol> {
                                 newSet.add(lookahead);
                             }
                             
-                            if (!additions.containsKey(newItem)) {
-                                final Set<T> copy = terminalSetFactory.getNewSet();
-                                additions.put(newItem, copy);
-                            }
                             additions.get(newItem).addAll(newSet);
                         }
                     }
