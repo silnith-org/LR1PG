@@ -9,10 +9,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 
 /**
@@ -68,149 +66,6 @@ public class Grammar<T extends TerminalSymbol> {
 
     private static final NonTerminalSymbol START = new StartSymbol();
     
-    protected class NullableSetComputer implements Callable<Set<NonTerminalSymbol>> {
-        
-        private final NonTerminalSymbol nonTerminalSymbol;
-        
-        private final Production production;
-    
-        public NullableSetComputer(final NonTerminalSymbol nonTerminalSymbol, final Production production) {
-            super();
-            this.nonTerminalSymbol = nonTerminalSymbol;
-            this.production = production;
-        }
-    
-        @Override
-        public Set<NonTerminalSymbol> call() throws Exception {
-            if (nullable.containsAll(production.getSymbols())) {
-                return Collections.singleton(nonTerminalSymbol);
-            } else {
-                return Collections.emptySet();
-            }
-        }
-        
-    }
-
-    protected class FirstSetComputer implements Callable<Map<NonTerminalSymbol, Set<T>>> {
-        
-        private final NonTerminalSymbol nonTerminalSymbol;
-        
-        private final Production production;
-    
-        public FirstSetComputer(final NonTerminalSymbol nonTerminalSymbol, final Production production) {
-            super();
-            this.nonTerminalSymbol = nonTerminalSymbol;
-            this.production = production;
-        }
-    
-        @Override
-        public Map<NonTerminalSymbol, Set<T>> call() throws Exception {
-            final Set<T> firstSet = terminalSetFactory.getNewSet();
-            
-            for (final Symbol symbol : production.getSymbols()) {
-                firstSet.addAll(first.get(symbol));
-                
-                if (!nullable.contains(symbol)) {
-                    break;
-                }
-            }
-            
-            return Collections.singletonMap(nonTerminalSymbol, firstSet);
-        }
-        
-    }
-
-    private class FollowSetComputer implements Callable<Map<Symbol, Set<T>>> {
-        
-        private final NonTerminalSymbol nonTerminalSymbol;
-        
-        private final Production production;
-        
-        public FollowSetComputer(final NonTerminalSymbol nonTerminalSymbol, final Production production) {
-            super();
-            this.nonTerminalSymbol = nonTerminalSymbol;
-            this.production = production;
-        }
-        
-        @Override
-        public Map<Symbol, Set<T>> call() throws Exception {
-            final Map<Symbol, Set<T>> followSetAdditions = new HashMap<>();
-            
-            followSetAdditions.put(nonTerminalSymbol, terminalSetFactory.getNewSet());
-            for (final Symbol symbol : production.getSymbols()) {
-                /*
-                 * If the same symbol appears more than once in the production this will overwrite the previous set.
-                 * Don't care.
-                 */
-                followSetAdditions.put(symbol, terminalSetFactory.getNewSet());
-            }
-            
-            final Set<T> nonTerminalFollowSet = follow.get(nonTerminalSymbol);
-            
-            final List<Symbol> productionSymbols = production.getSymbols();
-            final ListIterator<Symbol> revIter = productionSymbols.listIterator(productionSymbols.size());
-            while (revIter.hasPrevious()) {
-                final Symbol symbol = revIter.previous();
-                
-                final Set<T> additionsForSymbol = followSetAdditions.get(symbol);
-                additionsForSymbol.addAll(nonTerminalFollowSet);
-                
-                if (!nullable.contains(symbol)) {
-                    break;
-                }
-            }
-            
-            final ListIterator<Symbol> forwardIter = productionSymbols.listIterator();
-            while (forwardIter.hasNext()) {
-                final int startIndex = forwardIter.nextIndex();
-                final Symbol startSymbol = forwardIter.next();
-                
-                final Set<T> additionsForSymbol = followSetAdditions.get(startSymbol);
-                
-                final ListIterator<Symbol> innerIter = productionSymbols.listIterator(startIndex + 1);
-                while (innerIter.hasNext()) {
-                    final Symbol endSymbol = innerIter.next();
-                    
-                    additionsForSymbol.addAll(first.get(endSymbol));
-                    
-                    if (!nullable.contains(endSymbol)) {
-                        break;
-                    }
-                }
-            }
-            
-            return followSetAdditions;
-        }
-        
-    }
-
-    private class ParserStateComputer implements Callable<Edge<T>> {
-        
-        private final ParserState<T> parserState;
-        
-        private final Set<LookaheadItem<T>> stateItems;
-        
-        private final LookaheadItem<T> lookaheadItem;
-    
-        public ParserStateComputer(final ParserState<T> parserState, final Set<LookaheadItem<T>> stateItems,
-                final LookaheadItem<T> lookaheadItem) {
-            super();
-            this.parserState = parserState;
-            this.stateItems = stateItems;
-            this.lookaheadItem = lookaheadItem;
-        }
-    
-        @Override
-        public Edge<T> call() throws Exception {
-            final Item item = lookaheadItem.getItem();
-            final Symbol nextSymbol = item.getNextSymbol();
-            final ParserState<T> newParserState = calculateGoto(stateItems, nextSymbol);
-            final Edge<T> newEdge = edgeFactory.createInstance(parserState, nextSymbol, newParserState);
-            return newEdge;
-        }
-        
-    }
-
     private final ItemFactory itemFactory;
 
     private final LookaheadItemFactory<T> lookaheadItemFactory;
@@ -519,6 +374,15 @@ public class Grammar<T extends TerminalSymbol> {
         computeFollow();
     }
     
+    /**
+     * Given an item and a look-ahead set, get all possible sequences of symbols that could follow
+     * the current symbol in the item.  This is the production from after the current symbol to
+     * the end, appended by each symbol in the look-ahead set.
+     * 
+     * @param item
+     * @param lookaheadSet
+     * @return
+     */
     private Set<List<Symbol>> getProductionRemainders(final Item item, final Collection<T> lookaheadSet) {
         final List<Symbol> symbols = item.getProduction().getSymbols();
         
@@ -575,17 +439,28 @@ public class Grammar<T extends TerminalSymbol> {
         
         return changedByProduction;
     }
-
+    
     private ParserState<T> calculateClosure(final Collection<LookaheadItem<T>> items) {
         /*
          * The canonical algorithm creates look-ahead items that are composed of a single item
          * and a single look-ahead terminal.  This modifies the classic algorithm by consolidating
          * identical items to a single item with a set of look-ahead terminals.
+         * 
+         * Since all the items are part of a single parser state, they will all share the same
+         * outbound edges.  Therefore, this optimization causes no loss of fidelity in the
+         * resulting parser.
          */
         final Map<Item, Set<T>> itemLookaheadMap = new HashMap<>();
+        /*
+         * Copy the items in the input set to a new map keyed by item
+         * where the value is the look-ahead set for that item.
+         */
         for (final LookaheadItem<T> lookaheadItem : items) {
-            final Set<T> newSet = terminalSetFactory.getNewSet(lookaheadItem.getLookaheadSet());
-            itemLookaheadMap.put(lookaheadItem.getItem(), newSet);
+            final Item item = lookaheadItem.getItem();
+            final Set<T> lookaheadSet = lookaheadItem.getLookaheadSet();
+            
+            final Set<T> newSet = terminalSetFactory.getNewSet(lookaheadSet);
+            itemLookaheadMap.put(item, newSet);
         }
 
         final Map<Item, Set<T>> additions = new HashMap<Item, Set<T>>();
@@ -594,9 +469,14 @@ public class Grammar<T extends TerminalSymbol> {
         do {
             additions.clear();
             
+            /*
+             * Go through all the items in the nascent parser state.
+             * If the next symbol in an item is a non-terminal, then all productions that can be
+             * reduced to that non-terminal need to be added to the potential parser state.
+             */
             for (final Map.Entry<Item, Set<T>> entry : itemLookaheadMap.entrySet()) {
                 final Item item = entry.getKey();
-                final Set<T> value = entry.getValue();
+                final Set<T> lookaheadSet = entry.getValue();
                 
                 if (item.isComplete()) {
                     continue;
@@ -610,23 +490,30 @@ public class Grammar<T extends TerminalSymbol> {
                 final NonTerminalSymbol nextNonTerminalSymbol = (NonTerminalSymbol) nextSymbol;
                 final Set<Production> productionsForNextSymbol = productions.get(nextNonTerminalSymbol);
                 
+                /*
+                 * Add all the productions for the non-terminal to the parser state.
+                 */
                 final Set<Item> newItems = new HashSet<>();
                 for (final Production production : productionsForNextSymbol) {
                     final Item newItem = itemFactory.createItem(nextNonTerminalSymbol, production, 0);
                     newItems.add(newItem);
                 }
                 
-                final Set<List<Symbol>> remainderList = getProductionRemainders(item, value);
+                /*
+                 * The new items added need look-ahead sets.  The look-ahead for each item is
+                 * the first set of everything that comes after the next symbol in the item.
+                 */
+                final Set<List<Symbol>> remainderList = getProductionRemainders(item, lookaheadSet);
                 for (final List<Symbol> remainder : remainderList) {
                     final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
                     expandFirstSetByProduction(firstSetOfRemainder, remainder);
                     
                     for (final Item newItem : newItems) {
-                        final Set<T> lookaheadSet = additions.get(newItem);
-                        if (lookaheadSet == null) {
+                        final Set<T> lookaheadAdditions = additions.get(newItem);
+                        if (lookaheadAdditions == null) {
                             additions.put(newItem, terminalSetFactory.getNewSet(firstSetOfRemainder));
                         } else {
-                            lookaheadSet.addAll(firstSetOfRemainder);
+                            lookaheadAdditions.addAll(firstSetOfRemainder);
                         }
                     }
                 }
@@ -663,6 +550,15 @@ public class Grammar<T extends TerminalSymbol> {
         return parserStateFactory.createInstance(itemSet);
     }
     
+    /**
+     * Calculates a new parser state by taking an existing state and one symbol, finding all items in the state that
+     * would be advanced by that symbol, and for those items creating new items that are advanced by that one symbol.
+     * The set of new items that have been advanced are combined into a new parser state.
+     * 
+     * @param itemSet the existing parser state items.
+     * @param symbol the symbol to use to advance items
+     * @return a new parser state that is the existing parser state advanced by the symbol
+     */
     private ParserState<T> calculateGoto(final Collection<LookaheadItem<T>> itemSet, final Symbol symbol) {
         final Set<LookaheadItem<T>> newItemSet = new HashSet<>(itemSet.size());
         
@@ -670,6 +566,7 @@ public class Grammar<T extends TerminalSymbol> {
          * Go through the look-ahead item set, find the items that would be advanced by the given symbol.
          * Create new items for each of those that are advanced by one parse position.
          */
+        // simple enough not to parallelize
         for (final LookaheadItem<T> lookaheadItem : itemSet) {
             final Item item = lookaheadItem.getItem();
             if (item.isComplete()) {
@@ -705,6 +602,9 @@ public class Grammar<T extends TerminalSymbol> {
                 /*
                  * For each production + parse position + lookahead in the parser state...
                  */
+                /*
+                 * Find all symbols that could advance any one of the items in the state.
+                 */
                 final Set<Symbol> relevantSymbols = new HashSet<>();
                 for (final LookaheadItem<T> lookaheadItem : stateItems) {
                     final Item item = lookaheadItem.getItem();
@@ -716,7 +616,12 @@ public class Grammar<T extends TerminalSymbol> {
                     
                     relevantSymbols.add(nextSymbol);
                 }
+                
                 relevantSymbols.remove(endOfFileSymbol);
+                
+                /*
+                 * For each symbol that could advance an item...
+                 */
                 for (final Symbol symbol : relevantSymbols) {
                     /*
                      * Find the closure of all items that would be advanced by the next symbol in the current item.
@@ -787,177 +692,6 @@ public class Grammar<T extends TerminalSymbol> {
         return parser;
     }
 
-    private void threadedComputeNullable(final ExecutorService executorService) throws InterruptedException, ExecutionException {
-        nullable.clear();
-    
-        final List<Callable<Set<NonTerminalSymbol>>> tasks = new ArrayList<>();
-        boolean changed;
-        do {
-            tasks.clear();
-            
-            for (final Map.Entry<NonTerminalSymbol, Set<Production>> entry : productions.entrySet()) {
-                final NonTerminalSymbol nonTerminalSymbol = entry.getKey();
-                final Set<Production> productionSet = entry.getValue();
-    
-                if (nullable.contains(nonTerminalSymbol)) {
-                    continue;
-                }
-                for (final Production production : productionSet) {
-                    final NullableSetComputer nullableSetComputer = new NullableSetComputer(nonTerminalSymbol, production);
-                    
-                    tasks.add(nullableSetComputer);
-                }
-            }
-            
-            final List<Future<Set<NonTerminalSymbol>>> futures = executorService.invokeAll(tasks);
-    
-            changed = false;
-            
-            for (final Future<Set<NonTerminalSymbol>> future : futures) {
-                final Set<NonTerminalSymbol> set = future.get();
-                
-                final boolean b = nullable.addAll(set);
-                
-                changed = b || changed;
-            }
-        } while (changed);
-    }
-
-    private void threadedComputeFirstSet(final ExecutorService executorService) throws InterruptedException, ExecutionException {
-        first.clear();
-        for (final T terminalSymbol : lexicon) {
-            first.put(terminalSymbol, terminalSetFactory.getNewSet(Collections.singleton(terminalSymbol)));
-        }
-        for (final NonTerminalSymbol nonTerminalSymbol : nonTerminalSymbols) {
-            first.put(nonTerminalSymbol, terminalSetFactory.getNewSet());
-        }
-        
-        final List<FirstSetComputer> tasks = new ArrayList<>();
-        boolean changed;
-        do {
-            tasks.clear();
-            
-            for (final Map.Entry<NonTerminalSymbol, Set<Production>> entry : productions.entrySet()) {
-                final NonTerminalSymbol nonTerminalSymbol = entry.getKey();
-                final Set<Production> productionSet = entry.getValue();
-                
-                for (final Production production : productionSet) {
-                    final FirstSetComputer firstSetComputer = new FirstSetComputer(nonTerminalSymbol, production);
-                    tasks.add(firstSetComputer);
-                }
-            }
-            
-            final List<Future<Map<NonTerminalSymbol, Set<T>>>> futures = executorService.invokeAll(tasks);
-            
-            changed = false;
-            
-            for (final Future<Map<NonTerminalSymbol, Set<T>>> future : futures) {
-                final Map<NonTerminalSymbol, Set<T>> firstSetAdditions = future.get();
-                
-                for (final Map.Entry<NonTerminalSymbol, Set<T>> entry : firstSetAdditions.entrySet()) {
-                    final NonTerminalSymbol nonTerminalSymbol = entry.getKey();
-                    final Set<T> firstSet = entry.getValue();
-                    
-                    final boolean b = first.get(nonTerminalSymbol).addAll(firstSet);
-                    
-                    changed = b || changed;
-                }
-            }
-        } while (changed);
-    }
-
-    private void threadedComputeFollowSet(final ExecutorService executorService) throws InterruptedException, ExecutionException {
-        follow.clear();
-        for (final T terminalSymbol : lexicon) {
-            follow.put(terminalSymbol, terminalSetFactory.getNewSet());
-        }
-        for (final NonTerminalSymbol nonTerminalSymbol : nonTerminalSymbols) {
-            follow.put(nonTerminalSymbol, terminalSetFactory.getNewSet());
-        }
-        
-        final List<FollowSetComputer> tasks = new ArrayList<>();
-        boolean changed;
-        do {
-            tasks.clear();
-            
-            for (final Map.Entry<NonTerminalSymbol, Set<Production>> entry : productions.entrySet()) {
-                final NonTerminalSymbol nonTerminalSymbol = entry.getKey();
-                final Set<Production> productionSet = entry.getValue();
-                
-                for (final Production production : productionSet) {
-                    final FollowSetComputer followSetComputer = new FollowSetComputer(nonTerminalSymbol, production);
-                    tasks.add(followSetComputer);
-                }
-            }
-            
-            final List<Future<Map<Symbol, Set<T>>>> futures = executorService.invokeAll(tasks);
-            
-            changed = false;
-            
-            for (final Future<Map<Symbol, Set<T>>> future : futures) {
-                final Map<Symbol, Set<T>> followSetAdditions = future.get();
-                
-                for (final Map.Entry<Symbol, Set<T>> entry : followSetAdditions.entrySet()) {
-                    final Symbol symbol = entry.getKey();
-                    final Set<T> followSet = entry.getValue();
-                    
-                    final boolean b = follow.get(symbol).addAll(followSet);
-                    
-                    changed = b || changed;
-                }
-            }
-        } while (changed);
-    }
-
-    protected void threadedCompute(final ExecutorService executorService) throws InterruptedException, ExecutionException {
-        threadedComputeNullable(executorService);
-        threadedComputeFirstSet(executorService);
-        threadedComputeFollowSet(executorService);
-    }
-
-    private ParserState<T> threadedComputeParseStates(final Set<LookaheadItem<T>> initialItems, final T endOfFileSymbol, final ExecutorService executorService)
-            throws InterruptedException, ExecutionException {
-        final ParserState<T> startState = calculateClosure(initialItems);
-        parserStates.add(startState);
-        
-        final List<ParserStateComputer> tasks = new ArrayList<>();
-        boolean changed;
-        do {
-            tasks.clear();
-            
-            for (final ParserState<T> parserState : parserStates) {
-                final Set<LookaheadItem<T>> stateItems = parserState.getItems();
-                for (final LookaheadItem<T> lookaheadItem : stateItems) {
-                    final Item item = lookaheadItem.getItem();
-                    if (item.isComplete()) {
-                        continue;
-                    }
-                    final Symbol nextSymbolInProduction = item.getNextSymbol();
-                    if (endOfFileSymbol.equals(nextSymbolInProduction)) {
-                        continue;
-                    }
-                    tasks.add(new ParserStateComputer(parserState, stateItems, lookaheadItem));
-                }
-            }
-            
-            final List<Future<Edge<T>>> futures = executorService.invokeAll(tasks);
-
-            changed = false;
-            
-            for (final Future<Edge<T>> future : futures) {
-                final Edge<T> edge = future.get();
-                final ParserState<T> state = edge.getFinalState();
-                
-                final boolean newEdge = edges.add(edge);
-                final boolean newState = parserStates.add(state);
-                
-                changed = newEdge || newState || changed;
-            }
-        } while (changed);
-        
-        return startState;
-    }
-
     /**
      * Creates a parser for the grammar.  This is called after all calls to {@link #addProduction}.
      * 
@@ -974,18 +708,20 @@ public class Grammar<T extends TerminalSymbol> {
         
         final Set<LookaheadItem<T>> initialItems = createInitialItem(startSymbol, endOfFileSymbol);
 
-        threadedCompute(executorService);
+//        threadedCompute(executorService);
+        compute();
         
-        final ParserState<T> startState = threadedComputeParseStates(initialItems, endOfFileSymbol, executorService);
+//        final ParserState<T> startState = threadedComputeParseStates(initialItems, endOfFileSymbol, executorService);
+        final ParserState<T> startState = computeParseStates(initialItems, endOfFileSymbol);
         
         final Parser<T> parser = new Parser<>(parserStates, edges, startState, endOfFileSymbol);
         
         final long endTime = System.currentTimeMillis();
         
-        System.out.print("Parser states creation, Duration: ");
-        System.out.println(endTime - startTime);
-        
-        printStatistics();
+//        System.out.print("Parser states creation, Duration: ");
+//        System.out.println(endTime - startTime);
+//        
+//        printStatistics();
         
         return parser;
     }
