@@ -468,15 +468,12 @@ public class Grammar<T extends TerminalSymbol> {
                 
                 final int nextSymbolIndex = item.getParserPosition() + 1;
                 
-                final Set<List<Symbol>> productionRemainders = new HashSet<>();
-                
                 if (nextSymbolIndex < symbols.size()) {
                     final List<Symbol> remainder1 = symbols.subList(nextSymbolIndex, symbols.size());
                     
                     for (final T lookahead : lookaheadSet) {
                         final List<Symbol> remainder = new ArrayList<>(remainder1);
                         remainder.add(lookahead);
-                        productionRemainders.add(remainder);
                         
                         extracted(additions, newItems, remainder);
                     }
@@ -487,8 +484,6 @@ public class Grammar<T extends TerminalSymbol> {
                     
                     for (final T lookahead : lookaheadSet) {
                         final List<Symbol> remainder = Collections.<Symbol>singletonList(lookahead);
-                        
-                        productionRemainders.add(remainder);
                         
                         extracted(additions, newItems, remainder);
                     }
