@@ -490,10 +490,10 @@ public class Grammar<T extends TerminalSymbol> {
                             final Set<T> copy = terminalSetFactory.getNewSet();
                             additions.put(newItem, copy);
                         }
+
+                        additions.get(newItem).addAll(firstSetOfRemainder);
                         
                         for (final T lookahead : lookaheadSet) {
-                            additions.get(newItem).addAll(firstSetOfRemainder);
-                            
                             if (allNullable) {
                                 additions.get(newItem).add(lookahead);
                             }
