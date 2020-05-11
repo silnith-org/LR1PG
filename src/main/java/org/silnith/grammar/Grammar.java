@@ -484,15 +484,15 @@ public class Grammar<T extends TerminalSymbol> {
                             break;
                         }
                     }
-                    
-                    for (final T lookahead : lookaheadSet) {
-                        final Set<T> copy = terminalSetFactory.getNewSet(firstSetOfRemainder);
-                        
-                        if (allNullable) {
-                            copy.add(lookahead);
-                        }
-                        
-                        for (final Item newItem : newItems) {
+
+                    for (final Item newItem : newItems) {
+                        for (final T lookahead : lookaheadSet) {
+                            final Set<T> copy = terminalSetFactory.getNewSet(firstSetOfRemainder);
+                            
+                            if (allNullable) {
+                                copy.add(lookahead);
+                            }
+                            
                             final Set<T> lookaheadAdditions = additions.get(newItem);
                             if (lookaheadAdditions == null) {
                                 additions.put(newItem, terminalSetFactory.getNewSet(copy));
