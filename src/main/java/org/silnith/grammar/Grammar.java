@@ -451,15 +451,6 @@ public class Grammar<T extends TerminalSymbol> {
                 final Set<Production> productionsForNextSymbol = productions.get(nextNonTerminalSymbol);
                 
                 /*
-                 * Add all the productions for the non-terminal to the parser state.
-                 */
-                final Set<Item> newItems = new HashSet<>();
-                for (final Production production : productionsForNextSymbol) {
-                    final Item newItem = itemFactory.createItem(nextNonTerminalSymbol, production, 0);
-                    newItems.add(newItem);
-                }
-                
-                /*
                  * Given an item and a look-ahead set, get all possible sequences of symbols that could follow
                  * the current symbol in the item.  This is the production from after the current symbol to
                  * the end, appended by each symbol in the look-ahead set.
@@ -486,6 +477,15 @@ public class Grammar<T extends TerminalSymbol> {
                     }
                 }
 
+                /*
+                 * Add all the productions for the non-terminal to the parser state.
+                 */
+                final Set<Item> newItems = new HashSet<>();
+                for (final Production production : productionsForNextSymbol) {
+                    final Item newItem = itemFactory.createItem(nextNonTerminalSymbol, production, 0);
+                    newItems.add(newItem);
+                }
+                
                 for (final Item newItem : newItems) {
                     if (!additions.containsKey(newItem)) {
                         additions.put(newItem, terminalSetFactory.getNewSet());
