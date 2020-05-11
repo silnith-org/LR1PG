@@ -480,10 +480,8 @@ public class Grammar<T extends TerminalSymbol> {
                 /*
                  * Add all the productions for the non-terminal to the parser state.
                  */
-                final Set<Item> newItems = new HashSet<>();
                 for (final Production production : productionsForNextSymbol) {
                     final Item newItem = itemFactory.createItem(nextNonTerminalSymbol, production, 0);
-                    newItems.add(newItem);
                     
                     if (!additions.containsKey(newItem)) {
                         additions.put(newItem, terminalSetFactory.getNewSet());
