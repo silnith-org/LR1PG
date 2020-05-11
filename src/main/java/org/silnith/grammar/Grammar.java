@@ -489,7 +489,7 @@ public class Grammar<T extends TerminalSymbol> {
                         final Set<T> copy = terminalSetFactory.getNewSet(firstSetOfRemainder);
                         
                         if (allNullable) {
-                            final Set<T> firstSetForSymbolInProduction = first.get(lookahead);
+                            final Set<T> firstSetForSymbolInProduction = Collections.singleton(lookahead);
                             
                             copy.addAll(firstSetForSymbolInProduction);
                         }
