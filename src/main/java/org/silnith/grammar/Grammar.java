@@ -487,17 +487,17 @@ public class Grammar<T extends TerminalSymbol> {
 
                     for (final Item newItem : newItems) {
                         for (final T lookahead : lookaheadSet) {
-                            final Set<T> copy = terminalSetFactory.getNewSet(firstSetOfRemainder);
+                            final Set<T> newSet = terminalSetFactory.getNewSet(firstSetOfRemainder);
                             
                             if (allNullable) {
-                                copy.add(lookahead);
+                                newSet.add(lookahead);
                             }
                             
                             final Set<T> lookaheadAdditions = additions.get(newItem);
                             if (lookaheadAdditions == null) {
-                                additions.put(newItem, copy);
+                                additions.put(newItem, newSet);
                             } else {
-                                lookaheadAdditions.addAll(copy);
+                                lookaheadAdditions.addAll(newSet);
                             }
                         }
                     }
