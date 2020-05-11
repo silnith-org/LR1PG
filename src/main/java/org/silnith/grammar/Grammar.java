@@ -500,6 +500,8 @@ public class Grammar<T extends TerminalSymbol> {
                     /*
                      * The production is completed.  Return the look-aheads.
                      */
+
+                    final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
                     
                     for (final Item newItem : newItems) {
                         if (!additions.containsKey(newItem)) {
