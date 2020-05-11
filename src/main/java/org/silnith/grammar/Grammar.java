@@ -504,7 +504,19 @@ public class Grammar<T extends TerminalSymbol> {
                 
                 for (final List<Symbol> remainder : remainderList) {
                     final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
-                    expandFirstSetByProduction(firstSetOfRemainder, remainder);
+                    
+                    boolean changedByProduction = false;
+                    
+                    for (final Symbol symbol : remainder) {
+                        final Set<T> firstSetForSymbolInProduction = first.get(symbol);
+                        
+                        final boolean addedElementsToFirstSet = firstSetOfRemainder.addAll(firstSetForSymbolInProduction);
+                        changedByProduction = addedElementsToFirstSet || changedByProduction;
+                        
+                        if (!nullable.contains(symbol)) {
+                            break;
+                        }
+                    }
                     
                     for (final Item newItem : newItems) {
                         final Set<T> lookaheadAdditions = additions.get(newItem);
