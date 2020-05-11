@@ -450,9 +450,7 @@ public class Grammar<T extends TerminalSymbol> {
                 
                 boolean allNullable = true;
                 if (nextSymbolIndex < symbols.size()) {
-                    final List<Symbol> remainder1 = symbols.subList(nextSymbolIndex, symbols.size());
-
-                    for (final Symbol symbol : remainder1) {
+                    for (final Symbol symbol : symbols.subList(nextSymbolIndex, symbols.size())) {
                         final Set<T> firstSetForSymbolInProduction = first.get(symbol);
                         
                         firstSetOfRemainder.addAll(firstSetForSymbolInProduction);
