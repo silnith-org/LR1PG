@@ -445,7 +445,9 @@ public class Grammar<T extends TerminalSymbol> {
                 final List<Symbol> symbols = item.getProduction().getSymbols();
                 
                 final int nextSymbolIndex = item.getParserPosition() + 1;
-
+                
+                assert nextSymbolIndex <= symbols.size();
+                
                 final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
                 
                 boolean remainderIsNullable = true;
