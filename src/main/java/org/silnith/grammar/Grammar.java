@@ -486,7 +486,7 @@ public class Grammar<T extends TerminalSymbol> {
                             }
                         }
                         
-                        final Set<T> copy = firstSetOfRemainder;
+                        final Set<T> copy = terminalSetFactory.getNewSet(firstSetOfRemainder);
                         
                         if (allNullable) {
                             final Set<T> firstSetForSymbolInProduction = first.get(lookahead);
