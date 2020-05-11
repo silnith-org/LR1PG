@@ -492,28 +492,7 @@ public class Grammar<T extends TerminalSymbol> {
                  * The new items added need look-ahead sets.  The look-ahead for each item is
                  * the first set of everything that comes after the next symbol in the item.
                  */
-                for (final List<Symbol> remainder : productionRemainders) {
-                    final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
-                    
-                    for (final Symbol symbol : remainder) {
-                        final Set<T> firstSetForSymbolInProduction = first.get(symbol);
-                        
-                        firstSetOfRemainder.addAll(firstSetForSymbolInProduction);
-                        
-                        if (!nullable.contains(symbol)) {
-                            break;
-                        }
-                    }
-                    
-                    for (final Item newItem : newItems) {
-                        final Set<T> lookaheadAdditions = additions.get(newItem);
-                        if (lookaheadAdditions == null) {
-                            additions.put(newItem, terminalSetFactory.getNewSet(firstSetOfRemainder));
-                        } else {
-                            lookaheadAdditions.addAll(firstSetOfRemainder);
-                        }
-                    }
-                }
+                extracted(additions, newItems, productionRemainders);
             }
             
             changed = false;
@@ -545,6 +524,32 @@ public class Grammar<T extends TerminalSymbol> {
         }
         
         return parserStateFactory.createInstance(itemSet);
+    }
+
+    private void extracted(final Map<Item, Set<T>> additions, final Set<Item> newItems,
+            final Set<List<Symbol>> productionRemainders) {
+        for (final List<Symbol> remainder : productionRemainders) {
+            final Set<T> firstSetOfRemainder = terminalSetFactory.getNewSet();
+            
+            for (final Symbol symbol : remainder) {
+                final Set<T> firstSetForSymbolInProduction = first.get(symbol);
+                
+                firstSetOfRemainder.addAll(firstSetForSymbolInProduction);
+                
+                if (!nullable.contains(symbol)) {
+                    break;
+                }
+            }
+            
+            for (final Item newItem : newItems) {
+                final Set<T> lookaheadAdditions = additions.get(newItem);
+                if (lookaheadAdditions == null) {
+                    additions.put(newItem, terminalSetFactory.getNewSet(firstSetOfRemainder));
+                } else {
+                    lookaheadAdditions.addAll(firstSetOfRemainder);
+                }
+            }
+        }
     }
     
     /**
