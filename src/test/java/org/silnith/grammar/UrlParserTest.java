@@ -98,7 +98,7 @@ public class UrlParserTest {
     @Before
     public void setUp() {
 //        grammar = new Grammar<UriTerminalType>();
-        grammar = new Grammar<UriTerminalType>(new UriTerminalSetFactory());
+        grammar = new Grammar<UriTerminalType>(new EnumSetFactory<>(UriTerminalType.class));
         
         pctEncoded = grammar.getNonTerminalSymbol("pct-encoded");
 //        final NonTerminalSymbol unreserved = grammar.getNonTerminalSymbol("unreserved");

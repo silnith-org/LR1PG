@@ -7,6 +7,7 @@ import java.util.Set;
  * A factory for instances of sets containing terminal or non-terminal symbols.
  * 
  * @param <T> the type of elements in the set
+ * @see EnumSetFactory
  */
 public interface SetFactory<T> {
     
