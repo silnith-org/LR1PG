@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -64,6 +66,10 @@ public class Grammar<T extends TerminalSymbol> {
     }
 
     private static final NonTerminalSymbol START = new StartSymbol();
+
+    private static final String sourceClass = Grammar.class.getName();
+
+    private final Logger logger;
     
     private final ItemFactory itemFactory;
 
@@ -126,6 +132,7 @@ public class Grammar<T extends TerminalSymbol> {
         if (terminalSetFactory == null) {
             throw new IllegalArgumentException();
         }
+        this.logger = Logger.getLogger(sourceClass);
         this.itemFactory = new ItemFactory();
         this.lookaheadItemFactory = new LookaheadItemFactory<>();
         this.parserStateFactory = new ParserStateFactory<>();
@@ -185,6 +192,9 @@ public class Grammar<T extends TerminalSymbol> {
      * Resets the grammar to its default state where it has no production and no lexicon.
      */
     public void clear() {
+        final String sourceMethod = "clear";
+        logger.entering(sourceClass, sourceMethod);
+        
         lexicon.clear();
         nonTerminalSymbols.clear();
         productions.clear();
@@ -195,6 +205,8 @@ public class Grammar<T extends TerminalSymbol> {
         
         parserStates.clear();
         edges.clear();
+        
+        logger.exiting(sourceClass, sourceMethod);
     }
     
     /**
@@ -262,6 +274,9 @@ public class Grammar<T extends TerminalSymbol> {
      * Compute the nullable set.
      */
     private void computeNullable() {
+        final String sourceMethod = "computeNullable";
+        logger.entering(sourceClass, sourceMethod);
+        
         nullable.clear();
         
         boolean changed;
@@ -284,12 +299,19 @@ public class Grammar<T extends TerminalSymbol> {
                 }
             }
         } while (changed);
+        
+        logger.logp(Level.FINE, sourceClass, sourceMethod, "nullable set: {0}", nullable);
+        
+        logger.exiting(sourceClass, sourceMethod);
     }
     
     /**
      * Compute the first set for each symbol.
      */
     private void computeFirst() {
+        final String sourceMethod = "computeFirst";
+        logger.entering(sourceClass, sourceMethod);
+        
         first.clear();
         for (final T terminalSymbol : lexicon) {
             final Set<T> newSet = terminalSetFactory.getNewSet();
@@ -323,12 +345,19 @@ public class Grammar<T extends TerminalSymbol> {
                 }
             }
         } while (changed);
+        
+        logger.logp(Level.FINE, sourceClass, sourceMethod, "first sets: {0}", first);
+        
+        logger.exiting(sourceClass, sourceMethod);
     }
     
     /**
      * Compute the follow set for each symbol.
      */
     private void computeFollow() {
+        final String sourceMethod = "computeFollow";
+        logger.entering(sourceClass, sourceMethod);
+        
         follow.clear();
         for (final T terminalSymbol : lexicon) {
             follow.put(terminalSymbol, terminalSetFactory.getNewSet());
@@ -379,15 +408,27 @@ public class Grammar<T extends TerminalSymbol> {
                 }
             }
         } while (changed);
+        
+        logger.logp(Level.FINE, sourceClass, sourceMethod, "follow sets: {0}", follow);
+        
+        logger.exiting(sourceClass, sourceMethod);
     }
     
     protected void compute() {
+        final String sourceMethod = "compute";
+        logger.entering(sourceClass, sourceMethod);
+        
         computeNullable();
         computeFirst();
         computeFollow();
+        
+        logger.exiting(sourceClass, sourceMethod);
     }
     
     private ParserState<T> calculateClosure(final Collection<LookaheadItem<T>> items) {
+        final String sourceMethod = "calculateClosure";
+        logger.entering(sourceClass, sourceMethod, items);
+        
         /*
          * The canonical algorithm creates look-ahead items that are composed of a single item
          * and a single look-ahead terminal.  This modifies the classic algorithm by consolidating
@@ -416,6 +457,8 @@ public class Grammar<T extends TerminalSymbol> {
         boolean changed;
         do {
             additions.clear();
+            
+            logger.logp(Level.FINEST, sourceClass, sourceMethod, "items in closure: {0}", itemLookaheadMap.size());
             
             /*
              * Go through all the items in the nascent parser state.
@@ -484,6 +527,8 @@ public class Grammar<T extends TerminalSymbol> {
                 }
             }
             
+            logger.logp(Level.FINEST, sourceClass, sourceMethod, "items to add to closure: {0}", additions.size());
+            
             changed = false;
             
             for (final Map.Entry<Item, Set<T>> entry : additions.entrySet()) {
@@ -515,7 +560,10 @@ public class Grammar<T extends TerminalSymbol> {
             itemSet.add(lookaheadItem);
         }
         
-        return parserStateFactory.createInstance(itemSet);
+        final ParserState<T> parserState = parserStateFactory.createInstance(itemSet);
+        
+        logger.exiting(sourceClass, sourceMethod, parserState);
+        return parserState;
     }
 
     /**
@@ -528,6 +576,9 @@ public class Grammar<T extends TerminalSymbol> {
      * @return a new parser state that is the existing parser state advanced by the symbol
      */
     private ParserState<T> calculateGoto(final Collection<LookaheadItem<T>> itemSet, final Symbol symbol) {
+        final String sourceMethod = "calculateGoto";
+        logger.entering(sourceClass, sourceMethod, new Object[] {itemSet, symbol});
+        
         final Set<LookaheadItem<T>> newItemSet = new HashSet<>(itemSet.size());
         
         /*
@@ -549,10 +600,18 @@ public class Grammar<T extends TerminalSymbol> {
             }
         }
         
-        return calculateClosure(newItemSet);
+        logger.logp(Level.FINEST, sourceClass, sourceMethod, "goto item set size: {0}", newItemSet.size());
+        
+        final ParserState<T> closure = calculateClosure(newItemSet);
+        
+        logger.exiting(sourceClass, sourceMethod, closure);
+        return closure;
     }
     
     private ParserState<T> computeParseStates(final Set<LookaheadItem<T>> initialItems, final T endOfFileSymbol) {
+        final String sourceMethod = "computeParseStates";
+        logger.entering(sourceClass, sourceMethod, new Object[] {initialItems, endOfFileSymbol});
+        
         final ParserState<T> startState = calculateClosure(initialItems);
         /*
          * Start with just the initial state.
@@ -563,6 +622,8 @@ public class Grammar<T extends TerminalSymbol> {
         while ( !pending.isEmpty()) {
             final Set<ParserState<T>> newParserStates = new HashSet<>();
             final Set<Edge<T>> newEdges = new HashSet<>();
+            
+            logger.logp(Level.FINE, sourceClass, sourceMethod, "parser states to compute: {0}", pending.size());
             
             for (final ParserState<T> parserState : pending) {
                 final Set<LookaheadItem<T>> stateItems = parserState.getItems();
@@ -608,14 +669,20 @@ public class Grammar<T extends TerminalSymbol> {
             parserStates.addAll(pending);
             edges.addAll(newEdges);
             
+            logger.logp(Level.FINE, sourceClass, sourceMethod, "total parser states: {0}, total edges: {1}", new Object[] {parserStates.size(), edges.size()});
+            
             pending = newParserStates;
             pending.removeAll(parserStates);
         }
         
+        logger.exiting(sourceClass, sourceMethod, startState);
         return startState;
     }
 
     private Set<LookaheadItem<T>> createInitialItem(final NonTerminalSymbol startSymbol, final T endOfFileSymbol) {
+        final String sourceMethod = "createInitialItem";
+        logger.entering(sourceClass, sourceMethod, new Object[] {startSymbol, endOfFileSymbol});
+        
         final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(endOfFileSymbol));
         
         addProduction(START, new IdentityProductionHandler(), startSymbol, endOfFileSymbol);
@@ -628,6 +695,7 @@ public class Grammar<T extends TerminalSymbol> {
             initialItems.add(lookaheadItem);
         }
         
+        logger.exiting(sourceClass, sourceMethod, initialItems);
         return initialItems;
     }
 
@@ -640,6 +708,9 @@ public class Grammar<T extends TerminalSymbol> {
      * @return a parser for the language defined by this grammar
      */
     public Parser<T> createParser(final NonTerminalSymbol startSymbol, final T endOfFileSymbol) {
+        final String sourceMethod = "createParser";
+        logger.entering(sourceClass, sourceMethod, new Object[] {startSymbol, endOfFileSymbol});
+        
         final long startTime = System.currentTimeMillis();
         
         final Set<LookaheadItem<T>> initialItems = createInitialItem(startSymbol, endOfFileSymbol);
@@ -652,11 +723,11 @@ public class Grammar<T extends TerminalSymbol> {
         
         final long endTime = System.currentTimeMillis();
         
-        System.out.print("Parser states creation, Duration: ");
-        System.out.println(endTime - startTime);
+        logger.logp(Level.FINE, sourceClass, sourceMethod, "time to create parser: {0} ms", endTime - startTime);
         
-        printStatistics();
+        logStatistics();
         
+        logger.exiting(sourceClass, sourceMethod, parser);
         return parser;
     }
 
@@ -694,20 +765,16 @@ public class Grammar<T extends TerminalSymbol> {
         return parser;
     }
     
-    private void printFactoryStatistics(final String name, final WeakCanonicalFactory<?> factory) {
-        System.out.print(name);
-        System.out.print(" calls: ");
-        System.out.println(factory.getCallCount());
-        System.out.print(name);
-        System.out.print(" instances: ");
-        System.out.println(factory.getInstanceCount());
+    private void logFactoryStatistics(final String name, final WeakCanonicalFactory<?> factory) {
+        final String sourceMethod = "logFactoryStatistics";
+        logger.logp(Level.FINE, sourceClass, sourceMethod, "{0} invocations: {1}, total instances: {2}", new Object[] {name, factory.getCallCount(), factory.getInstanceCount()});
     }
     
-    public void printStatistics() {
-        printFactoryStatistics("Item factory", itemFactory);
-        printFactoryStatistics("Look-ahead factory", lookaheadItemFactory);
-        printFactoryStatistics("State factory", parserStateFactory);
-        printFactoryStatistics("Edge factory", edgeFactory);
+    public void logStatistics() {
+        logFactoryStatistics("Item factory", itemFactory);
+        logFactoryStatistics("Look-ahead factory", lookaheadItemFactory);
+        logFactoryStatistics("State factory", parserStateFactory);
+        logFactoryStatistics("Edge factory", edgeFactory);
     }
     
 }
