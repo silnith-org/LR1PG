@@ -1,17 +1,14 @@
 package org.silnith.grammar.example;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 import org.silnith.grammar.DataStackElement;
+import org.silnith.grammar.EnumSetFactory;
 import org.silnith.grammar.Grammar;
 import org.silnith.grammar.NonTerminalSymbol;
 import org.silnith.grammar.Parser;
 import org.silnith.grammar.ProductionHandler;
-import org.silnith.grammar.SetFactory;
 
 
 public class ExampleGrammar {
@@ -34,31 +31,13 @@ public class ExampleGrammar {
 
     }
 
-	public static class TerminalSetFactory implements SetFactory<Terminals> {
-        
-        @Override
-        public Set<Terminals> getNewSet() {
-            return EnumSet.noneOf(Terminals.class);
-        }
-        
-        @Override
-        public Set<Terminals> getNewSet(final Collection<Terminals> c) {
-            if (c.isEmpty()) {
-                return EnumSet.noneOf(Terminals.class);
-            } else {
-                return EnumSet.copyOf(c);
-            }
-        }
-        
-    }
-    
-    /**
+	/**
      * An example program demonstrating a parser generated for a simple grammar.
      * 
      * @param args the command-line arguments
      */
     public static void main(final String[] args) {
-        final Grammar<Terminals> grammar = new Grammar<>(new TerminalSetFactory());
+        final Grammar<Terminals> grammar = new Grammar<>(new EnumSetFactory<>(Terminals.class));
         
         final NonTerminalSymbol nonTerminal = grammar.getNonTerminalSymbol("S");
         
