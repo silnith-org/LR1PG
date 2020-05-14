@@ -670,7 +670,7 @@ public class Grammar<T extends TerminalSymbol> {
         /*
          * For each symbol that could advance an item...
          */
-        final Set<Edge<T>> newEdges = new HashSet<>();
+        final Set<Edge<T>> newEdges = new HashSet<>(relevantSymbols.size());
         for (final Symbol symbol : relevantSymbols) {
             /*
              * Find the closure of all items that would be advanced by the next symbol in the current item.
