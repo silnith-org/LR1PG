@@ -727,8 +727,8 @@ public class Grammar<T extends TerminalSymbol> {
     }
 
     private Set<LookaheadItem<T>> createInitialItem(final NonTerminalSymbol startSymbol, final T endOfFileSymbol) {
-        final String sourceMethod = "createInitialItem";
-        logger.entering(sourceClass, sourceMethod, new Object[] {startSymbol, endOfFileSymbol});
+//        final String sourceMethod = "createInitialItem";
+//        logger.entering(sourceClass, sourceMethod, new Object[] {startSymbol, endOfFileSymbol});
         
         final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(endOfFileSymbol));
         
@@ -742,7 +742,7 @@ public class Grammar<T extends TerminalSymbol> {
             initialItems.add(lookaheadItem);
         }
         
-        logger.exiting(sourceClass, sourceMethod, initialItems);
+//        logger.exiting(sourceClass, sourceMethod, initialItems);
         return initialItems;
     }
 
@@ -759,10 +759,22 @@ public class Grammar<T extends TerminalSymbol> {
         logger.entering(sourceClass, sourceMethod, new Object[] {startSymbol, endOfFileSymbol});
         
         final long startTime = System.currentTimeMillis();
+        final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(endOfFileSymbol));
         
-        final Set<LookaheadItem<T>> initialItems = createInitialItem(startSymbol, endOfFileSymbol);
-
+        addProduction(START, new IdentityProductionHandler(), startSymbol, endOfFileSymbol);
+        
+        final Set<LookaheadItem<T>> initialItems1 = new HashSet<>();
+        
+        for (final Production production : productions.get(START)) {
+            final Item item = itemFactory.createItem(START, production, 0);
+            final LookaheadItem<T> lookaheadItem = lookaheadItemFactory.createInstance(item, endOfFileSet);
+            initialItems1.add(lookaheadItem);
+        }
+        
+        final Set<LookaheadItem<T>> initialItems = initialItems1;
+        
         compute();
+        
         final ParserState<T> startState = calculateClosure(initialItems);
         /*
          * Start with just the initial state.
