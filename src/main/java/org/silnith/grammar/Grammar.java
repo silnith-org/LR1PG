@@ -632,7 +632,7 @@ public class Grammar<T extends TerminalSymbol> {
             parserStates.addAll(pending);
             edges.addAll(newEdges);
 
-            final Set<ParserState<T>> newParserStates = new HashSet<>();
+            final Set<ParserState<T>> newParserStates = new HashSet<>(newEdges.size());
             for (final Edge<T> edge : newEdges) {
                 newParserStates.add(edge.getFinalState());
             }
