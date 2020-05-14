@@ -761,7 +761,7 @@ public class Grammar<T extends TerminalSymbol> {
         final long startTime = System.currentTimeMillis();
         final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(endOfFileSymbol));
         
-        final Production production1 = new Production(new IdentityProductionHandler(), new Symbol[] { startSymbol, endOfFileSymbol });
+        final Production production1 = new Production(new IdentityProductionHandler(), startSymbol, endOfFileSymbol);
         final Set<Production> productionSet;
         if (productions.containsKey(START)) {
             productionSet = productions.get(START);
@@ -772,7 +772,7 @@ public class Grammar<T extends TerminalSymbol> {
         productionSet.add(production1);
         
         nonTerminalSymbols.add(START);
-        addSymbols(new Symbol[] { startSymbol, endOfFileSymbol });
+        addSymbols(startSymbol, endOfFileSymbol);
         
         final Set<LookaheadItem<T>> initialItems = new HashSet<>();
         
