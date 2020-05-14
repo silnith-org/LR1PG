@@ -766,10 +766,10 @@ public class Grammar<T extends TerminalSymbol> {
         nonTerminalSymbols.add(START);
         addSymbols(startSymbol, endOfFileSymbol);
         
-        final Set<LookaheadItem<T>> initialItems = new HashSet<>();
-        
         final Item item = itemFactory.createItem(START, production, 0);
         final LookaheadItem<T> lookaheadItem = lookaheadItemFactory.createInstance(item, endOfFileSet);
+        
+        final Set<LookaheadItem<T>> initialItems = new HashSet<>();
         initialItems.add(lookaheadItem);
         
         compute();
