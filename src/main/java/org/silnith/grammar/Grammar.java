@@ -763,17 +763,17 @@ public class Grammar<T extends TerminalSymbol> {
         
         addProduction(START, new IdentityProductionHandler(), startSymbol, endOfFileSymbol);
         
-        final Set<LookaheadItem<T>> initialItems1 = new HashSet<>();
+        final Set<LookaheadItem<T>> initialItems = new HashSet<>();
         
         for (final Production production : productions.get(START)) {
             final Item item = itemFactory.createItem(START, production, 0);
             final LookaheadItem<T> lookaheadItem = lookaheadItemFactory.createInstance(item, endOfFileSet);
-            initialItems1.add(lookaheadItem);
+            initialItems.add(lookaheadItem);
         }
         
         compute();
         
-        final ParserState<T> startState = calculateClosure(initialItems1);
+        final ParserState<T> startState = calculateClosure(initialItems);
         /*
          * Start with just the initial state.
          */
