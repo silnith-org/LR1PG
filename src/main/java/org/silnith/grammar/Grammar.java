@@ -699,7 +699,7 @@ public class Grammar<T extends TerminalSymbol> {
         
     }
     
-    private void computeParseStatesInternal(final ParserState<T> startState, final T endOfFileSymbol) {
+    private void computeParseStates(final ParserState<T> startState, final T endOfFileSymbol) {
         Set<ParserState<T>> pending = Collections.singleton(startState);
         
         while ( !pending.isEmpty()) {
@@ -774,7 +774,7 @@ public class Grammar<T extends TerminalSymbol> {
          * Start with just the initial state.
          */
         
-        computeParseStatesInternal(startState, endOfFileSymbol);
+        computeParseStates(startState, endOfFileSymbol);
         
         final Parser<T> parser = new Parser<>(parserStates, edges, startState, endOfFileSymbol);
         
@@ -811,7 +811,7 @@ public class Grammar<T extends TerminalSymbol> {
          * Start with just the initial state.
          */
         
-        computeParseStatesInternal(startState1, endOfFileSymbol);
+        computeParseStates(startState1, endOfFileSymbol);
         
 //        final ParserState<T> startState = threadedComputeParseStates(initialItems, endOfFileSymbol, executorService);
         final ParserState<T> startState = startState1;
