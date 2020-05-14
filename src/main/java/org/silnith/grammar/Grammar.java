@@ -642,7 +642,7 @@ public class Grammar<T extends TerminalSymbol> {
         return startState;
     }
 
-    private void computeOutgoingEdges(final ParserState<T> parserState, final T endOfFileSymbol,
+    private Set<Edge<T>> computeOutgoingEdges(final ParserState<T> parserState, final T endOfFileSymbol,
             final Set<ParserState<T>> newParserStates, final Set<Edge<T>> newEdges) {
         final Set<LookaheadItem<T>> stateItems = parserState.getItems();
         
@@ -682,6 +682,8 @@ public class Grammar<T extends TerminalSymbol> {
             newParserStates.add(newParserState);
             newEdges.add(newEdge);
         }
+        
+        return newEdges;
     }
 
     private Set<LookaheadItem<T>> createInitialItem(final NonTerminalSymbol startSymbol, final T endOfFileSymbol) {
