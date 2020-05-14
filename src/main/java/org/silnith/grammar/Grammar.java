@@ -768,7 +768,8 @@ public class Grammar<T extends TerminalSymbol> {
         
         final Set<LookaheadItem<T>> initialItems = new HashSet<>();
         
-        for (final Production production : Collections.singleton(production1)) {
+        final Production production = production1;
+        {
             final Item item = itemFactory.createItem(START, production, 0);
             final LookaheadItem<T> lookaheadItem = lookaheadItemFactory.createInstance(item, endOfFileSet);
             initialItems.add(lookaheadItem);
