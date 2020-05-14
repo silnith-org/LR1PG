@@ -700,10 +700,13 @@ public class Grammar<T extends TerminalSymbol> {
     }
     
     private void computeParseStates(final ParserState<T> startState, final T endOfFileSymbol) {
+        final String sourceMethod = "computeParseStates";
+        logger.entering(sourceClass, sourceMethod, new Object[] {startState, endOfFileSymbol});
+        
         Set<ParserState<T>> pending = Collections.singleton(startState);
         
         while ( !pending.isEmpty()) {
-//            logger.logp(Level.FINE, sourceClass, sourceMethod, "parser states to compute: {0}", pending.size());
+            logger.logp(Level.FINE, sourceClass, sourceMethod, "parser states to compute: {0}", pending.size());
 
             final Set<Edge<T>> newEdges = new HashSet<>(pending.size());
             for (final ParserState<T> parserState : pending) {
@@ -719,11 +722,13 @@ public class Grammar<T extends TerminalSymbol> {
                 newParserStates.add(edge.getFinalState());
             }
             
-//            logger.logp(Level.FINE, sourceClass, sourceMethod, "total parser states: {0}, total edges: {1}", new Object[] {parserStates.size(), edges.size()});
+            logger.logp(Level.FINE, sourceClass, sourceMethod, "total parser states: {0}, total edges: {1}", new Object[] {parserStates.size(), edges.size()});
             
             pending = newParserStates;
             pending.removeAll(parserStates);
         }
+        
+        logger.exiting(sourceClass, sourceMethod);
     }
 
     private Set<LookaheadItem<T>> createInitialItem(final NonTerminalSymbol startSymbol, final T endOfFileSymbol) {
