@@ -100,6 +100,8 @@ public class UrlParserTest {
 //        grammar = new Grammar<UriTerminalType>();
         grammar = new Grammar<UriTerminalType>(new EnumSetFactory<>(UriTerminalType.class));
         
+        grammar.setEndOfFileSymbol(EndOfFile);
+        
         pctEncoded = grammar.getNonTerminalSymbol("pct-encoded");
 //        final NonTerminalSymbol unreserved = grammar.getNonTerminalSymbol("unreserved");
 
@@ -367,7 +369,6 @@ public class UrlParserTest {
     public void testPercentEncodedSerial() {
         final NonTerminalSymbol startSymbol = pctEncoded;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testPercentEncoded(parser);
     }
@@ -376,7 +377,6 @@ public class UrlParserTest {
     public void testPercentEncodedParallel() throws InterruptedException, ExecutionException {
         final NonTerminalSymbol startSymbol = pctEncoded;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testPercentEncoded(parser);
     }
@@ -400,7 +400,6 @@ public class UrlParserTest {
     public void testSchemeSerial() {
         final NonTerminalSymbol startSymbol = scheme;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testScheme(parser);
     }
@@ -409,7 +408,6 @@ public class UrlParserTest {
     public void testSchemeParallel() throws InterruptedException, ExecutionException {
         final NonTerminalSymbol startSymbol = scheme;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testScheme(parser);
     }
@@ -458,7 +456,6 @@ public class UrlParserTest {
     public void testUserinfoSerial() {
         final NonTerminalSymbol startSymbol = userinfo;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testUserinfo(parser);
     }
@@ -467,7 +464,6 @@ public class UrlParserTest {
     public void testUserinfoParallel() throws InterruptedException, ExecutionException {
         final NonTerminalSymbol startSymbol = userinfo;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testUserinfo(parser);
     }
@@ -498,7 +494,6 @@ public class UrlParserTest {
     public void testHostSerial() {
         final NonTerminalSymbol startSymbol = host;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testHost(parser);
     }
@@ -507,7 +502,6 @@ public class UrlParserTest {
     public void testHostParallel() throws InterruptedException, ExecutionException {
         final NonTerminalSymbol startSymbol = host;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testHost(parser);
     }
@@ -539,7 +533,6 @@ public class UrlParserTest {
     public void testPortSerial() {
         final NonTerminalSymbol startSymbol = port;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testPort(parser);
     }
@@ -548,7 +541,6 @@ public class UrlParserTest {
     public void testPortParallel() throws InterruptedException, ExecutionException {
         final NonTerminalSymbol startSymbol = port;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testPort(parser);
     }
@@ -585,7 +577,6 @@ public class UrlParserTest {
     public void testAuthoritySerial() {
         final NonTerminalSymbol startSymbol = authority;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testAuthority(parser);
     }
@@ -594,7 +585,6 @@ public class UrlParserTest {
     public void testAuthorityParallel() throws InterruptedException, ExecutionException {
         final NonTerminalSymbol startSymbol = authority;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testAuthority(parser);
     }
@@ -636,7 +626,6 @@ public class UrlParserTest {
     public void testSegmentSerial() {
         final NonTerminalSymbol startSymbol = segment;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testSegment(parser);
     }
@@ -645,7 +634,6 @@ public class UrlParserTest {
     public void testSegmentParallel() throws InterruptedException, ExecutionException {
         final NonTerminalSymbol startSymbol = segment;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testSegment(parser);
     }
@@ -688,7 +676,6 @@ public class UrlParserTest {
     public void testSegmentSequenceSerial() {
         final NonTerminalSymbol startSymbol = segmentSequence;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testSegmentSequence(parser);
     }
@@ -697,7 +684,6 @@ public class UrlParserTest {
     public void testSegmentSequenceParallel() throws InterruptedException, ExecutionException {
         final NonTerminalSymbol startSymbol = segmentSequence;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testSegmentSequence(parser);
     }
@@ -719,7 +705,6 @@ public class UrlParserTest {
     public void testQuerySerial() {
         final NonTerminalSymbol startSymbol = query;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testQuery(parser);
     }
@@ -728,7 +713,6 @@ public class UrlParserTest {
     public void testQueryParallel() throws InterruptedException, ExecutionException {
         final NonTerminalSymbol startSymbol = query;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testQuery(parser);
     }
@@ -757,7 +741,6 @@ public class UrlParserTest {
     public void testFragmentSerial() {
         final NonTerminalSymbol startSymbol = fragment;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testFragment(parser);
     }
@@ -766,7 +749,6 @@ public class UrlParserTest {
     public void testFragmentParallel() throws InterruptedException, ExecutionException {
         final NonTerminalSymbol startSymbol = fragment;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testFragment(parser);
     }
@@ -796,7 +778,6 @@ public class UrlParserTest {
     public void testRelativeRefSerial() {
         final NonTerminalSymbol startSymbol = relativeRef;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testRelativeRef(parser);
     }
@@ -806,7 +787,6 @@ public class UrlParserTest {
     public void testRelativeRefParallel() throws InterruptedException, ExecutionException {
         final NonTerminalSymbol startSymbol = relativeRef;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testRelativeRef(parser);
     }
@@ -830,7 +810,6 @@ public class UrlParserTest {
     public void testURISerial() {
         final NonTerminalSymbol startSymbol = uri;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testURI(parser);
     }
@@ -840,7 +819,6 @@ public class UrlParserTest {
     public void testURIParallel() throws InterruptedException, ExecutionException {
         final NonTerminalSymbol startSymbol = uri;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testURI(parser);
     }
@@ -863,7 +841,6 @@ public class UrlParserTest {
     public void testPathAbEmptySerial() {
         final NonTerminalSymbol startSymbol = pathAbEmpty;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testPathAbEmpty(parser);
     }
@@ -872,7 +849,6 @@ public class UrlParserTest {
     public void testPathAbEmptyParallel() throws InterruptedException, ExecutionException {
         final NonTerminalSymbol startSymbol = pathAbEmpty;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testPathAbEmpty(parser);
     }
@@ -907,7 +883,6 @@ public class UrlParserTest {
     public void testPathAbsoluteSerial() {
         final NonTerminalSymbol startSymbol = pathAbsolute;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testPathAbsolute(parser);
     }
@@ -916,7 +891,6 @@ public class UrlParserTest {
     public void testPathAbsoluteParallel() throws InterruptedException, ExecutionException {
         final NonTerminalSymbol startSymbol = pathAbsolute;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testPathAbsolute(parser);
     }
@@ -945,7 +919,6 @@ public class UrlParserTest {
     public void testPathRootlessSerial() {
         final NonTerminalSymbol startSymbol = pathRootless;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testPathRootless(parser);
     }
@@ -954,7 +927,6 @@ public class UrlParserTest {
     public void testPathRootlessParallel() throws InterruptedException, ExecutionException {
         final NonTerminalSymbol startSymbol = pathRootless;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testPathRootless(parser);
     }
@@ -982,7 +954,6 @@ public class UrlParserTest {
     public void testPathEmptySerial() {
         final NonTerminalSymbol startSymbol = pathEmpty;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testPathEmpty(parser);
     }
@@ -991,7 +962,6 @@ public class UrlParserTest {
     public void testPathEmptyParallel() throws InterruptedException, ExecutionException {
         final NonTerminalSymbol startSymbol = pathEmpty;
         grammar.setStartSymbol(startSymbol);
-        grammar.setEndOfFileSymbol(EndOfFile);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testPathEmpty(parser);
     }
