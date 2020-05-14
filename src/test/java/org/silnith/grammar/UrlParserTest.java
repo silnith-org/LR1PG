@@ -367,16 +367,14 @@ public class UrlParserTest {
     
     @Test
     public void testPercentEncodedSerial() {
-        final NonTerminalSymbol startSymbol = pctEncoded;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(pctEncoded);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testPercentEncoded(parser);
     }
     
     @Test
     public void testPercentEncodedParallel() throws InterruptedException, ExecutionException {
-        final NonTerminalSymbol startSymbol = pctEncoded;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(pctEncoded);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testPercentEncoded(parser);
     }
@@ -398,16 +396,14 @@ public class UrlParserTest {
     
     @Test
     public void testSchemeSerial() {
-        final NonTerminalSymbol startSymbol = scheme;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(scheme);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testScheme(parser);
     }
     
     @Test
     public void testSchemeParallel() throws InterruptedException, ExecutionException {
-        final NonTerminalSymbol startSymbol = scheme;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(scheme);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testScheme(parser);
     }
@@ -454,16 +450,14 @@ public class UrlParserTest {
     
     @Test
     public void testUserinfoSerial() {
-        final NonTerminalSymbol startSymbol = userinfo;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(userinfo);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testUserinfo(parser);
     }
     
     @Test
     public void testUserinfoParallel() throws InterruptedException, ExecutionException {
-        final NonTerminalSymbol startSymbol = userinfo;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(userinfo);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testUserinfo(parser);
     }
@@ -492,16 +486,14 @@ public class UrlParserTest {
     
     @Test
     public void testHostSerial() {
-        final NonTerminalSymbol startSymbol = host;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(host);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testHost(parser);
     }
     
     @Test
     public void testHostParallel() throws InterruptedException, ExecutionException {
-        final NonTerminalSymbol startSymbol = host;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(host);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testHost(parser);
     }
@@ -531,16 +523,14 @@ public class UrlParserTest {
     
     @Test
     public void testPortSerial() {
-        final NonTerminalSymbol startSymbol = port;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(port);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testPort(parser);
     }
     
     @Test
     public void testPortParallel() throws InterruptedException, ExecutionException {
-        final NonTerminalSymbol startSymbol = port;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(port);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testPort(parser);
     }
@@ -575,16 +565,14 @@ public class UrlParserTest {
     
     @Test
     public void testAuthoritySerial() {
-        final NonTerminalSymbol startSymbol = authority;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(authority);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testAuthority(parser);
     }
     
     @Test
     public void testAuthorityParallel() throws InterruptedException, ExecutionException {
-        final NonTerminalSymbol startSymbol = authority;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(authority);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testAuthority(parser);
     }
@@ -624,16 +612,14 @@ public class UrlParserTest {
     
     @Test
     public void testSegmentSerial() {
-        final NonTerminalSymbol startSymbol = segment;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(segment);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testSegment(parser);
     }
     
     @Test
     public void testSegmentParallel() throws InterruptedException, ExecutionException {
-        final NonTerminalSymbol startSymbol = segment;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(segment);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testSegment(parser);
     }
@@ -674,16 +660,14 @@ public class UrlParserTest {
     
     @Test
     public void testSegmentSequenceSerial() {
-        final NonTerminalSymbol startSymbol = segmentSequence;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(segmentSequence);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testSegmentSequence(parser);
     }
     
     @Test
     public void testSegmentSequenceParallel() throws InterruptedException, ExecutionException {
-        final NonTerminalSymbol startSymbol = segmentSequence;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(segmentSequence);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testSegmentSequence(parser);
     }
@@ -703,16 +687,14 @@ public class UrlParserTest {
     
     @Test
     public void testQuerySerial() {
-        final NonTerminalSymbol startSymbol = query;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(query);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testQuery(parser);
     }
     
     @Test
     public void testQueryParallel() throws InterruptedException, ExecutionException {
-        final NonTerminalSymbol startSymbol = query;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(query);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testQuery(parser);
     }
@@ -739,16 +721,14 @@ public class UrlParserTest {
     
     @Test
     public void testFragmentSerial() {
-        final NonTerminalSymbol startSymbol = fragment;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(fragment);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testFragment(parser);
     }
     
     @Test
     public void testFragmentParallel() throws InterruptedException, ExecutionException {
-        final NonTerminalSymbol startSymbol = fragment;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(fragment);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testFragment(parser);
     }
@@ -776,8 +756,7 @@ public class UrlParserTest {
     @Ignore
     @Test
     public void testRelativeRefSerial() {
-        final NonTerminalSymbol startSymbol = relativeRef;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(relativeRef);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testRelativeRef(parser);
     }
@@ -785,8 +764,7 @@ public class UrlParserTest {
     @Ignore
     @Test
     public void testRelativeRefParallel() throws InterruptedException, ExecutionException {
-        final NonTerminalSymbol startSymbol = relativeRef;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(relativeRef);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testRelativeRef(parser);
     }
@@ -808,8 +786,7 @@ public class UrlParserTest {
     @Ignore
     @Test
     public void testURISerial() {
-        final NonTerminalSymbol startSymbol = uri;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(uri);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testURI(parser);
     }
@@ -817,8 +794,7 @@ public class UrlParserTest {
     @Ignore
     @Test
     public void testURIParallel() throws InterruptedException, ExecutionException {
-        final NonTerminalSymbol startSymbol = uri;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(uri);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testURI(parser);
     }
@@ -839,16 +815,14 @@ public class UrlParserTest {
     
     @Test
     public void testPathAbEmptySerial() {
-        final NonTerminalSymbol startSymbol = pathAbEmpty;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(pathAbEmpty);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testPathAbEmpty(parser);
     }
 
     @Test
     public void testPathAbEmptyParallel() throws InterruptedException, ExecutionException {
-        final NonTerminalSymbol startSymbol = pathAbEmpty;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(pathAbEmpty);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testPathAbEmpty(parser);
     }
@@ -881,16 +855,14 @@ public class UrlParserTest {
 
     @Test
     public void testPathAbsoluteSerial() {
-        final NonTerminalSymbol startSymbol = pathAbsolute;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(pathAbsolute);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testPathAbsolute(parser);
     }
     
     @Test
     public void testPathAbsoluteParallel() throws InterruptedException, ExecutionException {
-        final NonTerminalSymbol startSymbol = pathAbsolute;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(pathAbsolute);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testPathAbsolute(parser);
     }
@@ -917,16 +889,14 @@ public class UrlParserTest {
 
     @Test
     public void testPathRootlessSerial() {
-        final NonTerminalSymbol startSymbol = pathRootless;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(pathRootless);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testPathRootless(parser);
     }
     
     @Test
     public void testPathRootlessParallel() throws InterruptedException, ExecutionException {
-        final NonTerminalSymbol startSymbol = pathRootless;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(pathRootless);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testPathRootless(parser);
     }
@@ -952,16 +922,14 @@ public class UrlParserTest {
 
     @Test
     public void testPathEmptySerial() {
-        final NonTerminalSymbol startSymbol = pathEmpty;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(pathEmpty);
         final Parser<UriTerminalType> parser = grammar.createParser();
         testPathEmpty(parser);
     }
     
     @Test
     public void testPathEmptyParallel() throws InterruptedException, ExecutionException {
-        final NonTerminalSymbol startSymbol = pathEmpty;
-        grammar.setStartSymbol(startSymbol);
+        grammar.setStartSymbol(pathEmpty);
         final Parser<UriTerminalType> parser = grammar.threadedCreateParser(executor);
         testPathEmpty(parser);
     }
