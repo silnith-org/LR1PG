@@ -771,11 +771,9 @@ public class Grammar<T extends TerminalSymbol> {
             initialItems1.add(lookaheadItem);
         }
         
-        final Set<LookaheadItem<T>> initialItems = initialItems1;
-        
         compute();
         
-        final ParserState<T> startState = calculateClosure(initialItems);
+        final ParserState<T> startState = calculateClosure(initialItems1);
         /*
          * Start with just the initial state.
          */
