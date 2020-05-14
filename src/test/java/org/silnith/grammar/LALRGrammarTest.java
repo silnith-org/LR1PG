@@ -28,8 +28,10 @@ public class LALRGrammarTest {
 		grammar.addProduction(nonTerminalE, new TestProductionHandler("E"), Terminals.E);
 
 		grammar.addProduction(nonTerminalF, new TestProductionHandler("F"), Terminals.E);
+        grammar.setStartSymbol(nonTerminalS);
+        grammar.setEndOfFileSymbol(Terminals.EOF);
 		
-		parser = grammar.createParser(nonTerminalS, Terminals.EOF);
+		parser = grammar.createParser1();
 	}
 	
 	@Test

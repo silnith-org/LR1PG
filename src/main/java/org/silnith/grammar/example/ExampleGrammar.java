@@ -42,8 +42,10 @@ public class ExampleGrammar {
         final NonTerminalSymbol nonTerminal = grammar.getNonTerminalSymbol("S");
         
 		grammar.addProduction(nonTerminal, new StringProductionHandler("S = A + B + C"), Terminals.A, Terminals.B, Terminals.C);
+        grammar.setStartSymbol(nonTerminal);
+        grammar.setEndOfFileSymbol(Terminals.EOF);
         
-        final Parser<Terminals> parser = grammar.createParser(nonTerminal, Terminals.EOF);
+        final Parser<Terminals> parser = grammar.createParser1();
         
         final List<Terminals> input = Arrays.asList(Terminals.A, Terminals.B, Terminals.C, Terminals.EOF);
         

@@ -25,8 +25,10 @@ public class ParserTest {
         grammar.addProduction(v, new TestProductionHandler("V"), star, e);
         
         grammar.compute();
+        grammar.setStartSymbol(s);
+        grammar.setEndOfFileSymbol(eof);
         
-        final Parser<CharacterLiteral> parser = grammar.createParser(s, eof);
+        final Parser<CharacterLiteral> parser = grammar.createParser1();
         
         parser.parse(new StaticLexer<>(star, x, eq, star, x));
         

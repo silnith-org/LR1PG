@@ -402,12 +402,14 @@ public class GrammarTest {
         grammar.addProduction(white, new TestProductionHandler("white"), space);
         
         grammar.compute();
+        grammar.setStartSymbol(s);
+        grammar.setEndOfFileSymbol(eof);
         
 //        System.out.println(grammar.getFollowSet(end));
 //        System.out.println(grammar.getFollowSet(white_Kleene));
 //        System.out.println(grammar.getFollowSet(white));
         
-        grammar.createParser(s, eof);
+        grammar.createParser1();
     }
     
     @Test
@@ -430,12 +432,14 @@ public class GrammarTest {
         grammar.addProduction(white, new TestProductionHandler("white"), space);
         
         grammar.compute();
+        grammar.setStartSymbol(s);
+        grammar.setEndOfFileSymbol(eof);
         
 //        System.out.println(grammar.getFollowSet(end));
 //        System.out.println(grammar.getFollowSet(white_Kleene));
 //        System.out.println(grammar.getFollowSet(white));
         
-        grammar.createParser(s, eof);
+        grammar.createParser1();
     }
     
     @Test
@@ -459,12 +463,14 @@ public class GrammarTest {
         grammar.addProduction(white, new TestProductionHandler("white"), space);
         
         grammar.compute();
+        grammar.setStartSymbol(s);
+        grammar.setEndOfFileSymbol(eof);
         
 //        System.out.println(grammar.getFollowSet().get(end));
 //        System.out.println(grammar.getFollowSet().get(white_Plus));
 //        System.out.println(grammar.getFollowSet().get(white));
         
-        grammar.createParser(s, eof);
+        grammar.createParser1();
     }
     
 }

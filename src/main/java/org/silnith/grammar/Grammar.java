@@ -751,21 +751,6 @@ public class Grammar<T extends TerminalSymbol> {
     }
     
     /**
-     * Creates a parser for the grammar.  This is called after all calls to {@link #addProduction}.
-     * 
-     * @param startSymbol the initial non-terminal symbol that the parser will attempt to produce
-     *         from the input stream of terminal symbols
-     * @param endOfFileSymbol the terminal symbol that represents the end of the input
-     * @return a parser for the language defined by this grammar
-     */
-    public Parser<T> createParser(final NonTerminalSymbol startSymbol, final T endOfFileSymbol) {
-        setStartSymbol(startSymbol);
-        setEndOfFileSymbol(endOfFileSymbol);
-        
-        return createParser1();
-    }
-    
-    /**
      * Creates a parser for the grammar.  This is called after all calls to
      * {@link #addProduction}, {@link #setStartSymbol(NonTerminalSymbol)}, and {@link #setEndOfFileSymbol(TerminalSymbol)}.
      * 

@@ -25,8 +25,10 @@ public class SLRGrammarTest {
 		grammar.addProduction(nonTerminalS, new TestProductionHandler("S"), Terminals.B, nonTerminalA, Terminals.C);
 		grammar.addProduction(nonTerminalS, new TestProductionHandler("S"), Terminals.D, Terminals.C);
 		grammar.addProduction(nonTerminalS, new TestProductionHandler("S"), Terminals.B, Terminals.D, Terminals.A);
+        grammar.setStartSymbol(nonTerminalS);
+        grammar.setEndOfFileSymbol(Terminals.EOF);
 		
-		parser = grammar.createParser(nonTerminalS, Terminals.EOF);
+		parser = grammar.createParser1();
 	}
 
 	@Test
