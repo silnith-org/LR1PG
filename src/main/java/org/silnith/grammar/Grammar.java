@@ -804,35 +804,40 @@ public class Grammar<T extends TerminalSymbol> {
      * @throws ExecutionException foo
      * @throws InterruptedException bar
      */
-    public Parser<T> threadedCreateParser(final NonTerminalSymbol startSymbol, final T endOfFileSymbol, final ExecutorService executorService) throws InterruptedException, ExecutionException {
-        final long startTime = System.currentTimeMillis();
+    public Parser<T> threadedCreateParser(final NonTerminalSymbol startSymbol, final T endOfFileSymbol, final ExecutorService executorService) {
+        final String sourceMethod = "threadedCreateParser";
+        logger.entering(sourceClass, sourceMethod, new Object[] {startSymbol, endOfFileSymbol});
         
-        final Set<LookaheadItem<T>> initialItems = createInitialItem(startSymbol, endOfFileSymbol);
-
-//        threadedCompute(executorService);
+        final long startTime = System.currentTimeMillis();
+        final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(endOfFileSymbol));
+        
+        addSymbols(startSymbol, endOfFileSymbol);
+        
         compute();
-        final ParserState<T> startState1 = calculateClosure(initialItems);
+        
+        final Production production = new Production(new IdentityProductionHandler(), startSymbol, endOfFileSymbol);
+        final Item item = itemFactory.createItem(START, production, 0);
+        final LookaheadItem<T> lookaheadItem = lookaheadItemFactory.createInstance(item, endOfFileSet);
+        final Set<LookaheadItem<T>> initialItems = Collections.singleton(lookaheadItem);
+        final ParserState<T> startState = calculateClosure(initialItems);
         /*
          * Start with just the initial state.
          */
         
-        computeParseStates(startState1, endOfFileSymbol);
-        
-//        final ParserState<T> startState = threadedComputeParseStates(initialItems, endOfFileSymbol, executorService);
-        final ParserState<T> startState = startState1;
+        computeParseStates(startState, endOfFileSymbol);
         
         final Parser<T> parser = new Parser<>(parserStates, edges, startState, endOfFileSymbol);
         
         final long endTime = System.currentTimeMillis();
         
-//        System.out.print("Parser states creation, Duration: ");
-//        System.out.println(endTime - startTime);
-//        
-//        printStatistics();
+        logger.logp(Level.FINE, sourceClass, sourceMethod, "time to create parser: {0} ms", endTime - startTime);
         
+        logStatistics();
+        
+        logger.exiting(sourceClass, sourceMethod, parser);
         return parser;
     }
-    
+
     private void logFactoryStatistics(final String name, final WeakCanonicalFactory<?> factory) {
         final String sourceMethod = "logFactoryStatistics";
         logger.logp(Level.FINE, sourceClass, sourceMethod, "{0} invocations: {1}, total instances: {2}", new Object[] {name, factory.getCallCount(), factory.getInstanceCount()});
