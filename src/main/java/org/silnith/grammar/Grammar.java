@@ -720,7 +720,7 @@ public class Grammar<T extends TerminalSymbol> {
     
     private void computeParseStates(final ParserState<T> startState) {
         final String sourceMethod = "computeParseStates";
-        logger.entering(sourceClass, sourceMethod, new Object[] {startState});
+        logger.entering(sourceClass, sourceMethod, startState);
         
         Set<ParserState<T>> pending = Collections.singleton(startState);
         
