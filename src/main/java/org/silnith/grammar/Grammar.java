@@ -672,7 +672,7 @@ public class Grammar<T extends TerminalSymbol> {
     
     private Set<Edge<T>> computeOutgoingEdges(final ParserState<T> parserState) {
         final String sourceMethod = "computeOutgoingEdges";
-        logger.entering(sourceClass, sourceMethod, new Object[] {parserState});
+        logger.entering(sourceClass, sourceMethod, parserState);
         
         final Set<LookaheadItem<T>> stateItems = parserState.getItems();
         
