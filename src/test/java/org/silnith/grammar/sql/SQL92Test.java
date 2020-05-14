@@ -1502,6 +1502,6 @@ public class SQL92Test {
     public void testGrammar() throws InterruptedException, ExecutionException {
         grammar.setStartSymbol(nt("module"));
         grammar.setEndOfFileSymbol(end_of_file);
-        grammar.threadedCreateParser1(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+        grammar.threadedCreateParser(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
     }
 }

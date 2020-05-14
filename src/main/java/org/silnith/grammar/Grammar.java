@@ -856,7 +856,7 @@ public class Grammar<T extends TerminalSymbol> {
      * @throws ExecutionException foo
      * @throws InterruptedException bar
      */
-    public Parser<T> threadedCreateParser1(final ExecutorService executorService)
+    public Parser<T> threadedCreateParser(final ExecutorService executorService)
             throws InterruptedException, ExecutionException {
         final String sourceMethod = "threadedCreateParser";
         logger.entering(sourceClass, sourceMethod, new Object[] {this.startSymbol, this.endOfFileSymbol});
