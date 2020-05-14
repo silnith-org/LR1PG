@@ -620,20 +620,19 @@ public class Grammar<T extends TerminalSymbol> {
         Set<ParserState<T>> pending = Collections.singleton(startState);
         
         while ( !pending.isEmpty()) {
-            final Set<ParserState<T>> newParserStates = new HashSet<>();
             final Set<Edge<T>> newEdges = new HashSet<>();
             
             logger.logp(Level.FINE, sourceClass, sourceMethod, "parser states to compute: {0}", pending.size());
             
             for (final ParserState<T> parserState : pending) {
-                final Set<Edge<T>> newEdgesForState = computeOutgoingEdges(parserState, endOfFileSymbol, newParserStates);
+                final Set<Edge<T>> newEdgesForState = computeOutgoingEdges(parserState, endOfFileSymbol, new HashSet<ParserState<T>>());
                 newEdges.addAll(newEdgesForState);
             }
             
             parserStates.addAll(pending);
             edges.addAll(newEdges);
-            
-            newParserStates.clear();
+
+            final Set<ParserState<T>> newParserStates = new HashSet<>();
             for (final Edge<T> edge : newEdges) {
                 newParserStates.add(edge.getFinalState());
             }
