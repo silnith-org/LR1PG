@@ -770,9 +770,7 @@ public class Grammar<T extends TerminalSymbol> {
         
         final Item item = itemFactory.createItem(START, production, 0);
         final LookaheadItem<T> lookaheadItem = lookaheadItemFactory.createInstance(item, endOfFileSet);
-        
         final Set<LookaheadItem<T>> initialItems = Collections.singleton(lookaheadItem);
-        
         final ParserState<T> startState = calculateClosure(initialItems);
         /*
          * Start with just the initial state.
