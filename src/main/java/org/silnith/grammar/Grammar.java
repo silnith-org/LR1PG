@@ -877,6 +877,21 @@ public class Grammar<T extends TerminalSymbol> {
         setStartSymbol(startSymbol);
         setEndOfFileSymbol(endOfFileSymbol);
         
+        return threadedCreateParser1(executorService);
+    }
+
+
+    /**
+     * Creates a parser for the grammar.  This is called after all calls to
+     * {@link #addProduction}, {@link #setStartSymbol(NonTerminalSymbol)}, and {@link #setEndOfFileSymbol(TerminalSymbol)}.
+     * 
+     * @param executorService the thread pool to use
+     * @return a parser for the language defined by this grammar
+     * @throws ExecutionException foo
+     * @throws InterruptedException bar
+     */
+    public Parser<T> threadedCreateParser1(final ExecutorService executorService)
+            throws InterruptedException, ExecutionException {
         final String sourceMethod = "threadedCreateParser";
         logger.entering(sourceClass, sourceMethod, new Object[] {this.startSymbol, this.endOfFileSymbol});
         
