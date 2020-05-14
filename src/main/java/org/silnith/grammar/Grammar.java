@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -732,7 +733,7 @@ public class Grammar<T extends TerminalSymbol> {
         logger.exiting(sourceClass, sourceMethod);
     }
     
-    private void threadedComputeParseStates(final ParserState<T> startState, final T endOfFileSymbol, final ExecutorService executorService) {
+    private void threadedComputeParseStates(final ParserState<T> startState, final T endOfFileSymbol, final ExecutorService executorService) throws InterruptedException, ExecutionException {
         final String sourceMethod = "threadedComputeParseStates";
         logger.entering(sourceClass, sourceMethod, new Object[] {startState, endOfFileSymbol});
         
@@ -747,9 +748,11 @@ public class Grammar<T extends TerminalSymbol> {
                 tasks.add(task);
             }
             
+            final List<Future<Set<Edge<T>>>> futures = executorService.invokeAll(tasks);
+            
             final Set<Edge<T>> newEdges = new HashSet<>(pending.size());
-            for (final NewEdgeComputer task : tasks) {
-                final Set<Edge<T>> newEdgesForState = task.call();
+            for (final Future<Set<Edge<T>>> future : futures) {
+                final Set<Edge<T>> newEdgesForState = future.get();
                 newEdges.addAll(newEdgesForState);
             }
             
