@@ -206,6 +206,7 @@ public class Grammar<T extends TerminalSymbol> {
         
         nullableComputed = false;
         firstComputed = false;
+        followComputed = false;
         
         parserStates.clear();
         edges.clear();
@@ -345,6 +346,7 @@ public class Grammar<T extends TerminalSymbol> {
                         final boolean addedElements = firstSet.addAll(first.get(symbol));
                         changed = addedElements || changed;
                         
+                        assert nullableComputed;
                         if (!nullable.contains(symbol)) {
                             /*
                              * Break inner loop only, continue outer loop.
@@ -362,6 +364,8 @@ public class Grammar<T extends TerminalSymbol> {
         
         logger.exiting(sourceClass, sourceMethod);
     }
+    
+    private boolean followComputed = false;
     
     /**
      * Compute the follow set for each symbol.
@@ -395,6 +399,7 @@ public class Grammar<T extends TerminalSymbol> {
                         
                         final boolean b = follow.get(symbol).addAll(nonTerminalFollowSet);
                         changed = b || changed;
+                        assert nullableComputed;
                         if (!nullable.contains(symbol)) {
                             break;
                         }
@@ -409,9 +414,11 @@ public class Grammar<T extends TerminalSymbol> {
                         final ListIterator<Symbol> rangeEndIter = productionSymbols.listIterator(startIndex + 1);
                         while (rangeEndIter.hasNext()) {
                             final Symbol endSymbol = rangeEndIter.next();
-                            
+
+                            assert firstComputed;
                             final boolean b = followSet.addAll(first.get(endSymbol));
                             changed = b || changed;
+                            assert nullableComputed;
                             if (!nullable.contains(endSymbol)) {
                                 break;
                             }
@@ -422,6 +429,8 @@ public class Grammar<T extends TerminalSymbol> {
         } while (changed);
         
         logger.logp(Level.FINE, sourceClass, sourceMethod, "follow sets: {0}", follow);
+        
+        followComputed = true;
         
         logger.exiting(sourceClass, sourceMethod);
     }
@@ -551,8 +560,11 @@ public class Grammar<T extends TerminalSymbol> {
                  * The subList may be an empty list.
                  */
                 for (final Symbol symbol : symbols.subList(nextSymbolIndex, symbols.size())) {
+                    
+                    assert firstComputed;
                     firstSetOfRemainder.addAll(first.get(symbol));
-    
+                    
+                    assert nullableComputed;
                     if (!nullable.contains(symbol)) {
                         remainderIsNullable = false;
                         break;
