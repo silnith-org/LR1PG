@@ -776,12 +776,12 @@ public class Grammar<T extends TerminalSymbol> {
         logger.entering(sourceClass, sourceMethod, new Object[] {this.startSymbol, this.endOfFileSymbol});
         
         final long startTime = System.currentTimeMillis();
-        final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(this.endOfFileSymbol));
         
         compute();
         
         final Production production = new Production(new IdentityProductionHandler(), this.startSymbol, this.endOfFileSymbol);
         final Item item = itemFactory.createItem(START, production, 0);
+        final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(this.endOfFileSymbol));
         final LookaheadItem<T> lookaheadItem = lookaheadItemFactory.createInstance(item, endOfFileSet);
         final Set<LookaheadItem<T>> initialItems = Collections.singleton(lookaheadItem);
         final ParserState<T> startState = calculateClosure(initialItems);
@@ -896,12 +896,12 @@ public class Grammar<T extends TerminalSymbol> {
         logger.entering(sourceClass, sourceMethod, new Object[] {this.startSymbol, this.endOfFileSymbol});
         
         final long startTime = System.currentTimeMillis();
-        final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(this.endOfFileSymbol));
         
         compute();
         
         final Production production = new Production(new IdentityProductionHandler(), this.startSymbol, this.endOfFileSymbol);
         final Item item = itemFactory.createItem(START, production, 0);
+        final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(this.endOfFileSymbol));
         final LookaheadItem<T> lookaheadItem = lookaheadItemFactory.createInstance(item, endOfFileSet);
         final Set<LookaheadItem<T>> initialItems = Collections.singleton(lookaheadItem);
         final ParserState<T> startState = calculateClosure(initialItems);
