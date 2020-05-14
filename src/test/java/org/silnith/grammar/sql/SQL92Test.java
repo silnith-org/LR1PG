@@ -1500,6 +1500,8 @@ public class SQL92Test {
 //    @Ignore
     @Test
     public void testGrammar() throws InterruptedException, ExecutionException {
-        grammar.threadedCreateParser(nt("module"), end_of_file, Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+        grammar.setStartSymbol(nt("module"));
+        grammar.setEndOfFileSymbol(end_of_file);
+        grammar.threadedCreateParser1(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
     }
 }
