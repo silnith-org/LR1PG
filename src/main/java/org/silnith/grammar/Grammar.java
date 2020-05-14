@@ -1,5 +1,6 @@
 package org.silnith.grammar;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -741,8 +742,10 @@ public class Grammar<T extends TerminalSymbol> {
             logger.logp(Level.FINE, sourceClass, sourceMethod, "parser states to compute: {0}", pending.size());
 
             final Set<Edge<T>> newEdges = new HashSet<>(pending.size());
+            final List<NewEdgeComputer> tasks = new ArrayList<>(pending.size());
             for (final ParserState<T> parserState : pending) {
                 final NewEdgeComputer task = new NewEdgeComputer(parserState, endOfFileSymbol);
+                tasks.add(task);
                 final Set<Edge<T>> newEdgesForState = task.call();
                 newEdges.addAll(newEdgesForState);
             }
