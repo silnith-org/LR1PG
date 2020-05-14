@@ -365,12 +365,14 @@ public class UrlParserTest {
     
     @Test
     public void testPercentEncodedSerial() {
-        testPercentEncoded(grammar.createParser(pctEncoded, EndOfFile));
+        final Parser<UriTerminalType> parser = grammar.createParser(pctEncoded, EndOfFile);
+        testPercentEncoded(parser);
     }
     
     @Test
     public void testPercentEncodedParallel() throws InterruptedException, ExecutionException {
-        testPercentEncoded(grammar.threadedCreateParser(pctEncoded, EndOfFile, executor));
+        final Parser<UriTerminalType> parser = grammar.threadedCreateParser(pctEncoded, EndOfFile, executor);
+        testPercentEncoded(parser);
     }
     
     private void testPercentEncoded(final Parser<UriTerminalType> parser) {
@@ -390,12 +392,14 @@ public class UrlParserTest {
     
     @Test
     public void testSchemeSerial() {
-        testScheme(grammar.createParser(scheme, EndOfFile));
+        final Parser<UriTerminalType> parser = grammar.createParser(scheme, EndOfFile);
+        testScheme(parser);
     }
     
     @Test
     public void testSchemeParallel() throws InterruptedException, ExecutionException {
-        testScheme(grammar.threadedCreateParser(scheme, EndOfFile, executor));
+        final Parser<UriTerminalType> parser = grammar.threadedCreateParser(scheme, EndOfFile, executor);
+        testScheme(parser);
     }
     
     private void testScheme(final Parser<UriTerminalType> parser) {
@@ -440,12 +444,14 @@ public class UrlParserTest {
     
     @Test
     public void testUserinfoSerial() {
-        testUserinfo(grammar.createParser(userinfo, EndOfFile));
+        final Parser<UriTerminalType> parser = grammar.createParser(userinfo, EndOfFile);
+        testUserinfo(parser);
     }
     
     @Test
     public void testUserinfoParallel() throws InterruptedException, ExecutionException {
-        testUserinfo(grammar.threadedCreateParser(userinfo, EndOfFile, executor));
+        final Parser<UriTerminalType> parser = grammar.threadedCreateParser(userinfo, EndOfFile, executor);
+        testUserinfo(parser);
     }
     
     private void testUserinfo(final Parser<UriTerminalType> parser) {
@@ -472,12 +478,14 @@ public class UrlParserTest {
     
     @Test
     public void testHostSerial() {
-        testHost(grammar.createParser(host, EndOfFile));
+        final Parser<UriTerminalType> parser = grammar.createParser(host, EndOfFile);
+        testHost(parser);
     }
     
     @Test
     public void testHostParallel() throws InterruptedException, ExecutionException {
-        testHost(grammar.threadedCreateParser(host, EndOfFile, executor));
+        final Parser<UriTerminalType> parser = grammar.threadedCreateParser(host, EndOfFile, executor);
+        testHost(parser);
     }
     
     private void testHost(final Parser<UriTerminalType> parser) {
@@ -505,12 +513,14 @@ public class UrlParserTest {
     
     @Test
     public void testPortSerial() {
-        testPort(grammar.createParser(port, EndOfFile));
+        final Parser<UriTerminalType> parser = grammar.createParser(port, EndOfFile);
+        testPort(parser);
     }
     
     @Test
     public void testPortParallel() throws InterruptedException, ExecutionException {
-        testPort(grammar.threadedCreateParser(port, EndOfFile, executor));
+        final Parser<UriTerminalType> parser = grammar.threadedCreateParser(port, EndOfFile, executor);
+        testPort(parser);
     }
 
     private void testPort(final Parser<UriTerminalType> parser) {
@@ -543,12 +553,14 @@ public class UrlParserTest {
     
     @Test
     public void testAuthoritySerial() {
-        testAuthority(grammar.createParser(authority, EndOfFile));
+        final Parser<UriTerminalType> parser = grammar.createParser(authority, EndOfFile);
+        testAuthority(parser);
     }
     
     @Test
     public void testAuthorityParallel() throws InterruptedException, ExecutionException {
-        testAuthority(grammar.threadedCreateParser(authority, EndOfFile, executor));
+        final Parser<UriTerminalType> parser = grammar.threadedCreateParser(authority, EndOfFile, executor);
+        testAuthority(parser);
     }
     
     private void testAuthority(final Parser<UriTerminalType> parser) {
@@ -586,12 +598,14 @@ public class UrlParserTest {
     
     @Test
     public void testSegmentSerial() {
-        testSegment(grammar.createParser(segment, EndOfFile));
+        final Parser<UriTerminalType> parser = grammar.createParser(segment, EndOfFile);
+        testSegment(parser);
     }
     
     @Test
     public void testSegmentParallel() throws InterruptedException, ExecutionException {
-        testSegment(grammar.threadedCreateParser(segment, EndOfFile, executor));
+        final Parser<UriTerminalType> parser = grammar.threadedCreateParser(segment, EndOfFile, executor);
+        testSegment(parser);
     }
     
     private void testSegment(final Parser<UriTerminalType> parser) {
@@ -630,12 +644,14 @@ public class UrlParserTest {
     
     @Test
     public void testSegmentSequenceSerial() {
-        testSegmentSequence(grammar.createParser(segmentSequence, EndOfFile));
+        final Parser<UriTerminalType> parser = grammar.createParser(segmentSequence, EndOfFile);
+        testSegmentSequence(parser);
     }
     
     @Test
     public void testSegmentSequenceParallel() throws InterruptedException, ExecutionException {
-        testSegmentSequence(grammar.threadedCreateParser(segmentSequence, EndOfFile, executor));
+        final Parser<UriTerminalType> parser = grammar.threadedCreateParser(segmentSequence, EndOfFile, executor);
+        testSegmentSequence(parser);
     }
     
     private void testSegmentSequence(final Parser<UriTerminalType> parser) {
@@ -653,12 +669,14 @@ public class UrlParserTest {
     
     @Test
     public void testQuerySerial() {
-        testQuery(grammar.createParser(query, EndOfFile));
+        final Parser<UriTerminalType> parser = grammar.createParser(query, EndOfFile);
+        testQuery(parser);
     }
     
     @Test
     public void testQueryParallel() throws InterruptedException, ExecutionException {
-        testQuery(grammar.threadedCreateParser(query, EndOfFile, executor));
+        final Parser<UriTerminalType> parser = grammar.threadedCreateParser(query, EndOfFile, executor);
+        testQuery(parser);
     }
 
     private void testQuery(final Parser<UriTerminalType> parser) {
@@ -683,12 +701,14 @@ public class UrlParserTest {
     
     @Test
     public void testFragmentSerial() {
-        testFragment(grammar.createParser(fragment, EndOfFile));
+        final Parser<UriTerminalType> parser = grammar.createParser(fragment, EndOfFile);
+        testFragment(parser);
     }
     
     @Test
     public void testFragmentParallel() throws InterruptedException, ExecutionException {
-        testFragment(grammar.threadedCreateParser(fragment, EndOfFile, executor));
+        final Parser<UriTerminalType> parser = grammar.threadedCreateParser(fragment, EndOfFile, executor);
+        testFragment(parser);
     }
     
     private void testFragment(final Parser<UriTerminalType> parser) {
@@ -714,13 +734,15 @@ public class UrlParserTest {
     @Ignore
     @Test
     public void testRelativeRefSerial() {
-        testRelativeRef(grammar.createParser(relativeRef, EndOfFile));
+        final Parser<UriTerminalType> parser = grammar.createParser(relativeRef, EndOfFile);
+        testRelativeRef(parser);
     }
 
     @Ignore
     @Test
     public void testRelativeRefParallel() throws InterruptedException, ExecutionException {
-        testRelativeRef(grammar.threadedCreateParser(relativeRef, EndOfFile, executor));
+        final Parser<UriTerminalType> parser = grammar.threadedCreateParser(relativeRef, EndOfFile, executor);
+        testRelativeRef(parser);
     }
 
     private void testRelativeRef(final Parser<UriTerminalType> parser) {
@@ -740,13 +762,15 @@ public class UrlParserTest {
     @Ignore
     @Test
     public void testURISerial() {
-        testURI(grammar.createParser(uri, EndOfFile));
+        final Parser<UriTerminalType> parser = grammar.createParser(uri, EndOfFile);
+        testURI(parser);
     }
 
     @Ignore
     @Test
     public void testURIParallel() throws InterruptedException, ExecutionException {
-        testURI(grammar.threadedCreateParser(uri, EndOfFile, executor));
+        final Parser<UriTerminalType> parser = grammar.threadedCreateParser(uri, EndOfFile, executor);
+        testURI(parser);
     }
     
     private void testURI(final Parser<UriTerminalType> parser) {
@@ -765,12 +789,14 @@ public class UrlParserTest {
     
     @Test
     public void testPathAbEmptySerial() {
-        testPathAbEmpty(grammar.createParser(pathAbEmpty, EndOfFile));
+        final Parser<UriTerminalType> parser = grammar.createParser(pathAbEmpty, EndOfFile);
+        testPathAbEmpty(parser);
     }
 
     @Test
     public void testPathAbEmptyParallel() throws InterruptedException, ExecutionException {
-        testPathAbEmpty(grammar.threadedCreateParser(pathAbEmpty, EndOfFile, executor));
+        final Parser<UriTerminalType> parser = grammar.threadedCreateParser(pathAbEmpty, EndOfFile, executor);
+        testPathAbEmpty(parser);
     }
 
     private void testPathAbEmpty(final Parser<UriTerminalType> parser) {
@@ -801,12 +827,14 @@ public class UrlParserTest {
 
     @Test
     public void testPathAbsoluteSerial() {
-        testPathAbsolute(grammar.createParser(pathAbsolute, EndOfFile));
+        final Parser<UriTerminalType> parser = grammar.createParser(pathAbsolute, EndOfFile);
+        testPathAbsolute(parser);
     }
     
     @Test
     public void testPathAbsoluteParallel() throws InterruptedException, ExecutionException {
-        testPathAbsolute(grammar.threadedCreateParser(pathAbsolute, EndOfFile, executor));
+        final Parser<UriTerminalType> parser = grammar.threadedCreateParser(pathAbsolute, EndOfFile, executor);
+        testPathAbsolute(parser);
     }
     
     private void testPathAbsolute(final Parser<UriTerminalType> parser) {
@@ -831,12 +859,14 @@ public class UrlParserTest {
 
     @Test
     public void testPathRootlessSerial() {
-        testPathRootless(grammar.createParser(pathRootless, EndOfFile));
+        final Parser<UriTerminalType> parser = grammar.createParser(pathRootless, EndOfFile);
+        testPathRootless(parser);
     }
     
     @Test
     public void testPathRootlessParallel() throws InterruptedException, ExecutionException {
-        testPathRootless(grammar.threadedCreateParser(pathRootless, EndOfFile, executor));
+        final Parser<UriTerminalType> parser = grammar.threadedCreateParser(pathRootless, EndOfFile, executor);
+        testPathRootless(parser);
     }
     
     private void testPathRootless(final Parser<UriTerminalType> parser) {
@@ -860,12 +890,14 @@ public class UrlParserTest {
 
     @Test
     public void testPathEmptySerial() {
-        testPathEmpty(grammar.createParser(pathEmpty, EndOfFile));
+        final Parser<UriTerminalType> parser = grammar.createParser(pathEmpty, EndOfFile);
+        testPathEmpty(parser);
     }
     
     @Test
     public void testPathEmptyParallel() throws InterruptedException, ExecutionException {
-        testPathEmpty(grammar.threadedCreateParser(pathEmpty, EndOfFile, executor));
+        final Parser<UriTerminalType> parser = grammar.threadedCreateParser(pathEmpty, EndOfFile, executor);
+        testPathEmpty(parser);
     }
     
     private void testPathEmpty(final Parser<UriTerminalType> parser) {
