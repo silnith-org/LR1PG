@@ -37,6 +37,8 @@ public class SQL92Test {
         
         grammar = new Grammar<>(new EnumSetFactory<>(Terminals.class));
         
+        grammar.setEndOfFileSymbol(end_of_file);
+        
         /*
          * Basic Definitions of Characters Used, Tokens, Symbols, Etc.
          */
@@ -1501,7 +1503,6 @@ public class SQL92Test {
     @Test
     public void testGrammar() throws InterruptedException, ExecutionException {
         grammar.setStartSymbol(nt("module"));
-        grammar.setEndOfFileSymbol(end_of_file);
         grammar.threadedCreateParser(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
     }
 }
