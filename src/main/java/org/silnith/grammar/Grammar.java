@@ -765,8 +765,8 @@ public class Grammar<T extends TerminalSymbol> {
         final Set<Production> productionSet;
         
         productionSet = new HashSet<Production>();
-        productions.put(START, productionSet);
         productionSet.add(production1);
+        productions.put(START, productionSet);
         
         nonTerminalSymbols.add(START);
         addSymbols(startSymbol, endOfFileSymbol);
