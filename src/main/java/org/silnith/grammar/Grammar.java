@@ -645,7 +645,6 @@ public class Grammar<T extends TerminalSymbol> {
 
     private Set<Edge<T>> computeOutgoingEdges(final ParserState<T> parserState, final T endOfFileSymbol,
             final Set<ParserState<T>> newParserStates) {
-        final Set<Edge<T>> newEdges = new HashSet<>();
         final Set<LookaheadItem<T>> stateItems = parserState.getItems();
         
         /*
@@ -671,6 +670,7 @@ public class Grammar<T extends TerminalSymbol> {
         /*
          * For each symbol that could advance an item...
          */
+        final Set<Edge<T>> newEdges = new HashSet<>();
         for (final Symbol symbol : relevantSymbols) {
             /*
              * Find the closure of all items that would be advanced by the next symbol in the current item.
