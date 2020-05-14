@@ -804,9 +804,9 @@ public class Grammar<T extends TerminalSymbol> {
         
     }
 
-    private void threadedComputeParseStates(final ParserState<T> startState, final T endOfFileSymbol, final ExecutorService executorService) throws InterruptedException, ExecutionException {
+    private void threadedComputeParseStates(final ParserState<T> startState, final ExecutorService executorService) throws InterruptedException, ExecutionException {
         final String sourceMethod = "threadedComputeParseStates";
-        logger.entering(sourceClass, sourceMethod, new Object[] {startState, endOfFileSymbol});
+        logger.entering(sourceClass, sourceMethod, startState);
         
         Set<ParserState<T>> pending = Collections.singleton(startState);
         
@@ -872,7 +872,7 @@ public class Grammar<T extends TerminalSymbol> {
          * Start with just the initial state.
          */
         
-        threadedComputeParseStates(startState, this.endOfFileSymbol, executorService);
+        threadedComputeParseStates(startState, executorService);
         
         final Parser<T> parser = new Parser<>(parserStates, edges, startState, this.endOfFileSymbol);
         
