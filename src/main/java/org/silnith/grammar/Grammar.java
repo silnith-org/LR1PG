@@ -763,13 +763,9 @@ public class Grammar<T extends TerminalSymbol> {
         
         final Production production1 = new Production(new IdentityProductionHandler(), startSymbol, endOfFileSymbol);
         final Set<Production> productionSet;
-        assert !false;
-        if (false) {
-            productionSet = productions.get(START);
-        } else {
-            productionSet = new HashSet<Production>();
-            productions.put(START, productionSet);
-        }
+        
+        productionSet = new HashSet<Production>();
+        productions.put(START, productionSet);
         productionSet.add(production1);
         
         nonTerminalSymbols.add(START);
