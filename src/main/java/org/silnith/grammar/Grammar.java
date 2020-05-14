@@ -425,6 +425,48 @@ public class Grammar<T extends TerminalSymbol> {
         logger.exiting(sourceClass, sourceMethod);
     }
     
+    /**
+     * Calculates a new parser state by taking an existing state and one symbol, finding all items in the state that
+     * would be advanced by that symbol, and for those items creating new items that are advanced by that one symbol.
+     * The set of new items that have been advanced are combined into a new parser state.
+     * 
+     * @param itemSet the existing parser state items.
+     * @param symbol the symbol to use to advance items
+     * @return a new parser state that is the existing parser state advanced by the symbol
+     */
+    private ParserState<T> calculateGoto(final Collection<LookaheadItem<T>> itemSet, final Symbol symbol) {
+        final String sourceMethod = "calculateGoto";
+        logger.entering(sourceClass, sourceMethod, new Object[] {itemSet, symbol});
+        
+        final Set<LookaheadItem<T>> newItemSet = new HashSet<>(itemSet.size());
+        
+        /*
+         * Go through the look-ahead item set, find the items that would be advanced by the given symbol.
+         * Create new items for each of those that are advanced by one parse position.
+         */
+        // simple enough not to parallelize
+        for (final LookaheadItem<T> lookaheadItem : itemSet) {
+            final Item item = lookaheadItem.getItem();
+            if (item.isComplete()) {
+                continue;
+            }
+            
+            final Symbol nextSymbol = item.getNextSymbol();
+            if (symbol.equals(nextSymbol)) {
+                final Item newItem = itemFactory.createItem(item.getTarget(), item.getProduction(), item.getParserPosition() + 1);
+                final LookaheadItem<T> newLookaheadItem = lookaheadItemFactory.createInstance(newItem, lookaheadItem.getLookaheadSet());
+                newItemSet.add(newLookaheadItem);
+            }
+        }
+        
+        logger.logp(Level.FINEST, sourceClass, sourceMethod, "goto item set size: {0}", newItemSet.size());
+        
+        final ParserState<T> closure = calculateClosure(newItemSet);
+        
+        logger.exiting(sourceClass, sourceMethod, closure);
+        return closure;
+    }
+    
     private ParserState<T> calculateClosure(final Collection<LookaheadItem<T>> items) {
         final String sourceMethod = "calculateClosure";
         logger.entering(sourceClass, sourceMethod, items);
@@ -451,7 +493,7 @@ public class Grammar<T extends TerminalSymbol> {
             
             itemLookaheadMap.put(item, terminalSetFactory.getNewSet(lookaheadSet));
         }
-
+    
         final Map<Item, Set<T>> additions = new HashMap<Item, Set<T>>();
         
         boolean changed;
@@ -498,13 +540,13 @@ public class Grammar<T extends TerminalSymbol> {
                  */
                 for (final Symbol symbol : symbols.subList(nextSymbolIndex, symbols.size())) {
                     firstSetOfRemainder.addAll(first.get(symbol));
-
+    
                     if (!nullable.contains(symbol)) {
                         remainderIsNullable = false;
                         break;
                     }
                 }
-
+    
                 /*
                  * Add all the productions for the non-terminal to the parser state.
                  */
@@ -566,48 +608,6 @@ public class Grammar<T extends TerminalSymbol> {
         return parserState;
     }
 
-    /**
-     * Calculates a new parser state by taking an existing state and one symbol, finding all items in the state that
-     * would be advanced by that symbol, and for those items creating new items that are advanced by that one symbol.
-     * The set of new items that have been advanced are combined into a new parser state.
-     * 
-     * @param itemSet the existing parser state items.
-     * @param symbol the symbol to use to advance items
-     * @return a new parser state that is the existing parser state advanced by the symbol
-     */
-    private ParserState<T> calculateGoto(final Collection<LookaheadItem<T>> itemSet, final Symbol symbol) {
-        final String sourceMethod = "calculateGoto";
-        logger.entering(sourceClass, sourceMethod, new Object[] {itemSet, symbol});
-        
-        final Set<LookaheadItem<T>> newItemSet = new HashSet<>(itemSet.size());
-        
-        /*
-         * Go through the look-ahead item set, find the items that would be advanced by the given symbol.
-         * Create new items for each of those that are advanced by one parse position.
-         */
-        // simple enough not to parallelize
-        for (final LookaheadItem<T> lookaheadItem : itemSet) {
-            final Item item = lookaheadItem.getItem();
-            if (item.isComplete()) {
-                continue;
-            }
-            
-            final Symbol nextSymbol = item.getNextSymbol();
-            if (symbol.equals(nextSymbol)) {
-                final Item newItem = itemFactory.createItem(item.getTarget(), item.getProduction(), item.getParserPosition() + 1);
-                final LookaheadItem<T> newLookaheadItem = lookaheadItemFactory.createInstance(newItem, lookaheadItem.getLookaheadSet());
-                newItemSet.add(newLookaheadItem);
-            }
-        }
-        
-        logger.logp(Level.FINEST, sourceClass, sourceMethod, "goto item set size: {0}", newItemSet.size());
-        
-        final ParserState<T> closure = calculateClosure(newItemSet);
-        
-        logger.exiting(sourceClass, sourceMethod, closure);
-        return closure;
-    }
-    
     private Set<Edge<T>> computeOutgoingEdges(final ParserState<T> parserState, final T endOfFileSymbol) {
         final String sourceMethod = "computeOutgoingEdges";
         logger.entering(sourceClass, sourceMethod, new Object[] {parserState, endOfFileSymbol});
