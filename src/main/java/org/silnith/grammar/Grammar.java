@@ -792,7 +792,7 @@ public class Grammar<T extends TerminalSymbol> {
         
         private final ParserState<T> parserState;
         
-        public NewEdgeComputer(final ParserState<T> parserState, final T endOfFileSymbol) {
+        public NewEdgeComputer(final ParserState<T> parserState) {
             super();
             this.parserState = parserState;
         }
@@ -815,7 +815,7 @@ public class Grammar<T extends TerminalSymbol> {
     
             final List<NewEdgeComputer> tasks = new ArrayList<>(pending.size());
             for (final ParserState<T> parserState : pending) {
-                final NewEdgeComputer task = new NewEdgeComputer(parserState, endOfFileSymbol);
+                final NewEdgeComputer task = new NewEdgeComputer(parserState);
                 tasks.add(task);
             }
             
