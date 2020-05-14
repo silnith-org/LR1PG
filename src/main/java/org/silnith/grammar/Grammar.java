@@ -626,7 +626,7 @@ public class Grammar<T extends TerminalSymbol> {
             logger.logp(Level.FINE, sourceClass, sourceMethod, "parser states to compute: {0}", pending.size());
             
             for (final ParserState<T> parserState : pending) {
-                computeOutgoingEdges(parserState, endOfFileSymbol, newParserStates, newEdges);
+                final Set<Edge<T>> newEdgesForState = computeOutgoingEdges(parserState, endOfFileSymbol, newParserStates, newEdges);
             }
             
             parserStates.addAll(pending);
