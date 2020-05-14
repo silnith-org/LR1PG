@@ -647,6 +647,9 @@ public class Grammar<T extends TerminalSymbol> {
     }
 
     private Set<Edge<T>> computeOutgoingEdges(final ParserState<T> parserState, final T endOfFileSymbol) {
+        final String sourceMethod = "computeOutgoingEdges";
+        logger.entering(sourceClass, sourceMethod, new Object[] {parserState, endOfFileSymbol});
+        
         final Set<LookaheadItem<T>> stateItems = parserState.getItems();
         
         /*
@@ -669,6 +672,7 @@ public class Grammar<T extends TerminalSymbol> {
         
         relevantSymbols.remove(endOfFileSymbol);
         
+        logger.logp(Level.FINEST, sourceClass, sourceMethod, "computing new states for {0} relevant symbols", relevantSymbols.size());
         /*
          * For each symbol that could advance an item...
          */
@@ -685,7 +689,8 @@ public class Grammar<T extends TerminalSymbol> {
             
             newEdges.add(newEdge);
         }
-        
+
+        logger.exiting(sourceClass, sourceMethod, newEdges);
         return newEdges;
     }
 
