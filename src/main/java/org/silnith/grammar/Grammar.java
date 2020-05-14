@@ -626,44 +626,7 @@ public class Grammar<T extends TerminalSymbol> {
             logger.logp(Level.FINE, sourceClass, sourceMethod, "parser states to compute: {0}", pending.size());
             
             for (final ParserState<T> parserState : pending) {
-                final Set<LookaheadItem<T>> stateItems = parserState.getItems();
-                
-                /*
-                 * For each production + parse position + lookahead in the parser state...
-                 */
-                /*
-                 * Find all symbols that could advance any one of the items in the state.
-                 */
-                final Set<Symbol> relevantSymbols = new HashSet<>();
-                for (final LookaheadItem<T> lookaheadItem : stateItems) {
-                    final Item item = lookaheadItem.getItem();
-                    if (item.isComplete()) {
-                        continue;
-                    }
-                    
-                    final Symbol nextSymbol = item.getNextSymbol();
-                    
-                    relevantSymbols.add(nextSymbol);
-                }
-                
-                relevantSymbols.remove(endOfFileSymbol);
-                
-                /*
-                 * For each symbol that could advance an item...
-                 */
-                for (final Symbol symbol : relevantSymbols) {
-                    /*
-                     * Find the closure of all items that would be advanced by the next symbol in the current item.
-                     */
-                    final ParserState<T> newParserState = calculateGoto(stateItems, symbol);
-                    /*
-                     * Create an edge from the existing state to the new state.
-                     */
-                    final Edge<T> newEdge = edgeFactory.createInstance(parserState, symbol, newParserState);
-                    
-                    newParserStates.add(newParserState);
-                    newEdges.add(newEdge);
-                }
+                computeOutgoingEdges(parserState, endOfFileSymbol, newParserStates, newEdges);
             }
             
             parserStates.addAll(pending);
@@ -677,6 +640,48 @@ public class Grammar<T extends TerminalSymbol> {
         
         logger.exiting(sourceClass, sourceMethod, startState);
         return startState;
+    }
+
+    private void computeOutgoingEdges(final ParserState<T> parserState, final T endOfFileSymbol,
+            final Set<ParserState<T>> newParserStates, final Set<Edge<T>> newEdges) {
+        final Set<LookaheadItem<T>> stateItems = parserState.getItems();
+        
+        /*
+         * For each production + parse position + lookahead in the parser state...
+         */
+        /*
+         * Find all symbols that could advance any one of the items in the state.
+         */
+        final Set<Symbol> relevantSymbols = new HashSet<>();
+        for (final LookaheadItem<T> lookaheadItem : stateItems) {
+            final Item item = lookaheadItem.getItem();
+            if (item.isComplete()) {
+                continue;
+            }
+            
+            final Symbol nextSymbol = item.getNextSymbol();
+            
+            relevantSymbols.add(nextSymbol);
+        }
+        
+        relevantSymbols.remove(endOfFileSymbol);
+        
+        /*
+         * For each symbol that could advance an item...
+         */
+        for (final Symbol symbol : relevantSymbols) {
+            /*
+             * Find the closure of all items that would be advanced by the next symbol in the current item.
+             */
+            final ParserState<T> newParserState = calculateGoto(stateItems, symbol);
+            /*
+             * Create an edge from the existing state to the new state.
+             */
+            final Edge<T> newEdge = edgeFactory.createInstance(parserState, symbol, newParserState);
+            
+            newParserStates.add(newParserState);
+            newEdges.add(newEdge);
+        }
     }
 
     private Set<LookaheadItem<T>> createInitialItem(final NonTerminalSymbol startSymbol, final T endOfFileSymbol) {
