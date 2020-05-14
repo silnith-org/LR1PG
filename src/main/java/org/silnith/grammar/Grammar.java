@@ -608,44 +608,6 @@ public class Grammar<T extends TerminalSymbol> {
         return closure;
     }
     
-    private ParserState<T> computeParseStates(final Set<LookaheadItem<T>> initialItems, final T endOfFileSymbol) {
-        final String sourceMethod = "computeParseStates";
-        logger.entering(sourceClass, sourceMethod, new Object[] {initialItems, endOfFileSymbol});
-        
-        final ParserState<T> startState = calculateClosure(initialItems);
-        /*
-         * Start with just the initial state.
-         */
-        
-        Set<ParserState<T>> pending = Collections.singleton(startState);
-        
-        while ( !pending.isEmpty()) {
-            logger.logp(Level.FINE, sourceClass, sourceMethod, "parser states to compute: {0}", pending.size());
-
-            final Set<Edge<T>> newEdges = new HashSet<>(pending.size());
-            for (final ParserState<T> parserState : pending) {
-                final Set<Edge<T>> newEdgesForState = computeOutgoingEdges(parserState, endOfFileSymbol);
-                newEdges.addAll(newEdgesForState);
-            }
-            
-            parserStates.addAll(pending);
-            edges.addAll(newEdges);
-
-            final Set<ParserState<T>> newParserStates = new HashSet<>(newEdges.size());
-            for (final Edge<T> edge : newEdges) {
-                newParserStates.add(edge.getFinalState());
-            }
-            
-            logger.logp(Level.FINE, sourceClass, sourceMethod, "total parser states: {0}, total edges: {1}", new Object[] {parserStates.size(), edges.size()});
-            
-            pending = newParserStates;
-            pending.removeAll(parserStates);
-        }
-        
-        logger.exiting(sourceClass, sourceMethod, startState);
-        return startState;
-    }
-
     private Set<Edge<T>> computeOutgoingEdges(final ParserState<T> parserState, final T endOfFileSymbol) {
         final String sourceMethod = "computeOutgoingEdges";
         logger.entering(sourceClass, sourceMethod, new Object[] {parserState, endOfFileSymbol});
@@ -689,9 +651,47 @@ public class Grammar<T extends TerminalSymbol> {
             
             newEdges.add(newEdge);
         }
-
+    
         logger.exiting(sourceClass, sourceMethod, newEdges);
         return newEdges;
+    }
+
+    private ParserState<T> computeParseStates(final Set<LookaheadItem<T>> initialItems, final T endOfFileSymbol) {
+        final String sourceMethod = "computeParseStates";
+        logger.entering(sourceClass, sourceMethod, new Object[] {initialItems, endOfFileSymbol});
+        
+        final ParserState<T> startState = calculateClosure(initialItems);
+        /*
+         * Start with just the initial state.
+         */
+        
+        Set<ParserState<T>> pending = Collections.singleton(startState);
+        
+        while ( !pending.isEmpty()) {
+            logger.logp(Level.FINE, sourceClass, sourceMethod, "parser states to compute: {0}", pending.size());
+
+            final Set<Edge<T>> newEdges = new HashSet<>(pending.size());
+            for (final ParserState<T> parserState : pending) {
+                final Set<Edge<T>> newEdgesForState = computeOutgoingEdges(parserState, endOfFileSymbol);
+                newEdges.addAll(newEdgesForState);
+            }
+            
+            parserStates.addAll(pending);
+            edges.addAll(newEdges);
+
+            final Set<ParserState<T>> newParserStates = new HashSet<>(newEdges.size());
+            for (final Edge<T> edge : newEdges) {
+                newParserStates.add(edge.getFinalState());
+            }
+            
+            logger.logp(Level.FINE, sourceClass, sourceMethod, "total parser states: {0}, total edges: {1}", new Object[] {parserStates.size(), edges.size()});
+            
+            pending = newParserStates;
+            pending.removeAll(parserStates);
+        }
+        
+        logger.exiting(sourceClass, sourceMethod, startState);
+        return startState;
     }
 
     private Set<LookaheadItem<T>> createInitialItem(final NonTerminalSymbol startSymbol, final T endOfFileSymbol) {
