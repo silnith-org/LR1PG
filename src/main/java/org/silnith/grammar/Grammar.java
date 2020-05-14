@@ -720,7 +720,7 @@ public class Grammar<T extends TerminalSymbol> {
     
     private void computeParseStates(final ParserState<T> startState, final T endOfFileSymbol) {
         final String sourceMethod = "computeParseStates";
-        logger.entering(sourceClass, sourceMethod, new Object[] {startState, endOfFileSymbol});
+        logger.entering(sourceClass, sourceMethod, new Object[] {startState, this.endOfFileSymbol});
         
         Set<ParserState<T>> pending = Collections.singleton(startState);
         
@@ -729,7 +729,7 @@ public class Grammar<T extends TerminalSymbol> {
 
             final Set<Edge<T>> newEdges = new HashSet<>(pending.size());
             for (final ParserState<T> parserState : pending) {
-                final Set<Edge<T>> newEdgesForState = computeOutgoingEdges(parserState, endOfFileSymbol);
+                final Set<Edge<T>> newEdgesForState = computeOutgoingEdges(parserState, this.endOfFileSymbol);
                 newEdges.addAll(newEdgesForState);
             }
             
