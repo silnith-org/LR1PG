@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
@@ -607,7 +608,7 @@ public class Grammar<T extends TerminalSymbol> {
         logger.exiting(sourceClass, sourceMethod, parserState);
         return parserState;
     }
-
+    
     private Set<Edge<T>> computeOutgoingEdges(final ParserState<T> parserState, final T endOfFileSymbol) {
         final String sourceMethod = "computeOutgoingEdges";
         logger.entering(sourceClass, sourceMethod, new Object[] {parserState, endOfFileSymbol});
@@ -655,7 +656,26 @@ public class Grammar<T extends TerminalSymbol> {
         logger.exiting(sourceClass, sourceMethod, newEdges);
         return newEdges;
     }
-
+    
+    private class NewEdgeComputer implements Callable<Set<Edge<T>>> {
+        
+        private final ParserState<T> parserState;
+        
+        private final T endOfFileSymbol;
+    
+        public NewEdgeComputer(final ParserState<T> parserState, final T endOfFileSymbol) {
+            super();
+            this.parserState = parserState;
+            this.endOfFileSymbol = endOfFileSymbol;
+        }
+    
+        @Override
+        public Set<Edge<T>> call() {
+            return computeOutgoingEdges(parserState, endOfFileSymbol);
+        }
+        
+    }
+    
     private ParserState<T> computeParseStates(final Set<LookaheadItem<T>> initialItems, final T endOfFileSymbol) {
         final String sourceMethod = "computeParseStates";
         logger.entering(sourceClass, sourceMethod, new Object[] {initialItems, endOfFileSymbol});
