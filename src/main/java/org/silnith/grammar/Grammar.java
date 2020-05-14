@@ -741,12 +741,13 @@ public class Grammar<T extends TerminalSymbol> {
         while ( !pending.isEmpty()) {
             logger.logp(Level.FINE, sourceClass, sourceMethod, "parser states to compute: {0}", pending.size());
 
-            final Set<Edge<T>> newEdges = new HashSet<>(pending.size());
             final List<NewEdgeComputer> tasks = new ArrayList<>(pending.size());
             for (final ParserState<T> parserState : pending) {
                 final NewEdgeComputer task = new NewEdgeComputer(parserState, endOfFileSymbol);
                 tasks.add(task);
             }
+            
+            final Set<Edge<T>> newEdges = new HashSet<>(pending.size());
             for (final NewEdgeComputer task : tasks) {
                 final Set<Edge<T>> newEdgesForState = task.call();
                 newEdges.addAll(newEdgesForState);
