@@ -2,11 +2,14 @@ package org.silnith.grammar.sql;
 
 import static org.silnith.grammar.sql.Terminals.*;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.silnith.grammar.EnumSetFactory;
 import org.silnith.grammar.Grammar;
@@ -1494,8 +1497,9 @@ public class SQL92Test {
         grammar.addProduction(nt("high"), new TestProductionHandler("high"), nt("Low"), left_paren, nt("2"), right_paren);
     }
     
+//    @Ignore
     @Test
-    public void testGrammar() {
-        grammar.createParser(nt("module"), end_of_file);
+    public void testGrammar() throws InterruptedException, ExecutionException {
+        grammar.threadedCreateParser(nt("module"), end_of_file, Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
     }
 }
