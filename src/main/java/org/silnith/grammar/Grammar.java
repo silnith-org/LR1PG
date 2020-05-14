@@ -670,9 +670,9 @@ public class Grammar<T extends TerminalSymbol> {
         return parserState;
     }
     
-    private Set<Edge<T>> computeOutgoingEdges(final ParserState<T> parserState, final T endOfFileSymbol) {
+    private Set<Edge<T>> computeOutgoingEdges(final ParserState<T> parserState) {
         final String sourceMethod = "computeOutgoingEdges";
-        logger.entering(sourceClass, sourceMethod, new Object[] {parserState, this.endOfFileSymbol});
+        logger.entering(sourceClass, sourceMethod, new Object[] {parserState});
         
         final Set<LookaheadItem<T>> stateItems = parserState.getItems();
         
@@ -729,7 +729,7 @@ public class Grammar<T extends TerminalSymbol> {
 
             final Set<Edge<T>> newEdges = new HashSet<>(pending.size());
             for (final ParserState<T> parserState : pending) {
-                final Set<Edge<T>> newEdgesForState = computeOutgoingEdges(parserState, this.endOfFileSymbol);
+                final Set<Edge<T>> newEdgesForState = computeOutgoingEdges(parserState);
                 newEdges.addAll(newEdgesForState);
             }
             
@@ -802,7 +802,7 @@ public class Grammar<T extends TerminalSymbol> {
     
         @Override
         public Set<Edge<T>> call() {
-            return computeOutgoingEdges(parserState, endOfFileSymbol);
+            return computeOutgoingEdges(parserState);
         }
         
     }
