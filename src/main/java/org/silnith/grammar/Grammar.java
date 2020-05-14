@@ -792,12 +792,9 @@ public class Grammar<T extends TerminalSymbol> {
         
         private final ParserState<T> parserState;
         
-        private final T endOfFileSymbol;
-    
         public NewEdgeComputer(final ParserState<T> parserState, final T endOfFileSymbol) {
             super();
             this.parserState = parserState;
-            this.endOfFileSymbol = endOfFileSymbol;
         }
     
         @Override
