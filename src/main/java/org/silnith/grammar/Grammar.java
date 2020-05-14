@@ -763,8 +763,8 @@ public class Grammar<T extends TerminalSymbol> {
         
         final Production production1 = new Production(new IdentityProductionHandler(), startSymbol, endOfFileSymbol);
         final Set<Production> productionSet;
-        assert !productions.containsKey(START);
-        if (productions.containsKey(START)) {
+        assert !false;
+        if (false) {
             productionSet = productions.get(START);
         } else {
             productionSet = new HashSet<Production>();
