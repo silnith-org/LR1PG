@@ -763,6 +763,7 @@ public class Grammar<T extends TerminalSymbol> {
         
         final Production production1 = new Production(new IdentityProductionHandler(), startSymbol, endOfFileSymbol);
         final Set<Production> productionSet;
+        assert !productions.containsKey(START);
         if (productions.containsKey(START)) {
             productionSet = productions.get(START);
         } else {
