@@ -762,10 +762,9 @@ public class Grammar<T extends TerminalSymbol> {
         final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(endOfFileSymbol));
         
         final Production production1 = new Production(new IdentityProductionHandler(), startSymbol, endOfFileSymbol);
-        final Set<Production> productionSet;
-        
-        productionSet = new HashSet<Production>();
+        final Set<Production> productionSet = new HashSet<Production>();
         productionSet.add(production1);
+        
         productions.put(START, productionSet);
         
         nonTerminalSymbols.add(START);
