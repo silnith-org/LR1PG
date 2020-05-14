@@ -758,7 +758,7 @@ public class Grammar<T extends TerminalSymbol> {
      */
     public Parser<T> createParser() {
         final String sourceMethod = "createParser";
-        logger.entering(sourceClass, sourceMethod, new Object[] {this.startSymbol, this.endOfFileSymbol});
+        logger.entering(sourceClass, sourceMethod);
         
         final long startTime = System.currentTimeMillis();
         
@@ -859,7 +859,7 @@ public class Grammar<T extends TerminalSymbol> {
     public Parser<T> threadedCreateParser(final ExecutorService executorService)
             throws InterruptedException, ExecutionException {
         final String sourceMethod = "threadedCreateParser";
-        logger.entering(sourceClass, sourceMethod, new Object[] {this.startSymbol, this.endOfFileSymbol});
+        logger.entering(sourceClass, sourceMethod, executorService);
         
         final long startTime = System.currentTimeMillis();
         
