@@ -682,25 +682,6 @@ public class Grammar<T extends TerminalSymbol> {
         return newEdges;
     }
     
-    private class NewEdgeComputer implements Callable<Set<Edge<T>>> {
-        
-        private final ParserState<T> parserState;
-        
-        private final T endOfFileSymbol;
-    
-        public NewEdgeComputer(final ParserState<T> parserState, final T endOfFileSymbol) {
-            super();
-            this.parserState = parserState;
-            this.endOfFileSymbol = endOfFileSymbol;
-        }
-    
-        @Override
-        public Set<Edge<T>> call() {
-            return computeOutgoingEdges(parserState, endOfFileSymbol);
-        }
-        
-    }
-    
     private void computeParseStates(final ParserState<T> startState, final T endOfFileSymbol) {
         final String sourceMethod = "computeParseStates";
         logger.entering(sourceClass, sourceMethod, new Object[] {startState, endOfFileSymbol});
@@ -733,46 +714,6 @@ public class Grammar<T extends TerminalSymbol> {
         logger.exiting(sourceClass, sourceMethod);
     }
     
-    private void threadedComputeParseStates(final ParserState<T> startState, final T endOfFileSymbol, final ExecutorService executorService) throws InterruptedException, ExecutionException {
-        final String sourceMethod = "threadedComputeParseStates";
-        logger.entering(sourceClass, sourceMethod, new Object[] {startState, endOfFileSymbol});
-        
-        Set<ParserState<T>> pending = Collections.singleton(startState);
-        
-        while ( !pending.isEmpty()) {
-            logger.logp(Level.FINE, sourceClass, sourceMethod, "parser states to compute: {0}", pending.size());
-
-            final List<NewEdgeComputer> tasks = new ArrayList<>(pending.size());
-            for (final ParserState<T> parserState : pending) {
-                final NewEdgeComputer task = new NewEdgeComputer(parserState, endOfFileSymbol);
-                tasks.add(task);
-            }
-            
-            final List<Future<Set<Edge<T>>>> futures = executorService.invokeAll(tasks);
-            
-            final Set<Edge<T>> newEdges = new HashSet<>(futures.size());
-            for (final Future<Set<Edge<T>>> future : futures) {
-                final Set<Edge<T>> newEdgesForState = future.get();
-                newEdges.addAll(newEdgesForState);
-            }
-            
-            parserStates.addAll(pending);
-            edges.addAll(newEdges);
-
-            final Set<ParserState<T>> newParserStates = new HashSet<>(newEdges.size());
-            for (final Edge<T> edge : newEdges) {
-                newParserStates.add(edge.getFinalState());
-            }
-            
-            logger.logp(Level.FINE, sourceClass, sourceMethod, "total parser states: {0}, total edges: {1}", new Object[] {parserStates.size(), edges.size()});
-            
-            pending = newParserStates;
-            pending.removeAll(parserStates);
-        }
-        
-        logger.exiting(sourceClass, sourceMethod);
-    }
-
     /**
      * Creates a parser for the grammar.  This is called after all calls to {@link #addProduction}.
      * 
@@ -813,6 +754,65 @@ public class Grammar<T extends TerminalSymbol> {
         
         logger.exiting(sourceClass, sourceMethod, parser);
         return parser;
+    }
+
+    private class NewEdgeComputer implements Callable<Set<Edge<T>>> {
+        
+        private final ParserState<T> parserState;
+        
+        private final T endOfFileSymbol;
+    
+        public NewEdgeComputer(final ParserState<T> parserState, final T endOfFileSymbol) {
+            super();
+            this.parserState = parserState;
+            this.endOfFileSymbol = endOfFileSymbol;
+        }
+    
+        @Override
+        public Set<Edge<T>> call() {
+            return computeOutgoingEdges(parserState, endOfFileSymbol);
+        }
+        
+    }
+
+    private void threadedComputeParseStates(final ParserState<T> startState, final T endOfFileSymbol, final ExecutorService executorService) throws InterruptedException, ExecutionException {
+        final String sourceMethod = "threadedComputeParseStates";
+        logger.entering(sourceClass, sourceMethod, new Object[] {startState, endOfFileSymbol});
+        
+        Set<ParserState<T>> pending = Collections.singleton(startState);
+        
+        while ( !pending.isEmpty()) {
+            logger.logp(Level.FINE, sourceClass, sourceMethod, "parser states to compute: {0}", pending.size());
+    
+            final List<NewEdgeComputer> tasks = new ArrayList<>(pending.size());
+            for (final ParserState<T> parserState : pending) {
+                final NewEdgeComputer task = new NewEdgeComputer(parserState, endOfFileSymbol);
+                tasks.add(task);
+            }
+            
+            final List<Future<Set<Edge<T>>>> futures = executorService.invokeAll(tasks);
+            
+            final Set<Edge<T>> newEdges = new HashSet<>(futures.size());
+            for (final Future<Set<Edge<T>>> future : futures) {
+                final Set<Edge<T>> newEdgesForState = future.get();
+                newEdges.addAll(newEdgesForState);
+            }
+            
+            parserStates.addAll(pending);
+            edges.addAll(newEdges);
+    
+            final Set<ParserState<T>> newParserStates = new HashSet<>(newEdges.size());
+            for (final Edge<T> edge : newEdges) {
+                newParserStates.add(edge.getFinalState());
+            }
+            
+            logger.logp(Level.FINE, sourceClass, sourceMethod, "total parser states: {0}, total edges: {1}", new Object[] {parserStates.size(), edges.size()});
+            
+            pending = newParserStates;
+            pending.removeAll(parserStates);
+        }
+        
+        logger.exiting(sourceClass, sourceMethod);
     }
 
     /**
