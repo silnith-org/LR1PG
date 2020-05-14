@@ -730,6 +730,38 @@ public class Grammar<T extends TerminalSymbol> {
         
         logger.exiting(sourceClass, sourceMethod);
     }
+    
+    private void threadedComputeParseStates(final ParserState<T> startState, final T endOfFileSymbol, final ExecutorService executorService) {
+        final String sourceMethod = "threadedComputeParseStates";
+        logger.entering(sourceClass, sourceMethod, new Object[] {startState, endOfFileSymbol});
+        
+        Set<ParserState<T>> pending = Collections.singleton(startState);
+        
+        while ( !pending.isEmpty()) {
+            logger.logp(Level.FINE, sourceClass, sourceMethod, "parser states to compute: {0}", pending.size());
+
+            final Set<Edge<T>> newEdges = new HashSet<>(pending.size());
+            for (final ParserState<T> parserState : pending) {
+                final Set<Edge<T>> newEdgesForState = new NewEdgeComputer(parserState, endOfFileSymbol).call();
+                newEdges.addAll(newEdgesForState);
+            }
+            
+            parserStates.addAll(pending);
+            edges.addAll(newEdges);
+
+            final Set<ParserState<T>> newParserStates = new HashSet<>(newEdges.size());
+            for (final Edge<T> edge : newEdges) {
+                newParserStates.add(edge.getFinalState());
+            }
+            
+            logger.logp(Level.FINE, sourceClass, sourceMethod, "total parser states: {0}, total edges: {1}", new Object[] {parserStates.size(), edges.size()});
+            
+            pending = newParserStates;
+            pending.removeAll(parserStates);
+        }
+        
+        logger.exiting(sourceClass, sourceMethod);
+    }
 
     /**
      * Creates a parser for the grammar.  This is called after all calls to {@link #addProduction}.
