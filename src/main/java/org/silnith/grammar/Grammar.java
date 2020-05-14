@@ -676,21 +676,6 @@ public class Grammar<T extends TerminalSymbol> {
         
     }
     
-    private ParserState<T> computeParseStates(final Set<LookaheadItem<T>> initialItems, final T endOfFileSymbol) {
-        final String sourceMethod = "computeParseStates";
-        logger.entering(sourceClass, sourceMethod, new Object[] {initialItems, endOfFileSymbol});
-        
-        final ParserState<T> startState = calculateClosure(initialItems);
-        /*
-         * Start with just the initial state.
-         */
-        
-        computeParseStatesInternal(startState, endOfFileSymbol);
-        
-        logger.exiting(sourceClass, sourceMethod, startState);
-        return startState;
-    }
-
     private void computeParseStatesInternal(final ParserState<T> startState, final T endOfFileSymbol) {
         Set<ParserState<T>> pending = Collections.singleton(startState);
         
@@ -755,8 +740,14 @@ public class Grammar<T extends TerminalSymbol> {
         final Set<LookaheadItem<T>> initialItems = createInitialItem(startSymbol, endOfFileSymbol);
 
         compute();
+        final ParserState<T> startState1 = calculateClosure(initialItems);
+        /*
+         * Start with just the initial state.
+         */
         
-        final ParserState<T> startState = computeParseStates(initialItems, endOfFileSymbol);
+        computeParseStatesInternal(startState1, endOfFileSymbol);
+        
+        final ParserState<T> startState = startState1;
         
         final Parser<T> parser = new Parser<>(parserStates, edges, startState, endOfFileSymbol);
         
@@ -788,9 +779,15 @@ public class Grammar<T extends TerminalSymbol> {
 
 //        threadedCompute(executorService);
         compute();
+        final ParserState<T> startState1 = calculateClosure(initialItems);
+        /*
+         * Start with just the initial state.
+         */
+        
+        computeParseStatesInternal(startState1, endOfFileSymbol);
         
 //        final ParserState<T> startState = threadedComputeParseStates(initialItems, endOfFileSymbol, executorService);
-        final ParserState<T> startState = computeParseStates(initialItems, endOfFileSymbol);
+        final ParserState<T> startState = startState1;
         
         final Parser<T> parser = new Parser<>(parserStates, edges, startState, endOfFileSymbol);
         
