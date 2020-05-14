@@ -826,7 +826,7 @@ public class Grammar<T extends TerminalSymbol> {
      * @throws ExecutionException foo
      * @throws InterruptedException bar
      */
-    public Parser<T> threadedCreateParser(final NonTerminalSymbol startSymbol, final T endOfFileSymbol, final ExecutorService executorService) {
+    public Parser<T> threadedCreateParser(final NonTerminalSymbol startSymbol, final T endOfFileSymbol, final ExecutorService executorService) throws InterruptedException, ExecutionException {
         final String sourceMethod = "threadedCreateParser";
         logger.entering(sourceClass, sourceMethod, new Object[] {startSymbol, endOfFileSymbol});
         
@@ -846,7 +846,7 @@ public class Grammar<T extends TerminalSymbol> {
          * Start with just the initial state.
          */
         
-        computeParseStates(startState, endOfFileSymbol);
+        threadedComputeParseStates(startState, endOfFileSymbol, executorService);
         
         final Parser<T> parser = new Parser<>(parserStates, edges, startState, endOfFileSymbol);
         
