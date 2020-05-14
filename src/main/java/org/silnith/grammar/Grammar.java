@@ -762,14 +762,13 @@ public class Grammar<T extends TerminalSymbol> {
         final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(endOfFileSymbol));
         
         final Production production1 = new Production(new IdentityProductionHandler(), startSymbol, endOfFileSymbol);
-        final Set<Production> productionSet = Collections.singleton(production1);
         
         nonTerminalSymbols.add(START);
         addSymbols(startSymbol, endOfFileSymbol);
         
         final Set<LookaheadItem<T>> initialItems = new HashSet<>();
         
-        for (final Production production : productionSet) {
+        for (final Production production : Collections.singleton(production1)) {
             final Item item = itemFactory.createItem(START, production, 0);
             final LookaheadItem<T> lookaheadItem = lookaheadItemFactory.createInstance(item, endOfFileSet);
             initialItems.add(lookaheadItem);
