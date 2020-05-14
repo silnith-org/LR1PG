@@ -622,15 +622,17 @@ public class Grammar<T extends TerminalSymbol> {
         while ( !pending.isEmpty()) {
             final Set<ParserState<T>> newParserStates = new HashSet<>();
             final Set<Edge<T>> newEdges = new HashSet<>();
+            final Set<Edge<T>> newEdges2 = new HashSet<>();
             
             logger.logp(Level.FINE, sourceClass, sourceMethod, "parser states to compute: {0}", pending.size());
             
             for (final ParserState<T> parserState : pending) {
                 final Set<Edge<T>> newEdgesForState = computeOutgoingEdges(parserState, endOfFileSymbol, newParserStates, newEdges);
+                newEdges2.addAll(newEdgesForState);
             }
             
             parserStates.addAll(pending);
-            edges.addAll(newEdges);
+            edges.addAll(newEdges2);
             
             logger.logp(Level.FINE, sourceClass, sourceMethod, "total parser states: {0}, total edges: {1}", new Object[] {parserStates.size(), edges.size()});
             
