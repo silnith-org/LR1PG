@@ -204,6 +204,8 @@ public class Grammar<T extends TerminalSymbol> {
         first.clear();
         follow.clear();
         
+        nullableComputed = false;
+        
         parserStates.clear();
         edges.clear();
         
@@ -271,6 +273,8 @@ public class Grammar<T extends TerminalSymbol> {
         }
     }
     
+    private boolean nullableComputed = false;
+    
     /**
      * Compute the nullable set.
      */
@@ -302,6 +306,8 @@ public class Grammar<T extends TerminalSymbol> {
         } while (changed);
         
         logger.logp(Level.FINE, sourceClass, sourceMethod, "nullable set: {0}", nullable);
+        
+        nullableComputed = true;
         
         logger.exiting(sourceClass, sourceMethod);
     }
