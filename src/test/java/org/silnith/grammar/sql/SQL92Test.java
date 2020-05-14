@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.silnith.grammar.EnumSetFactory;
 import org.silnith.grammar.Grammar;
 import org.silnith.grammar.NonTerminalSymbol;
 import org.silnith.grammar.TestProductionHandler;
@@ -31,7 +32,7 @@ public class SQL92Test {
         logger.addHandler(handler);
         logger.setLevel(Level.FINE);
         
-        grammar = new Grammar<>();
+        grammar = new Grammar<>(new EnumSetFactory<>(Terminals.class));
         
         /*
          * Basic Definitions of Characters Used, Tokens, Symbols, Etc.
