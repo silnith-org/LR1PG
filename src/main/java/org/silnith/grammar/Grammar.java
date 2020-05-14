@@ -731,26 +731,6 @@ public class Grammar<T extends TerminalSymbol> {
         logger.exiting(sourceClass, sourceMethod);
     }
 
-    private Set<LookaheadItem<T>> createInitialItem(final NonTerminalSymbol startSymbol, final T endOfFileSymbol) {
-//        final String sourceMethod = "createInitialItem";
-//        logger.entering(sourceClass, sourceMethod, new Object[] {startSymbol, endOfFileSymbol});
-        
-        final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(endOfFileSymbol));
-        
-        addProduction(START, new IdentityProductionHandler(), startSymbol, endOfFileSymbol);
-
-        final Set<LookaheadItem<T>> initialItems = new HashSet<>();
-        
-        for (final Production production : productions.get(START)) {
-            final Item item = itemFactory.createItem(START, production, 0);
-            final LookaheadItem<T> lookaheadItem = lookaheadItemFactory.createInstance(item, endOfFileSet);
-            initialItems.add(lookaheadItem);
-        }
-        
-//        logger.exiting(sourceClass, sourceMethod, initialItems);
-        return initialItems;
-    }
-
     /**
      * Creates a parser for the grammar.  This is called after all calls to {@link #addProduction}.
      * 
