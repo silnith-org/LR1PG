@@ -740,14 +740,14 @@ public class Grammar<T extends TerminalSymbol> {
         final Set<LookaheadItem<T>> initialItems = createInitialItem(startSymbol, endOfFileSymbol);
 
         compute();
-        final ParserState<T> startState1 = calculateClosure(initialItems);
+        final ParserState<T> startState = calculateClosure(initialItems);
         /*
          * Start with just the initial state.
          */
         
-        computeParseStatesInternal(startState1, endOfFileSymbol);
+        computeParseStatesInternal(startState, endOfFileSymbol);
         
-        final Parser<T> parser = new Parser<>(parserStates, edges, startState1, endOfFileSymbol);
+        final Parser<T> parser = new Parser<>(parserStates, edges, startState, endOfFileSymbol);
         
         final long endTime = System.currentTimeMillis();
         
