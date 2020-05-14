@@ -625,7 +625,7 @@ public class Grammar<T extends TerminalSymbol> {
             logger.logp(Level.FINE, sourceClass, sourceMethod, "parser states to compute: {0}", pending.size());
             
             for (final ParserState<T> parserState : pending) {
-                final Set<Edge<T>> newEdgesForState = computeOutgoingEdges(parserState, endOfFileSymbol, new HashSet<ParserState<T>>());
+                final Set<Edge<T>> newEdgesForState = computeOutgoingEdges(parserState, endOfFileSymbol);
                 newEdges.addAll(newEdgesForState);
             }
             
@@ -647,8 +647,7 @@ public class Grammar<T extends TerminalSymbol> {
         return startState;
     }
 
-    private Set<Edge<T>> computeOutgoingEdges(final ParserState<T> parserState, final T endOfFileSymbol,
-            final Set<ParserState<T>> newParserStates) {
+    private Set<Edge<T>> computeOutgoingEdges(final ParserState<T> parserState, final T endOfFileSymbol) {
         final Set<LookaheadItem<T>> stateItems = parserState.getItems();
         
         /*
@@ -685,7 +684,6 @@ public class Grammar<T extends TerminalSymbol> {
              */
             final Edge<T> newEdge = edgeFactory.createInstance(parserState, symbol, newParserState);
             
-            newParserStates.add(newParserState);
             newEdges.add(newEdge);
         }
         
