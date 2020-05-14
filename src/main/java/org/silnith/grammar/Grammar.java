@@ -756,7 +756,7 @@ public class Grammar<T extends TerminalSymbol> {
      * 
      * @return a parser for the language defined by this grammar
      */
-    public Parser<T> createParser1() {
+    public Parser<T> createParser() {
         final String sourceMethod = "createParser";
         logger.entering(sourceClass, sourceMethod, new Object[] {this.startSymbol, this.endOfFileSymbol});
         

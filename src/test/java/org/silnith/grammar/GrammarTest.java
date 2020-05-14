@@ -409,7 +409,7 @@ public class GrammarTest {
 //        System.out.println(grammar.getFollowSet(white_Kleene));
 //        System.out.println(grammar.getFollowSet(white));
         
-        grammar.createParser1();
+        grammar.createParser();
     }
     
     @Test
@@ -439,7 +439,7 @@ public class GrammarTest {
 //        System.out.println(grammar.getFollowSet(white_Kleene));
 //        System.out.println(grammar.getFollowSet(white));
         
-        grammar.createParser1();
+        grammar.createParser();
     }
     
     @Test
@@ -470,7 +470,7 @@ public class GrammarTest {
 //        System.out.println(grammar.getFollowSet().get(white_Plus));
 //        System.out.println(grammar.getFollowSet().get(white));
         
-        grammar.createParser1();
+        grammar.createParser();
     }
     
 }

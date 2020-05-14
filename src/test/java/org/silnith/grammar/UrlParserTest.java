@@ -368,7 +368,7 @@ public class UrlParserTest {
         final NonTerminalSymbol startSymbol = pctEncoded;
         grammar.setStartSymbol(startSymbol);
         grammar.setEndOfFileSymbol(EndOfFile);
-        final Parser<UriTerminalType> parser = grammar.createParser1();
+        final Parser<UriTerminalType> parser = grammar.createParser();
         testPercentEncoded(parser);
     }
     
@@ -398,7 +398,7 @@ public class UrlParserTest {
         final NonTerminalSymbol startSymbol = scheme;
         grammar.setStartSymbol(startSymbol);
         grammar.setEndOfFileSymbol(EndOfFile);
-        final Parser<UriTerminalType> parser = grammar.createParser1();
+        final Parser<UriTerminalType> parser = grammar.createParser();
         testScheme(parser);
     }
     
@@ -453,7 +453,7 @@ public class UrlParserTest {
         final NonTerminalSymbol startSymbol = userinfo;
         grammar.setStartSymbol(startSymbol);
         grammar.setEndOfFileSymbol(EndOfFile);
-        final Parser<UriTerminalType> parser = grammar.createParser1();
+        final Parser<UriTerminalType> parser = grammar.createParser();
         testUserinfo(parser);
     }
     
@@ -490,7 +490,7 @@ public class UrlParserTest {
         final NonTerminalSymbol startSymbol = host;
         grammar.setStartSymbol(startSymbol);
         grammar.setEndOfFileSymbol(EndOfFile);
-        final Parser<UriTerminalType> parser = grammar.createParser1();
+        final Parser<UriTerminalType> parser = grammar.createParser();
         testHost(parser);
     }
     
@@ -528,7 +528,7 @@ public class UrlParserTest {
         final NonTerminalSymbol startSymbol = port;
         grammar.setStartSymbol(startSymbol);
         grammar.setEndOfFileSymbol(EndOfFile);
-        final Parser<UriTerminalType> parser = grammar.createParser1();
+        final Parser<UriTerminalType> parser = grammar.createParser();
         testPort(parser);
     }
     
@@ -571,7 +571,7 @@ public class UrlParserTest {
         final NonTerminalSymbol startSymbol = authority;
         grammar.setStartSymbol(startSymbol);
         grammar.setEndOfFileSymbol(EndOfFile);
-        final Parser<UriTerminalType> parser = grammar.createParser1();
+        final Parser<UriTerminalType> parser = grammar.createParser();
         testAuthority(parser);
     }
     
@@ -619,7 +619,7 @@ public class UrlParserTest {
         final NonTerminalSymbol startSymbol = segment;
         grammar.setStartSymbol(startSymbol);
         grammar.setEndOfFileSymbol(EndOfFile);
-        final Parser<UriTerminalType> parser = grammar.createParser1();
+        final Parser<UriTerminalType> parser = grammar.createParser();
         testSegment(parser);
     }
     
@@ -668,7 +668,7 @@ public class UrlParserTest {
         final NonTerminalSymbol startSymbol = segmentSequence;
         grammar.setStartSymbol(startSymbol);
         grammar.setEndOfFileSymbol(EndOfFile);
-        final Parser<UriTerminalType> parser = grammar.createParser1();
+        final Parser<UriTerminalType> parser = grammar.createParser();
         testSegmentSequence(parser);
     }
     
@@ -696,7 +696,7 @@ public class UrlParserTest {
         final NonTerminalSymbol startSymbol = query;
         grammar.setStartSymbol(startSymbol);
         grammar.setEndOfFileSymbol(EndOfFile);
-        final Parser<UriTerminalType> parser = grammar.createParser1();
+        final Parser<UriTerminalType> parser = grammar.createParser();
         testQuery(parser);
     }
     
@@ -731,7 +731,7 @@ public class UrlParserTest {
         final NonTerminalSymbol startSymbol = fragment;
         grammar.setStartSymbol(startSymbol);
         grammar.setEndOfFileSymbol(EndOfFile);
-        final Parser<UriTerminalType> parser = grammar.createParser1();
+        final Parser<UriTerminalType> parser = grammar.createParser();
         testFragment(parser);
     }
     
@@ -767,7 +767,7 @@ public class UrlParserTest {
         final NonTerminalSymbol startSymbol = relativeRef;
         grammar.setStartSymbol(startSymbol);
         grammar.setEndOfFileSymbol(EndOfFile);
-        final Parser<UriTerminalType> parser = grammar.createParser1();
+        final Parser<UriTerminalType> parser = grammar.createParser();
         testRelativeRef(parser);
     }
 
@@ -798,7 +798,7 @@ public class UrlParserTest {
         final NonTerminalSymbol startSymbol = uri;
         grammar.setStartSymbol(startSymbol);
         grammar.setEndOfFileSymbol(EndOfFile);
-        final Parser<UriTerminalType> parser = grammar.createParser1();
+        final Parser<UriTerminalType> parser = grammar.createParser();
         testURI(parser);
     }
 
@@ -828,7 +828,7 @@ public class UrlParserTest {
         final NonTerminalSymbol startSymbol = pathAbEmpty;
         grammar.setStartSymbol(startSymbol);
         grammar.setEndOfFileSymbol(EndOfFile);
-        final Parser<UriTerminalType> parser = grammar.createParser1();
+        final Parser<UriTerminalType> parser = grammar.createParser();
         testPathAbEmpty(parser);
     }
 
@@ -869,7 +869,7 @@ public class UrlParserTest {
         final NonTerminalSymbol startSymbol = pathAbsolute;
         grammar.setStartSymbol(startSymbol);
         grammar.setEndOfFileSymbol(EndOfFile);
-        final Parser<UriTerminalType> parser = grammar.createParser1();
+        final Parser<UriTerminalType> parser = grammar.createParser();
         testPathAbsolute(parser);
     }
     
@@ -904,7 +904,7 @@ public class UrlParserTest {
         final NonTerminalSymbol startSymbol = pathRootless;
         grammar.setStartSymbol(startSymbol);
         grammar.setEndOfFileSymbol(EndOfFile);
-        final Parser<UriTerminalType> parser = grammar.createParser1();
+        final Parser<UriTerminalType> parser = grammar.createParser();
         testPathRootless(parser);
     }
     
@@ -938,7 +938,7 @@ public class UrlParserTest {
         final NonTerminalSymbol startSymbol = pathEmpty;
         grammar.setStartSymbol(startSymbol);
         grammar.setEndOfFileSymbol(EndOfFile);
-        final Parser<UriTerminalType> parser = grammar.createParser1();
+        final Parser<UriTerminalType> parser = grammar.createParser();
         testPathEmpty(parser);
     }
     

@@ -45,7 +45,7 @@ public class ExampleGrammar {
         grammar.setStartSymbol(nonTerminal);
         grammar.setEndOfFileSymbol(Terminals.EOF);
         
-        final Parser<Terminals> parser = grammar.createParser1();
+        final Parser<Terminals> parser = grammar.createParser();
         
         final List<Terminals> input = Arrays.asList(Terminals.A, Terminals.B, Terminals.C, Terminals.EOF);
         

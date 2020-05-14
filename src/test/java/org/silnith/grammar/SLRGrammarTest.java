@@ -28,7 +28,7 @@ public class SLRGrammarTest {
         grammar.setStartSymbol(nonTerminalS);
         grammar.setEndOfFileSymbol(Terminals.EOF);
 		
-		parser = grammar.createParser1();
+		parser = grammar.createParser();
 	}
 
 	@Test

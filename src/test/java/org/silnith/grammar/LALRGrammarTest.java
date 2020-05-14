@@ -31,7 +31,7 @@ public class LALRGrammarTest {
         grammar.setStartSymbol(nonTerminalS);
         grammar.setEndOfFileSymbol(Terminals.EOF);
 		
-		parser = grammar.createParser1();
+		parser = grammar.createParser();
 	}
 	
 	@Test
