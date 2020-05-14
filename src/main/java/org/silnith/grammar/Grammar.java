@@ -759,14 +759,14 @@ public class Grammar<T extends TerminalSymbol> {
      * @return a parser for the language defined by this grammar
      */
     public Parser<T> createParser(final NonTerminalSymbol startSymbol, final T endOfFileSymbol) {
+        setStartSymbol(startSymbol);
+        setEndOfFileSymbol(endOfFileSymbol);
+        
         final String sourceMethod = "createParser";
         logger.entering(sourceClass, sourceMethod, new Object[] {startSymbol, endOfFileSymbol});
         
         final long startTime = System.currentTimeMillis();
         final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(endOfFileSymbol));
-        
-        setStartSymbol(startSymbol);
-        setEndOfFileSymbol(endOfFileSymbol);
         
         compute();
         
@@ -864,14 +864,14 @@ public class Grammar<T extends TerminalSymbol> {
      * @throws InterruptedException bar
      */
     public Parser<T> threadedCreateParser(final NonTerminalSymbol startSymbol, final T endOfFileSymbol, final ExecutorService executorService) throws InterruptedException, ExecutionException {
+        setStartSymbol(startSymbol);
+        setEndOfFileSymbol(endOfFileSymbol);
+        
         final String sourceMethod = "threadedCreateParser";
         logger.entering(sourceClass, sourceMethod, new Object[] {startSymbol, endOfFileSymbol});
         
         final long startTime = System.currentTimeMillis();
         final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(endOfFileSymbol));
-        
-        setStartSymbol(startSymbol);
-        setEndOfFileSymbol(endOfFileSymbol);
         
         compute();
         
