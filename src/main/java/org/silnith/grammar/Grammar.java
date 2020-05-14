@@ -762,6 +762,16 @@ public class Grammar<T extends TerminalSymbol> {
         setStartSymbol(startSymbol);
         setEndOfFileSymbol(endOfFileSymbol);
         
+        return createParser1();
+    }
+    
+    /**
+     * Creates a parser for the grammar.  This is called after all calls to
+     * {@link #addProduction}, {@link #setStartSymbol(NonTerminalSymbol)}, and {@link #setEndOfFileSymbol(TerminalSymbol)}.
+     * 
+     * @return a parser for the language defined by this grammar
+     */
+    public Parser<T> createParser1() {
         final String sourceMethod = "createParser";
         logger.entering(sourceClass, sourceMethod, new Object[] {this.startSymbol, this.endOfFileSymbol});
         
