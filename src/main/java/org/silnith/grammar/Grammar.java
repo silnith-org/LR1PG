@@ -761,7 +761,6 @@ public class Grammar<T extends TerminalSymbol> {
         final long startTime = System.currentTimeMillis();
         final Set<T> endOfFileSet = terminalSetFactory.getNewSet(Collections.singleton(endOfFileSymbol));
         
-        nonTerminalSymbols.add(START);
         addSymbols(startSymbol, endOfFileSymbol);
         
         compute();
