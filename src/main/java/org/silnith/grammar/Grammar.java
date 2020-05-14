@@ -747,9 +747,7 @@ public class Grammar<T extends TerminalSymbol> {
         
         computeParseStatesInternal(startState1, endOfFileSymbol);
         
-        final ParserState<T> startState = startState1;
-        
-        final Parser<T> parser = new Parser<>(parserStates, edges, startState, endOfFileSymbol);
+        final Parser<T> parser = new Parser<>(parserStates, edges, startState1, endOfFileSymbol);
         
         final long endTime = System.currentTimeMillis();
         
