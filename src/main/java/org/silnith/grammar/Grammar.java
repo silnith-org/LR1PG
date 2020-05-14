@@ -205,6 +205,7 @@ public class Grammar<T extends TerminalSymbol> {
         follow.clear();
         
         nullableComputed = false;
+        firstComputed = false;
         
         parserStates.clear();
         edges.clear();
@@ -312,6 +313,8 @@ public class Grammar<T extends TerminalSymbol> {
         logger.exiting(sourceClass, sourceMethod);
     }
     
+    private boolean firstComputed = false;
+    
     /**
      * Compute the first set for each symbol.
      */
@@ -354,6 +357,8 @@ public class Grammar<T extends TerminalSymbol> {
         } while (changed);
         
         logger.logp(Level.FINE, sourceClass, sourceMethod, "first sets: {0}", first);
+        
+        firstComputed = true;
         
         logger.exiting(sourceClass, sourceMethod);
     }
