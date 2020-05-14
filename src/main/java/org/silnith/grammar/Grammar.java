@@ -750,7 +750,7 @@ public class Grammar<T extends TerminalSymbol> {
             
             final List<Future<Set<Edge<T>>>> futures = executorService.invokeAll(tasks);
             
-            final Set<Edge<T>> newEdges = new HashSet<>(pending.size());
+            final Set<Edge<T>> newEdges = new HashSet<>(futures.size());
             for (final Future<Set<Edge<T>>> future : futures) {
                 final Set<Edge<T>> newEdgesForState = future.get();
                 newEdges.addAll(newEdgesForState);
