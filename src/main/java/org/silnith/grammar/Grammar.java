@@ -766,12 +766,12 @@ public class Grammar<T extends TerminalSymbol> {
         nonTerminalSymbols.add(START);
         addSymbols(startSymbol, endOfFileSymbol);
         
+        compute();
+        
         final Item item = itemFactory.createItem(START, production, 0);
         final LookaheadItem<T> lookaheadItem = lookaheadItemFactory.createInstance(item, endOfFileSet);
         
         final Set<LookaheadItem<T>> initialItems = Collections.singleton(lookaheadItem);
-        
-        compute();
         
         final ParserState<T> startState = calculateClosure(initialItems);
         /*
