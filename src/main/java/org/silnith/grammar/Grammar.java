@@ -633,6 +633,11 @@ public class Grammar<T extends TerminalSymbol> {
             parserStates.addAll(pending);
             edges.addAll(newEdges);
             
+            newParserStates.clear();
+            for (final Edge<T> edge : newEdges) {
+                newParserStates.add(edge.getFinalState());
+            }
+            
             logger.logp(Level.FINE, sourceClass, sourceMethod, "total parser states: {0}, total edges: {1}", new Object[] {parserStates.size(), edges.size()});
             
             pending = newParserStates;
