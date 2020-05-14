@@ -99,6 +99,10 @@ public class Grammar<T extends TerminalSymbol> {
      */
     private final Map<NonTerminalSymbol, Set<Production>> productions;
     
+    private NonTerminalSymbol startSymbol;
+    
+    private T endOfFileSymbol;
+    
     /**
      * The nullable non-terminal symbols.
      */
@@ -144,6 +148,8 @@ public class Grammar<T extends TerminalSymbol> {
         this.lexicon = this.terminalSetFactory.getNewSet();
         this.nonTerminalSymbols = new HashSet<>();
         this.productions = new HashMap<>();
+        this.startSymbol = null;
+        this.endOfFileSymbol = null;
         this.nullable = new HashSet<>();
         this.first = new HashMap<>();
         this.follow = new HashMap<>();
@@ -202,6 +208,9 @@ public class Grammar<T extends TerminalSymbol> {
         nonTerminalSymbols.clear();
         productions.clear();
         
+        startSymbol = null;
+        endOfFileSymbol = null;
+        
         nullable.clear();
         first.clear();
         follow.clear();
@@ -249,6 +258,33 @@ public class Grammar<T extends TerminalSymbol> {
         
         nonTerminalSymbols.add(nonTerminalSymbol);
         addSymbols(symbols);
+    }
+    
+    /**
+     * Sets the start symbol for the generated parser.  This is the non-terminal symbol that the parser will attempt to
+     * match against the tokens coming from the lexer.
+     * 
+     * @param startSymbol the symbol that the parser will ultimately parse
+     */
+    public void setStartSymbol(final NonTerminalSymbol startSymbol) {
+        if (startSymbol == null) {
+            throw new IllegalArgumentException();
+        }
+        this.startSymbol = startSymbol;
+        this.nonTerminalSymbols.add(this.startSymbol);
+    }
+    
+    /**
+     * Sets the symbol that the lexer will produce to signal the end of the token stream.
+     * 
+     * @param endOfFileSymbol the end-of-input symbol
+     */
+    public void setEndOfFileSymbol(final T endOfFileSymbol) {
+        if (endOfFileSymbol == null) {
+            throw new IllegalArgumentException();
+        }
+        this.endOfFileSymbol = endOfFileSymbol;
+        this.lexicon.add(this.endOfFileSymbol);
     }
     
     /**
