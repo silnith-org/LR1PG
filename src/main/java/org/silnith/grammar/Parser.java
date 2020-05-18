@@ -98,7 +98,7 @@ public class Parser<T extends TerminalSymbol> {
             final Action action = state.getAction(symbol);
             done = action.perform();
         } while ( !done);
-        stateStack.pop();
+        popState();
         final DataStackElement datum = dataStack.pop();
         return datum.getAbstractSyntaxTreeElement();
     }
@@ -146,7 +146,7 @@ public class Parser<T extends TerminalSymbol> {
         final List<Symbol> symbols = production.getSymbols();
         final Deque<DataStackElement> data = new ArrayDeque<>(symbols.size());
         for (@SuppressWarnings("unused") final Symbol symbol : symbols) {
-            stateStack.pop();
+            popState();
             final DataStackElement datum = dataStack.pop();
             data.addFirst(datum);
         }
@@ -159,6 +159,10 @@ public class Parser<T extends TerminalSymbol> {
         stateStack.push(state);
         dataStack.push(new DataStackElement(newDatum));
         return false;
+    }
+
+    private void popState() {
+        stateStack.pop();
     }
     
 }
