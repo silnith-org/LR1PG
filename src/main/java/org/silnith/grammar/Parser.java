@@ -89,7 +89,7 @@ public class Parser<T extends TerminalSymbol> {
         
         lexer = new TempLexer<>(inputLexer.iterator(), finalToken);
     	state = startState;
-        stateStack.push(state);
+        pushState();
         token = lexer.getToken();
         
         boolean done;
@@ -127,7 +127,7 @@ public class Parser<T extends TerminalSymbol> {
      */
     boolean shift(final ParserState<T> destinationState) {
         state = destinationState;
-        stateStack.push(state);
+        pushState();
         dataStack.push(new DataStackElement(token));
         token = lexer.getToken();
         return false;
@@ -156,9 +156,13 @@ public class Parser<T extends TerminalSymbol> {
         final Action gotoAction = state.getAction(targetNonTerminal);
         assert gotoAction instanceof Goto;
         gotoAction.perform();
-        stateStack.push(state);
+        pushState();
         dataStack.push(new DataStackElement(newDatum));
         return false;
+    }
+
+    private void pushState() {
+        stateStack.push(state);
     }
 
     private void popState() {
