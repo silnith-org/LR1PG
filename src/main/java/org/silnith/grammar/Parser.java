@@ -151,7 +151,8 @@ public class Parser<T extends TerminalSymbol> {
             data.addFirst(datum);
         }
         final ProductionHandler handler = production.getProductionHandler();
-        final DataStackElement newDatum = new DataStackElement(handler.handleReduction(new ArrayList<>(data)));
+        final Object handleReduction = handler.handleReduction(new ArrayList<>(data));
+        final DataStackElement newDatum = new DataStackElement(handleReduction);
         state = stateStack.peek();
         final Action gotoAction = state.getAction(targetNonTerminal);
         assert gotoAction instanceof Goto;
