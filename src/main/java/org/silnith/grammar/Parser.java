@@ -128,7 +128,7 @@ public class Parser<T extends TerminalSymbol> {
     boolean shift(final ParserState<T> destinationState) {
         state = destinationState;
         pushState();
-        dataStack.push(new DataStackElement(token));
+        pushData(token);
         token = lexer.getToken();
         return false;
     }
@@ -157,8 +157,12 @@ public class Parser<T extends TerminalSymbol> {
         assert gotoAction instanceof Goto;
         gotoAction.perform();
         pushState();
-        dataStack.push(new DataStackElement(newDatum));
+        pushData(newDatum);
         return false;
+    }
+
+    private void pushData(final Object newDatum) {
+        dataStack.push(new DataStackElement(newDatum));
     }
 
     private void pushState() {
