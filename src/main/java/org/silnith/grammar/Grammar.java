@@ -747,6 +747,8 @@ public class Grammar<T extends TerminalSymbol> {
             pending.removeAll(parserStates);
         }
         
+        logger.logp(Level.INFO, sourceClass, sourceMethod, "Parser states: {0}, Edges: {1}", new Object[] {parserStates.size(), edges.size()});
+        
         logger.exiting(sourceClass, sourceMethod);
     }
     
@@ -840,6 +842,8 @@ public class Grammar<T extends TerminalSymbol> {
             pending = newParserStates;
             pending.removeAll(parserStates);
         }
+        
+        logger.logp(Level.INFO, sourceClass, sourceMethod, "Parser states: {0}, Edges: {1}", new Object[] {parserStates.size(), edges.size()});
         
         logger.exiting(sourceClass, sourceMethod);
     }
