@@ -19,7 +19,6 @@ class Goto<T extends TerminalSymbol> extends AbstractAction<T> {
     
     @Override
     public boolean perform(final ParserData<T> data) {
-        Parser<T> r = getParser();
         data.setState(destinationState);
         return false;
     }
