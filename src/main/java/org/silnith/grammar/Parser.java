@@ -116,7 +116,7 @@ public class Parser<T extends TerminalSymbol> {
      * @param destinationState the next parser state
      */
     boolean goTo(final ParserState<T> destinationState) {
-        state = destinationState;
+        setState(destinationState);
         return false;
     }
 
@@ -126,7 +126,7 @@ public class Parser<T extends TerminalSymbol> {
      * @param destinationState the next parser state
      */
     boolean shift(final ParserState<T> destinationState) {
-        state = destinationState;
+        setState(destinationState);
         pushState();
         pushData(token);
         token = lexer.getToken();
@@ -152,7 +152,7 @@ public class Parser<T extends TerminalSymbol> {
         }
         final ProductionHandler handler = production.getProductionHandler();
         final Object newDatum = handler.handleReduction(new ArrayList<>(data));
-        state = peekState();
+        setState(peekState());
         final Action gotoAction = state.getAction(targetNonTerminal);
         assert gotoAction instanceof Goto;
         gotoAction.perform();
@@ -169,6 +169,10 @@ public class Parser<T extends TerminalSymbol> {
         final DataStackElement datum = dataStack.pop();
         final Object abstractSyntaxTreeElement = datum.getAbstractSyntaxTreeElement();
         return abstractSyntaxTreeElement;
+    }
+
+    private void setState(final ParserState<T> destinationState) {
+        state = destinationState;
     }
 
     private ParserState<T> peekState() {
