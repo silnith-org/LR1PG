@@ -13,7 +13,7 @@ class Accept<T extends TerminalSymbol> extends AbstractAction<T> {
      * @param parser the parser to act upon
      */
     public Accept(final Parser<T> parser) {
-        super(parser);
+        super();
     }
     
     @Override

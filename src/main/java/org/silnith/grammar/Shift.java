@@ -10,7 +10,7 @@ class Shift<T extends TerminalSymbol> extends AbstractAction<T> {
     private final ParserState<T> destinationState;
     
     public Shift(final Parser<T> parser, final ParserState<T> destinationState) {
-        super(parser);
+        super();
         if (destinationState == null) {
             throw new IllegalArgumentException();
         }
