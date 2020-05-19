@@ -103,10 +103,6 @@ public class Parser<T extends TerminalSymbol> {
         return data;
     }
 
-    private Action getAction(final Symbol symbol) {
-        return state.getAction(symbol);
-    }
-
     /**
      * Accept the complete language string.
      */
@@ -163,6 +159,10 @@ public class Parser<T extends TerminalSymbol> {
         pushState();
         pushData(newDatum);
         return false;
+    }
+
+    private Action getAction(final Symbol symbol) {
+        return state.getAction(symbol);
     }
 
     private void pushData(final Object datum) {
