@@ -35,6 +35,16 @@ public class Parser<T extends TerminalSymbol> {
         private LinkedNode<ParserState<T>> stateStack;
         
         private LinkedNode<DataStackElement> dataStack;
+        
+        private boolean done;
+        
+        private boolean isDone() {
+            return done;
+        }
+        
+        private void setDone() {
+            done = true;
+        }
 
         private Action getAction(final Symbol symbol) {
             return state.getAction(symbol);
@@ -132,7 +142,7 @@ public class Parser<T extends TerminalSymbol> {
             final T symbol = token.getSymbol();
             final Action action = parserData.getAction(symbol);
             done = action.perform();
-        } while ( !done);
+        } while ( !parserData.isDone());
         parserData.popState();
         final Object data = parserData.popData();
         return data;
@@ -142,6 +152,7 @@ public class Parser<T extends TerminalSymbol> {
      * Accept the complete language string.
      */
     boolean accept() {
+        parserData.setDone();
         return true;
     }
 
