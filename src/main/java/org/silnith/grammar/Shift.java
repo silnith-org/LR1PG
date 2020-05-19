@@ -19,7 +19,7 @@ class Shift<T extends TerminalSymbol> extends AbstractAction<T> {
     
     @Override
     public boolean perform(final ParserData<T> data) {
-        return getParser().shift(destinationState);
+        return getParser().shift(data, destinationState);
     }
 
     @Override

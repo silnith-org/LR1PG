@@ -106,7 +106,7 @@ public class Parser<T extends TerminalSymbol> {
     /**
      * Accept the complete language string.
      */
-    boolean accept() {
+    boolean accept(final ParserData<T> parserData) {
         parserData.setDone();
         return false;
     }
@@ -116,7 +116,7 @@ public class Parser<T extends TerminalSymbol> {
      * 
      * @param destinationState the next parser state
      */
-    boolean goTo(final ParserState<T> destinationState) {
+    boolean goTo(final ParserData<T> parserData, final ParserState<T> destinationState) {
         parserData.setState(destinationState);
         return false;
     }
@@ -126,7 +126,7 @@ public class Parser<T extends TerminalSymbol> {
      * 
      * @param destinationState the next parser state
      */
-    boolean shift(final ParserState<T> destinationState) {
+    boolean shift(final ParserData<T> parserData, final ParserState<T> destinationState) {
         parserData.setState(destinationState);
         return true;
     }
@@ -137,7 +137,7 @@ public class Parser<T extends TerminalSymbol> {
      * 
      * @param reduceItem the production to reduce
      */
-    boolean reduce(final LookaheadItem<T> reduceItem) {
+    boolean reduce(final ParserData<T> parserData, final LookaheadItem<T> reduceItem) {
         final Item item = reduceItem.getItem();
         final NonTerminalSymbol targetNonTerminal = item.getTarget();
         final Production production = item.getProduction();
