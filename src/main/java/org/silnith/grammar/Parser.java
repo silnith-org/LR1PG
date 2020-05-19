@@ -26,9 +26,9 @@ public class Parser<T extends TerminalSymbol> {
 
     private Token<T> token;
     
-    private ParserData parserData;
+    private ParserData<T> parserData;
     
-    private class ParserData {
+    private static class ParserData<T extends TerminalSymbol> {
 
         private ParserState<T> state;
         
@@ -134,7 +134,7 @@ public class Parser<T extends TerminalSymbol> {
      *         the {@link Grammar}
      */
     public Object parse(final Lexer<T> inputLexer) {
-        parserData = new ParserData();
+        parserData = new ParserData<>();
         
         lexer = new TempLexer<>(inputLexer.iterator(), finalToken);
         parserData.setState(startState);
