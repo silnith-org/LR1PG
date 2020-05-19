@@ -12,8 +12,4 @@ abstract class AbstractAction<T extends TerminalSymbol> implements Action<T> {
         this.parser = parser;
     }
 
-    public Parser<T> getParser() {
-        return parser;
-    }
-
 }
