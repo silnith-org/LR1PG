@@ -88,7 +88,7 @@ public class Parser<T extends TerminalSymbol> {
         dataStack.clear();
         
         lexer = new TempLexer<>(inputLexer.iterator(), finalToken);
-    	state = startState;
+    	setState(startState);
         pushState();
         token = lexer.getToken();
         
