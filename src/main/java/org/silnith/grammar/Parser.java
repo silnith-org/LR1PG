@@ -98,14 +98,6 @@ public class Parser<T extends TerminalSymbol> {
     }
 
     /**
-     * Accept the complete language string.
-     */
-    boolean accept(final ParserData<T> parserData) {
-        parserData.setDone();
-        return false;
-    }
-
-    /**
      * Change to a new parser state.
      * 
      * @param destinationState the next parser state
