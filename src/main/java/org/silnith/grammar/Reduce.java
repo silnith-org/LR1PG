@@ -25,7 +25,6 @@ class Reduce<T extends TerminalSymbol> extends AbstractAction<T> {
     
     @Override
     public boolean perform(final ParserData<T> data) {
-        Parser<T> r = getParser();
         final Item item = reduceItem.getItem();
         final NonTerminalSymbol targetNonTerminal = item.getTarget();
         final Production production = item.getProduction();
