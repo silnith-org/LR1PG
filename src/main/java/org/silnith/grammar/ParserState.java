@@ -1,7 +1,9 @@
 package org.silnith.grammar;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -20,6 +22,8 @@ class ParserState<T extends TerminalSymbol> {
 
     private final Map<Symbol, Action> parsingTable;
 
+    private final Map<Symbol, Set<Action>> parsingTable2;
+
     public ParserState(final Set<LookaheadItem<T>> items) {
         super();
         if (items == null) {
@@ -32,6 +36,7 @@ class ParserState<T extends TerminalSymbol> {
          * hash code calculation or the equals comparison.
          */
         this.parsingTable = new HashMap<>();
+        this.parsingTable2 = new HashMap<>();
     }
     
     public Set<LookaheadItem<T>> getItems() {
@@ -39,6 +44,15 @@ class ParserState<T extends TerminalSymbol> {
     }
     
     private int conflictCount = 0;
+    
+    public void initializeParseTable(final Collection<T> terminals, final Collection<NonTerminalSymbol> nonTerminals) {
+        for (final T terminal : terminals) {
+            parsingTable2.put(terminal, new HashSet<Action>());
+        }
+        for (final NonTerminalSymbol nonTerminalSymbol : nonTerminals) {
+            parsingTable2.put(nonTerminalSymbol, new HashSet<Action>());
+        }
+    }
     
     /**
      * Adds an action to the parse table.
@@ -48,6 +62,7 @@ class ParserState<T extends TerminalSymbol> {
      * @param action the parser action to take
      */
     public void putAction(final Symbol symbol, final Action action) {
+        parsingTable2.get(symbol).add(action);
         final Action previousAction = parsingTable.put(symbol, action);
         if (previousAction != null) {
             conflictCount++;
@@ -59,6 +74,10 @@ class ParserState<T extends TerminalSymbol> {
             
             throw new IllegalStateException("Conflict between actions " + action + " and " + previousAction);
         }
+    }
+    
+    public Set<Action> getActions(final Symbol symbol) {
+        return parsingTable2.get(symbol);
     }
     
     public Action getAction(final Symbol symbol) {

@@ -778,6 +778,10 @@ public class Grammar<T extends TerminalSymbol> {
         
         computeParseStates(startState);
         
+        for (final ParserState<T> parserState : parserStates) {
+            parserState.initializeParseTable(lexicon, nonTerminalSymbols);
+        }
+        
         final Parser<T> parser = new Parser<>(parserStates, edges, startState, endOfFileSymbol);
         
         final long endTime = System.currentTimeMillis();
@@ -877,6 +881,10 @@ public class Grammar<T extends TerminalSymbol> {
          */
         
         threadedComputeParseStates(startState, executorService);
+        
+        for (final ParserState<T> parserState : parserStates) {
+            parserState.initializeParseTable(lexicon, nonTerminalSymbols);
+        }
         
         final Parser<T> parser = new Parser<>(parserStates, edges, startState, endOfFileSymbol);
         
