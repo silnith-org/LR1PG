@@ -22,8 +22,6 @@ public class Parser<T extends TerminalSymbol> {
     
     private final Token<T> finalToken;
     
-    private final Deque<DataStackElement> dataStack;
-    
     private TempLexer<T> lexer;
 
     private Token<T> token;
@@ -31,7 +29,9 @@ public class Parser<T extends TerminalSymbol> {
     private ParserState<T> state;
     
     private LinkedNode<ParserState<T>> stateStack;
-
+    
+    private LinkedNode<DataStackElement> dataStack;
+    
     public Parser(final Set<ParserState<T>> parserStates, final Set<Edge<T>> edges, final ParserState<T> startState,
             final T endOfFileSymbol) {
         super();
@@ -40,8 +40,6 @@ public class Parser<T extends TerminalSymbol> {
         }
         this.startState = startState;
         this.finalToken = new FinalToken<>(endOfFileSymbol);
-        
-        this.dataStack = new ArrayDeque<>();
         
         for (final Edge<T> edge : edges) {
             final ParserState<T> parserState = edge.getInitialState();
@@ -86,7 +84,7 @@ public class Parser<T extends TerminalSymbol> {
      */
     public Object parse(final Lexer<T> inputLexer) {
         stateStack = null;
-        dataStack.clear();
+        dataStack = null;
         
         lexer = new TempLexer<>(inputLexer.iterator(), finalToken);
     	setState(startState);
@@ -167,11 +165,12 @@ public class Parser<T extends TerminalSymbol> {
     }
 
     private void pushData(final Object datum) {
-        dataStack.push(new DataStackElement(datum));
+        dataStack = new LinkedNode<>(new DataStackElement(datum), dataStack);
     }
 
     private Object popData() {
-        final DataStackElement datum = dataStack.pop();
+        final DataStackElement datum = dataStack.getFirst();
+        dataStack = dataStack.getNext();
         final Object abstractSyntaxTreeElement = datum.getAbstractSyntaxTreeElement();
         return abstractSyntaxTreeElement;
     }
