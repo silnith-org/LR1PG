@@ -67,7 +67,7 @@ public class Parser<T extends TerminalSymbol> {
      *         the {@link Grammar}
      */
     public Object parse(final Lexer<T> inputLexer) {
-        final ParserData<T> parserData = new ParserData<>();
+        ParserData<T> parserData = new ParserData<>();
         
         final TempLexer<T> lexer = new TempLexer<>(inputLexer.iterator(), finalToken);
         parserData.setState(startState);
@@ -82,7 +82,7 @@ public class Parser<T extends TerminalSymbol> {
                 assert actions != null;
                 
                 final Action<T> action = parserData.getAction(lookaheadSymbol);
-                action.perform(parserData);
+                parserData = action.perform(parserData);
             } while ( !parserData.isDone() && !parserData.isReadyForShift());
             if (parserData.isReadyForShift()) {
                 parserData.pushData(token);
