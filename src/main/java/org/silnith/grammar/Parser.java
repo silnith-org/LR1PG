@@ -77,13 +77,12 @@ public class Parser<T extends TerminalSymbol> {
             final Token<T> token = lexer.getToken();
             parserData.setReadyForShift(false);
             final T lookaheadSymbol = token.getSymbol();
-            boolean readyForShift;
             do {
                 final Set<Action<T>> actions = parserData.getActions(lookaheadSymbol);
                 assert actions != null;
                 
                 final Action<T> action = parserData.getAction(lookaheadSymbol);
-                readyForShift = action.perform(parserData);
+                action.perform(parserData);
             } while ( !parserData.isDone() && !parserData.isReadyForShift());
             if (parserData.isReadyForShift()) {
                 parserData.pushData(token);
