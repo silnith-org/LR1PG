@@ -144,6 +144,9 @@ public class Parser<T extends TerminalSymbol> {
                 final Action action = parserData.getAction(symbol);
                 readyForShift = action.perform();
             } while ( !parserData.isDone() && !readyForShift);
+            if (readyForShift) {
+                parserData.pushData(token);
+            }
         } while ( !parserData.isDone());
         parserData.popState();
         final Object data = parserData.popData();
@@ -175,7 +178,6 @@ public class Parser<T extends TerminalSymbol> {
      */
     boolean shift(final ParserState<T> destinationState) {
         parserData.setState(destinationState);
-        parserData.pushData(token);
         return true;
     }
 
