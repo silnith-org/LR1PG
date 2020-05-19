@@ -95,12 +95,16 @@ public class Parser<T extends TerminalSymbol> {
         boolean done;
         do {
             final T symbol = token.getSymbol();
-            final Action action = state.getAction(symbol);
+            final Action action = getAction(symbol);
             done = action.perform();
         } while ( !done);
         popState();
         final Object data = popData();
         return data;
+    }
+
+    private Action getAction(final Symbol symbol) {
+        return state.getAction(symbol);
     }
 
     /**
@@ -153,7 +157,7 @@ public class Parser<T extends TerminalSymbol> {
         final ProductionHandler handler = production.getProductionHandler();
         final Object newDatum = handler.handleReduction(new ArrayList<>(data));
         setState(peekState());
-        final Action gotoAction = state.getAction(targetNonTerminal);
+        final Action gotoAction = getAction(targetNonTerminal);
         assert gotoAction instanceof Goto;
         gotoAction.perform();
         pushState();
