@@ -20,9 +20,9 @@ class ParserState<T extends TerminalSymbol> {
     
     private final int hashCode;
 
-    private final Map<Symbol, Action> parsingTable;
+    private final Map<Symbol, Action<T>> parsingTable;
 
-    private final Map<Symbol, Set<Action>> parsingTable2;
+    private final Map<Symbol, Set<Action<T>>> parsingTable2;
 
     public ParserState(final Set<LookaheadItem<T>> items) {
         super();
@@ -47,10 +47,10 @@ class ParserState<T extends TerminalSymbol> {
     
     public void initializeParseTable(final Collection<T> terminals, final Collection<NonTerminalSymbol> nonTerminals) {
         for (final T terminal : terminals) {
-            parsingTable2.put(terminal, new HashSet<Action>());
+            parsingTable2.put(terminal, new HashSet<Action<T>>());
         }
         for (final NonTerminalSymbol nonTerminalSymbol : nonTerminals) {
-            parsingTable2.put(nonTerminalSymbol, new HashSet<Action>());
+            parsingTable2.put(nonTerminalSymbol, new HashSet<Action<T>>());
         }
     }
     
@@ -61,9 +61,9 @@ class ParserState<T extends TerminalSymbol> {
      * @param symbol the next symbol to be consumed
      * @param action the parser action to take
      */
-    public void putAction(final Symbol symbol, final Action action) {
+    public void putAction(final Symbol symbol, final Action<T> action) {
         parsingTable2.get(symbol).add(action);
-        final Action previousAction = parsingTable.put(symbol, action);
+        final Action<T> previousAction = parsingTable.put(symbol, action);
         if (previousAction != null) {
             conflictCount++;
 //            System.out.println("Action conflict #" + conflictCount);
@@ -76,12 +76,12 @@ class ParserState<T extends TerminalSymbol> {
         }
     }
     
-    public Set<Action> getActions(final Symbol symbol) {
+    public Set<Action<T>> getActions(final Symbol symbol) {
         return parsingTable2.get(symbol);
     }
     
-    public Action getAction(final Symbol symbol) {
-        final Action action = parsingTable.get(symbol);
+    public Action<T> getAction(final Symbol symbol) {
+        final Action<T> action = parsingTable.get(symbol);
         if (action == null) {
 //            printLong();
 //            System.out.print("Next symbol: ");

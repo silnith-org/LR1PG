@@ -1,6 +1,6 @@
 package org.silnith.grammar;
 
-abstract class AbstractAction<T extends TerminalSymbol> implements Action {
+abstract class AbstractAction<T extends TerminalSymbol> implements Action<T> {
 
     private final Parser<T> parser;
 

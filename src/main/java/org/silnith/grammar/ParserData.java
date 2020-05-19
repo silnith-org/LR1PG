@@ -22,11 +22,11 @@ class ParserData<T extends TerminalSymbol> {
         done = true;
     }
 
-    Action getAction(final Symbol symbol) {
+    Action<T> getAction(final Symbol symbol) {
         return state.getAction(symbol);
     }
     
-    Set<Action> getActions(final Symbol symbol) {
+    Set<Action<T>> getActions(final Symbol symbol) {
         return state.getActions(symbol);
     }
 

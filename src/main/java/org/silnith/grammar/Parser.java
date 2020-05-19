@@ -40,7 +40,7 @@ public class Parser<T extends TerminalSymbol> {
             final Symbol symbol = edge.getSymbol();
             final ParserState<T> destinationState = edge.getFinalState();
             
-            final Action action;
+            final Action<T> action;
             if (symbol instanceof TerminalSymbol) {
                 action = new Shift<>(this, destinationState);
             } else if (symbol instanceof NonTerminalSymbol) {
@@ -54,14 +54,14 @@ public class Parser<T extends TerminalSymbol> {
             for (final LookaheadItem<T> lookaheadItem : parserState.getItems()) {
                 final Item item = lookaheadItem.getItem();
                 if (item.isComplete()) {
-                    final Action action = new Reduce<>(this, lookaheadItem);
+                    final Action<T> action = new Reduce<>(this, lookaheadItem);
                     for (final T lookahead : lookaheadItem.getLookaheadSet()) {
                         parserState.putAction(lookahead, action);
                     }
                 } else {
                     final Symbol symbol = item.getNextSymbol();
                     if (endOfFileSymbol.equals(symbol)) {
-                        final Action action = new Accept<>(this);
+                        final Action<T> action = new Accept<>(this);
                         parserState.putAction(symbol, action);
                     }
                 }
@@ -88,11 +88,11 @@ public class Parser<T extends TerminalSymbol> {
             final T lookaheadSymbol = token.getSymbol();
             boolean readyForShift;
             do {
-                final Set<Action> actions = parserData.getActions(lookaheadSymbol);
+                final Set<Action<T>> actions = parserData.getActions(lookaheadSymbol);
                 assert actions != null;
                 
-                final Action action = parserData.getAction(lookaheadSymbol);
-                readyForShift = action.perform();
+                final Action<T> action = parserData.getAction(lookaheadSymbol);
+                readyForShift = action.perform(parserData);
             } while ( !parserData.isDone() && !readyForShift);
             if (readyForShift) {
                 parserData.pushData(token);
@@ -151,12 +151,12 @@ public class Parser<T extends TerminalSymbol> {
         final ProductionHandler handler = production.getProductionHandler();
         final Object newDatum = handler.handleReduction(new ArrayList<>(data));
         parserData.setState(parserData.peekState());
-        final Action gotoAction = parserData.getAction(targetNonTerminal);
+        final Action<T> gotoAction = parserData.getAction(targetNonTerminal);
         assert gotoAction instanceof Goto;
         
         assert parserData.getActions(targetNonTerminal).size() == 1;
         
-        gotoAction.perform();
+        gotoAction.perform(parserData);
         parserData.pushState();
         parserData.pushData(newDatum);
         return false;
