@@ -25,13 +25,50 @@ public class Parser<T extends TerminalSymbol> {
     private TempLexer<T> lexer;
 
     private Token<T> token;
+    
+    private ParserData parserData;
+    
+    private class ParserData {
 
-    private ParserState<T> state;
-    
-    private LinkedNode<ParserState<T>> stateStack;
-    
-    private LinkedNode<DataStackElement> dataStack;
-    
+        private ParserState<T> state;
+        
+        private LinkedNode<ParserState<T>> stateStack;
+        
+        private LinkedNode<DataStackElement> dataStack;
+
+        private Action getAction(final Symbol symbol) {
+            return state.getAction(symbol);
+        }
+
+        private void pushData(final Object datum) {
+            dataStack = new LinkedNode<>(new DataStackElement(datum), dataStack);
+        }
+
+        private Object popData() {
+            final DataStackElement datum = dataStack.getFirst();
+            dataStack = dataStack.getNext();
+            final Object abstractSyntaxTreeElement = datum.getAbstractSyntaxTreeElement();
+            return abstractSyntaxTreeElement;
+        }
+
+        private void setState(final ParserState<T> destinationState) {
+            state = destinationState;
+        }
+
+        private ParserState<T> peekState() {
+            return stateStack.getFirst();
+        }
+
+        private void pushState() {
+            stateStack = new LinkedNode<ParserState<T>>(state, stateStack);
+        }
+
+        private void popState() {
+            stateStack = stateStack.getNext();
+        }
+        
+    }
+
     public Parser(final Set<ParserState<T>> parserStates, final Set<Edge<T>> edges, final ParserState<T> startState,
             final T endOfFileSymbol) {
         super();
@@ -83,22 +120,21 @@ public class Parser<T extends TerminalSymbol> {
      *         the {@link Grammar}
      */
     public Object parse(final Lexer<T> inputLexer) {
-        stateStack = null;
-        dataStack = null;
+        parserData = new ParserData();
         
         lexer = new TempLexer<>(inputLexer.iterator(), finalToken);
-    	setState(startState);
-        pushState();
+        parserData.setState(startState);
+        parserData.pushState();
         token = lexer.getToken();
         
         boolean done;
         do {
             final T symbol = token.getSymbol();
-            final Action action = getAction(symbol);
+            final Action action = parserData.getAction(symbol);
             done = action.perform();
         } while ( !done);
-        popState();
-        final Object data = popData();
+        parserData.popState();
+        final Object data = parserData.popData();
         return data;
     }
 
@@ -115,7 +151,7 @@ public class Parser<T extends TerminalSymbol> {
      * @param destinationState the next parser state
      */
     boolean goTo(final ParserState<T> destinationState) {
-        setState(destinationState);
+        parserData.setState(destinationState);
         return false;
     }
 
@@ -125,9 +161,9 @@ public class Parser<T extends TerminalSymbol> {
      * @param destinationState the next parser state
      */
     boolean shift(final ParserState<T> destinationState) {
-        setState(destinationState);
-        pushState();
-        pushData(token);
+        parserData.setState(destinationState);
+        parserData.pushState();
+        parserData.pushData(token);
         token = lexer.getToken();
         return false;
     }
@@ -145,50 +181,19 @@ public class Parser<T extends TerminalSymbol> {
         final List<Symbol> symbols = production.getSymbols();
         final Deque<Object> data = new ArrayDeque<>(symbols.size());
         for (@SuppressWarnings("unused") final Symbol symbol : symbols) {
-            popState();
-            final Object datum = popData();
+            parserData.popState();
+            final Object datum = parserData.popData();
             data.addFirst(datum);
         }
         final ProductionHandler handler = production.getProductionHandler();
         final Object newDatum = handler.handleReduction(new ArrayList<>(data));
-        setState(peekState());
-        final Action gotoAction = getAction(targetNonTerminal);
+        parserData.setState(parserData.peekState());
+        final Action gotoAction = parserData.getAction(targetNonTerminal);
         assert gotoAction instanceof Goto;
         gotoAction.perform();
-        pushState();
-        pushData(newDatum);
+        parserData.pushState();
+        parserData.pushData(newDatum);
         return false;
-    }
-
-    private Action getAction(final Symbol symbol) {
-        return state.getAction(symbol);
-    }
-
-    private void pushData(final Object datum) {
-        dataStack = new LinkedNode<>(new DataStackElement(datum), dataStack);
-    }
-
-    private Object popData() {
-        final DataStackElement datum = dataStack.getFirst();
-        dataStack = dataStack.getNext();
-        final Object abstractSyntaxTreeElement = datum.getAbstractSyntaxTreeElement();
-        return abstractSyntaxTreeElement;
-    }
-
-    private void setState(final ParserState<T> destinationState) {
-        state = destinationState;
-    }
-
-    private ParserState<T> peekState() {
-        return stateStack.getFirst();
-    }
-
-    private void pushState() {
-        stateStack = new LinkedNode<ParserState<T>>(state, stateStack);
-    }
-
-    private void popState() {
-        stateStack = stateStack.getNext();
     }
     
 }
