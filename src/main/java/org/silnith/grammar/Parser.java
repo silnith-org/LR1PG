@@ -48,7 +48,7 @@ public class Parser<T extends TerminalSymbol> {
             for (final LookaheadItem<T> lookaheadItem : parserState.getItems()) {
                 final Item item = lookaheadItem.getItem();
                 if (item.isComplete()) {
-                    final Action<T> action = new Reduce<>(this, lookaheadItem);
+                    final Action<T> action = new Reduce<>(lookaheadItem);
                     for (final T lookahead : lookaheadItem.getLookaheadSet()) {
                         parserState.putAction(lookahead, action);
                     }

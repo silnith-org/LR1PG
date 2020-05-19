@@ -15,7 +15,7 @@ class Reduce<T extends TerminalSymbol> implements Action<T> {
     
     private final LookaheadItem<T> reduceItem;
     
-    public Reduce(final Parser<T> parser, final LookaheadItem<T> reduceItem) {
+    public Reduce(final LookaheadItem<T> reduceItem) {
         super();
         if (reduceItem == null) {
             throw new IllegalArgumentException();
