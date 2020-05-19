@@ -139,8 +139,8 @@ public class Parser<T extends TerminalSymbol> {
         do {
             parserData.pushState();
             token = lexer.getToken();
+            final T symbol = token.getSymbol();
             do {
-                final T symbol = token.getSymbol();
                 final Action action = parserData.getAction(symbol);
                 readyForShift = action.perform();
             } while ( !parserData.isDone() && !readyForShift);
