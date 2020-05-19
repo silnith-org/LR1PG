@@ -137,11 +137,11 @@ public class Parser<T extends TerminalSymbol> {
         parserData.pushState();
         token = lexer.getToken();
         
-        boolean done;
+        boolean readyForShift;
         do {
             final T symbol = token.getSymbol();
             final Action action = parserData.getAction(symbol);
-            done = action.perform();
+            readyForShift = action.perform();
         } while ( !parserData.isDone());
         parserData.popState();
         final Object data = parserData.popData();
@@ -153,7 +153,7 @@ public class Parser<T extends TerminalSymbol> {
      */
     boolean accept() {
         parserData.setDone();
-        return true;
+        return false;
     }
 
     /**
@@ -176,7 +176,7 @@ public class Parser<T extends TerminalSymbol> {
         parserData.pushState();
         parserData.pushData(token);
         token = lexer.getToken();
-        return false;
+        return true;
     }
 
     /**

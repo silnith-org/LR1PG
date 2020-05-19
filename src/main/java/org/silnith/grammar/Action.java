@@ -8,7 +8,7 @@ interface Action {
     /**
      * Perform the action on the parser.
      * 
-     * @return {@code true} if the parse is finished
+     * @return {@code true} if the parser is ready for the next shift
      */
     boolean perform();
     
