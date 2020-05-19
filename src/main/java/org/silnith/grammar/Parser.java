@@ -19,8 +19,6 @@ public class Parser<T extends TerminalSymbol> {
     private final ParserState<T> startState;
     
     private final Token<T> finalToken;
-    
-    private TempLexer<T> lexer;
 
     private Token<T> token;
     
@@ -77,7 +75,7 @@ public class Parser<T extends TerminalSymbol> {
     public Object parse(final Lexer<T> inputLexer) {
         final ParserData<T> parserData = new ParserData<>();
         
-        lexer = new TempLexer<>(inputLexer.iterator(), finalToken);
+        final TempLexer<T> lexer = new TempLexer<>(inputLexer.iterator(), finalToken);
         parserData.setState(startState);
         
         do {
