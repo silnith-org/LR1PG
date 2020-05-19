@@ -85,7 +85,7 @@ public class Parser<T extends TerminalSymbol> {
                 final Action<T> action = parserData.getAction(lookaheadSymbol);
                 readyForShift = action.perform(parserData);
             } while ( !parserData.isDone() && !parserData.isReadyForShift());
-            if (readyForShift) {
+            if (parserData.isReadyForShift()) {
                 parserData.pushData(token);
             }
         } while ( !parserData.isDone());
