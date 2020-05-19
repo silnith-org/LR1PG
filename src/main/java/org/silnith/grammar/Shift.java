@@ -1,7 +1,7 @@
 package org.silnith.grammar;
 
 /**
- * The parser consumes an additional terminal symbol.
+ * The parser must consume an additional terminal symbol.
  * 
  * @param <T> the concrete type of terminal symbols
  */
@@ -19,7 +19,9 @@ class Shift<T extends TerminalSymbol> extends AbstractAction<T> {
     
     @Override
     public boolean perform(final ParserData<T> data) {
-        return getParser().shift(data, destinationState);
+        Parser<T> r = getParser();
+        data.setState(destinationState);
+        return true;
     }
 
     @Override

@@ -98,16 +98,6 @@ public class Parser<T extends TerminalSymbol> {
     }
 
     /**
-     * Read the next token and put it on the stack.
-     * 
-     * @param destinationState the next parser state
-     */
-    boolean shift(final ParserData<T> parserData, final ParserState<T> destinationState) {
-        parserData.setState(destinationState);
-        return true;
-    }
-
-    /**
      * Apply a production reduction to the stack.  This removes the symbols for each element of the production,
      * passes them through the production handler, and puts the output of the production handler onto the stack.
      * 
