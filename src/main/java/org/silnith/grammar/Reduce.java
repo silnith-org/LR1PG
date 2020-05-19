@@ -11,7 +11,7 @@ import java.util.List;
  * 
  * @param <T> the concrete type of terminal symbols
  */
-class Reduce<T extends TerminalSymbol> extends AbstractAction<T> {
+class Reduce<T extends TerminalSymbol> implements Action<T> {
     
     private final LookaheadItem<T> reduceItem;
     

@@ -5,7 +5,7 @@ package org.silnith.grammar;
  * 
  * @param <T> the concrete type of terminal symbols
  */
-class Accept<T extends TerminalSymbol> extends AbstractAction<T> {
+class Accept<T extends TerminalSymbol> implements Action<T> {
     
     /**
      * Creates a new "accept" action.

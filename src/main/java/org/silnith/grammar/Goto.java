@@ -5,7 +5,7 @@ package org.silnith.grammar;
  * 
  * @param <T> the concrete type of terminal symbols
  */
-class Goto<T extends TerminalSymbol> extends AbstractAction<T> {
+class Goto<T extends TerminalSymbol> implements Action<T> {
     
     private final ParserState<T> destinationState;
     
