@@ -135,11 +135,11 @@ public class Parser<T extends TerminalSymbol> {
         lexer = new TempLexer<>(inputLexer.iterator(), finalToken);
         parserData.setState(startState);
         
-        boolean readyForShift;
         do {
             parserData.pushState();
             token = lexer.getToken();
             final T lookaheadSymbol = token.getSymbol();
+            boolean readyForShift;
             do {
                 final Action action = parserData.getAction(lookaheadSymbol);
                 readyForShift = action.perform();
