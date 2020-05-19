@@ -6,8 +6,6 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Set;
 
-import org.silnith.grammar.util.LinkedNode;
-
 
 /**
  * A parser for the language defined by a {@link Grammar}.  The generated parser is guaranteed to process any input stream
@@ -28,61 +26,6 @@ public class Parser<T extends TerminalSymbol> {
     
     private ParserData<T> parserData;
     
-    private static class ParserData<T extends TerminalSymbol> {
-
-        private ParserState<T> state;
-        
-        private LinkedNode<ParserState<T>> stateStack;
-        
-        private LinkedNode<DataStackElement> dataStack;
-        
-        private boolean done;
-        
-        private boolean isDone() {
-            return done;
-        }
-        
-        private void setDone() {
-            done = true;
-        }
-
-        private Action getAction(final Symbol symbol) {
-            return state.getAction(symbol);
-        }
-        
-        private Set<Action> getActions(final Symbol symbol) {
-            return state.getActions(symbol);
-        }
-
-        private void pushData(final Object datum) {
-            dataStack = new LinkedNode<>(new DataStackElement(datum), dataStack);
-        }
-
-        private Object popData() {
-            final DataStackElement datum = dataStack.getFirst();
-            dataStack = dataStack.getNext();
-            final Object abstractSyntaxTreeElement = datum.getAbstractSyntaxTreeElement();
-            return abstractSyntaxTreeElement;
-        }
-
-        private void setState(final ParserState<T> destinationState) {
-            state = destinationState;
-        }
-
-        private ParserState<T> peekState() {
-            return stateStack.getFirst();
-        }
-
-        private void pushState() {
-            stateStack = new LinkedNode<ParserState<T>>(state, stateStack);
-        }
-
-        private void popState() {
-            stateStack = stateStack.getNext();
-        }
-        
-    }
-
     public Parser(final Set<ParserState<T>> parserStates, final Set<Edge<T>> edges, final ParserState<T> startState,
             final T endOfFileSymbol) {
         super();
