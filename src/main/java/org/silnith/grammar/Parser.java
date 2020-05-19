@@ -19,8 +19,6 @@ public class Parser<T extends TerminalSymbol> {
     private final ParserState<T> startState;
     
     private final Token<T> finalToken;
-
-    private Token<T> token;
     
     public Parser(final Set<ParserState<T>> parserStates, final Set<Edge<T>> edges, final ParserState<T> startState,
             final T endOfFileSymbol) {
@@ -80,7 +78,7 @@ public class Parser<T extends TerminalSymbol> {
         
         do {
             parserData.pushState();
-            token = lexer.getToken();
+            final Token<T> token = lexer.getToken();
             final T lookaheadSymbol = token.getSymbol();
             boolean readyForShift;
             do {
