@@ -36,7 +36,7 @@ public class Parser<T extends TerminalSymbol> {
             
             final Action<T> action;
             if (symbol instanceof TerminalSymbol) {
-                action = new Shift<>(this, destinationState);
+                action = new Shift<>(destinationState);
             } else if (symbol instanceof NonTerminalSymbol) {
                 action = new Goto<>(destinationState);
             } else {
