@@ -98,16 +98,6 @@ public class Parser<T extends TerminalSymbol> {
     }
 
     /**
-     * Change to a new parser state.
-     * 
-     * @param destinationState the next parser state
-     */
-    boolean goTo(final ParserData<T> parserData, final ParserState<T> destinationState) {
-        parserData.setState(destinationState);
-        return false;
-    }
-
-    /**
      * Read the next token and put it on the stack.
      * 
      * @param destinationState the next parser state
