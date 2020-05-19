@@ -9,10 +9,8 @@ class Accept<T extends TerminalSymbol> implements Action<T> {
     
     /**
      * Creates a new "accept" action.
-     * 
-     * @param parser the parser to act upon
      */
-    public Accept(final Parser<T> parser) {
+    public Accept() {
         super();
     }
     
