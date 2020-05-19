@@ -9,7 +9,7 @@ class Goto<T extends TerminalSymbol> implements Action<T> {
     
     private final ParserState<T> destinationState;
     
-    public Goto(final Parser<T> parser, final ParserState<T> destinationState) {
+    public Goto(final ParserState<T> destinationState) {
         super();
         if (destinationState == null) {
             throw new IllegalArgumentException();
