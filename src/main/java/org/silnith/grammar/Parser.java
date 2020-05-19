@@ -6,6 +6,8 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Set;
 
+import org.silnith.grammar.util.LinkedNode;
+
 
 /**
  * A parser for the language defined by a {@link Grammar}.  The generated parser is guaranteed to process any input stream
@@ -19,8 +21,6 @@ public class Parser<T extends TerminalSymbol> {
     private final ParserState<T> startState;
     
     private final Token<T> finalToken;
-
-    private final Deque<ParserState<T>> stateStack;
     
     private final Deque<DataStackElement> dataStack;
     
@@ -29,6 +29,8 @@ public class Parser<T extends TerminalSymbol> {
     private Token<T> token;
 
     private ParserState<T> state;
+    
+    private LinkedNode<ParserState<T>> stateStack;
 
     public Parser(final Set<ParserState<T>> parserStates, final Set<Edge<T>> edges, final ParserState<T> startState,
             final T endOfFileSymbol) {
@@ -39,7 +41,6 @@ public class Parser<T extends TerminalSymbol> {
         this.startState = startState;
         this.finalToken = new FinalToken<>(endOfFileSymbol);
         
-        this.stateStack = new ArrayDeque<>();
         this.dataStack = new ArrayDeque<>();
         
         for (final Edge<T> edge : edges) {
@@ -84,7 +85,7 @@ public class Parser<T extends TerminalSymbol> {
      *         the {@link Grammar}
      */
     public Object parse(final Lexer<T> inputLexer) {
-        stateStack.clear();
+        stateStack = null;
         dataStack.clear();
         
         lexer = new TempLexer<>(inputLexer.iterator(), finalToken);
@@ -180,15 +181,15 @@ public class Parser<T extends TerminalSymbol> {
     }
 
     private ParserState<T> peekState() {
-        return stateStack.peek();
+        return stateStack.getFirst();
     }
 
     private void pushState() {
-        stateStack.push(state);
+        stateStack = new LinkedNode<ParserState<T>>(state, stateStack);
     }
 
     private void popState() {
-        stateStack.pop();
+        stateStack = stateStack.getNext();
     }
     
 }
