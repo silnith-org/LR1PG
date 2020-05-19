@@ -38,11 +38,11 @@ class Reduce<T extends TerminalSymbol> implements Action<T> {
         final ProductionHandler handler = production.getProductionHandler();
         final Object newDatum = handler.handleReduction(new ArrayList<>(data1));
         data.setState(data.peekState());
-        final Action<T> gotoAction = data.getAction(targetNonTerminal);
-        assert gotoAction instanceof Goto;
         
         assert data.getActions(targetNonTerminal).size() == 1;
         
+        final Action<T> gotoAction = data.getAction(targetNonTerminal);
+        assert gotoAction instanceof Goto;
         gotoAction.perform(data);
         data.pushState();
         data.pushData(newDatum);
