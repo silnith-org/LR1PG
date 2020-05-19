@@ -2,7 +2,6 @@ package org.silnith.grammar.uri.production;
 
 import java.util.List;
 
-import org.silnith.grammar.DataStackElement;
 import org.silnith.grammar.ProductionHandler;
 import org.silnith.grammar.uri.token.UriTerminal;
 
@@ -15,11 +14,11 @@ public class QueryProductionHandler implements ProductionHandler {
     }
 
     @Override
-    public Object handleReduction(final List<DataStackElement> rightHandSide) {
+    public Object handleReduction(final List<Object> rightHandSide) {
         if (rightHandSide.isEmpty()) {
             return new QueryProduction();
         } else if (rightHandSide.size() == 2) {
-            final Object abstractSyntaxTreeElement = rightHandSide.get(0).getAbstractSyntaxTreeElement();
+            final Object abstractSyntaxTreeElement = rightHandSide.get(0);
             final char character;
             if (abstractSyntaxTreeElement instanceof PercentEncodedProduction) {
                 final PercentEncodedProduction foo = (PercentEncodedProduction) abstractSyntaxTreeElement;
@@ -30,7 +29,7 @@ public class QueryProductionHandler implements ProductionHandler {
             } else {
                 throw new IllegalStateException();
             }
-            final QueryProduction query = (QueryProduction) rightHandSide.get(1).getAbstractSyntaxTreeElement();
+            final QueryProduction query = (QueryProduction) rightHandSide.get(1);
 
             query.prependCharacter(character);
 

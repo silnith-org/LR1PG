@@ -12,15 +12,17 @@ public class TestProductionHandler implements ProductionHandler {
 	}
 
 	@Override
-	public Object handleReduction(final List<DataStackElement> rightHandSide) {
+	public Object handleReduction(final List<Object> rightHandSide) {
 		final StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(prefix);
 		
 		String separator = " ::= ";
 		
-		for (final DataStackElement dataStackElement : rightHandSide) {
+		for (final Object dataStackElement : rightHandSide) {
 			stringBuilder.append(separator);
+			stringBuilder.append('[');
 			stringBuilder.append(dataStackElement);
+            stringBuilder.append(']');
 			
 			separator = " ";
 		}

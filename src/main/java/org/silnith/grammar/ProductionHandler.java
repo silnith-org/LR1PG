@@ -18,6 +18,6 @@ public interface ProductionHandler {
      * @param rightHandSide the data objects for the symbols in the production
      * @return the data object for this production
      */
-    Object handleReduction(List<DataStackElement> rightHandSide);
+    Object handleReduction(List<Object> rightHandSide);
     
 }

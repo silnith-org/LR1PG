@@ -2,7 +2,6 @@ package org.silnith.grammar.uri.production;
 
 import java.util.List;
 
-import org.silnith.grammar.DataStackElement;
 import org.silnith.grammar.ProductionHandler;
 import org.silnith.grammar.uri.token.UriTerminal;
 
@@ -15,11 +14,11 @@ public class SegmentProductionHandler implements ProductionHandler {
     }
 
     @Override
-    public Object handleReduction(final List<DataStackElement> rightHandSide) {
+    public Object handleReduction(final List<Object> rightHandSide) {
         if (rightHandSide.isEmpty()) {
             return new SegmentProduction();
         } else {
-            final Object abstractSyntaxTreeElement = rightHandSide.get(0).getAbstractSyntaxTreeElement();
+            final Object abstractSyntaxTreeElement = rightHandSide.get(0);
             final char character;
             if (abstractSyntaxTreeElement instanceof PercentEncodedProduction) {
                 final PercentEncodedProduction percentEncodedProduction = (PercentEncodedProduction) abstractSyntaxTreeElement;
@@ -35,7 +34,7 @@ public class SegmentProductionHandler implements ProductionHandler {
             if (rightHandSide.size() == 1) {
                 segmentProduction = new SegmentProduction();
             } else if (rightHandSide.size() == 2) {
-                segmentProduction = (SegmentProduction) rightHandSide.get(1).getAbstractSyntaxTreeElement();
+                segmentProduction = (SegmentProduction) rightHandSide.get(1);
             } else {
                 throw new IllegalStateException();
             }

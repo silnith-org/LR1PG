@@ -62,8 +62,8 @@ public class Grammar<T extends TerminalSymbol> {
     private static class IdentityProductionHandler implements ProductionHandler {
         
         @Override
-        public Object handleReduction(final List<DataStackElement> rightHandSide) {
-            return rightHandSide.get(0).getAbstractSyntaxTreeElement();
+        public Object handleReduction(final List<Object> rightHandSide) {
+            return rightHandSide.get(0);
         }
         
     }

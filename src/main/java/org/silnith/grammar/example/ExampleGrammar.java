@@ -3,7 +3,6 @@ package org.silnith.grammar.example;
 import java.util.Arrays;
 import java.util.List;
 
-import org.silnith.grammar.DataStackElement;
 import org.silnith.grammar.EnumSetFactory;
 import org.silnith.grammar.Grammar;
 import org.silnith.grammar.NonTerminalSymbol;
@@ -23,7 +22,7 @@ public class ExampleGrammar {
 		}
 
 		@Override
-		public Object handleReduction(final List<DataStackElement> rightHandSide) {
+		public Object handleReduction(final List<Object> rightHandSide) {
 //			String.join(", ", rightHandSide);
 			
 			return string;
