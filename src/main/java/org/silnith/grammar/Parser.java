@@ -96,36 +96,5 @@ public class Parser<T extends TerminalSymbol> {
         final Object data = parserData.popData();
         return data;
     }
-
-    /**
-     * Apply a production reduction to the stack.  This removes the symbols for each element of the production,
-     * passes them through the production handler, and puts the output of the production handler onto the stack.
-     * 
-     * @param reduceItem the production to reduce
-     */
-    boolean reduce(final ParserData<T> parserData, final LookaheadItem<T> reduceItem) {
-        final Item item = reduceItem.getItem();
-        final NonTerminalSymbol targetNonTerminal = item.getTarget();
-        final Production production = item.getProduction();
-        final List<Symbol> symbols = production.getSymbols();
-        final Deque<Object> data = new ArrayDeque<>(symbols.size());
-        for (@SuppressWarnings("unused") final Symbol symbol : symbols) {
-            parserData.popState();
-            final Object datum = parserData.popData();
-            data.addFirst(datum);
-        }
-        final ProductionHandler handler = production.getProductionHandler();
-        final Object newDatum = handler.handleReduction(new ArrayList<>(data));
-        parserData.setState(parserData.peekState());
-        final Action<T> gotoAction = parserData.getAction(targetNonTerminal);
-        assert gotoAction instanceof Goto;
-        
-        assert parserData.getActions(targetNonTerminal).size() == 1;
-        
-        gotoAction.perform(parserData);
-        parserData.pushState();
-        parserData.pushData(newDatum);
-        return false;
-    }
     
 }
