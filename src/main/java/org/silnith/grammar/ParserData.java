@@ -12,7 +12,17 @@ class ParserData<T extends TerminalSymbol> {
     
     private LinkedNode<DataStackElement> dataStack;
     
+    private boolean readyForShift;
+    
     private boolean done;
+    
+    boolean isReadyForShift() {
+        return readyForShift;
+    }
+    
+    void setReadyForShift(final boolean readyForShift) {
+        this.readyForShift = readyForShift;
+    }
     
     boolean isDone() {
         return done;

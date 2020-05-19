@@ -20,6 +20,7 @@ class Shift<T extends TerminalSymbol> implements Action<T> {
     @Override
     public boolean perform(final ParserData<T> data) {
         data.setState(destinationState);
+        data.setReadyForShift(true);
         return true;
     }
 
