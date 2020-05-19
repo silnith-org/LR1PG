@@ -152,7 +152,7 @@ public class Parser<T extends TerminalSymbol> {
         }
         final ProductionHandler handler = production.getProductionHandler();
         final Object newDatum = handler.handleReduction(new ArrayList<>(data));
-        state = stateStack.peek();
+        state = peekState();
         final Action gotoAction = state.getAction(targetNonTerminal);
         assert gotoAction instanceof Goto;
         gotoAction.perform();
@@ -169,6 +169,10 @@ public class Parser<T extends TerminalSymbol> {
         final DataStackElement datum = dataStack.pop();
         final Object abstractSyntaxTreeElement = datum.getAbstractSyntaxTreeElement();
         return abstractSyntaxTreeElement;
+    }
+
+    private ParserState<T> peekState() {
+        return stateStack.peek();
     }
 
     private void pushState() {
