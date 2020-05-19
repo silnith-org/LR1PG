@@ -49,6 +49,10 @@ public class Parser<T extends TerminalSymbol> {
         private Action getAction(final Symbol symbol) {
             return state.getAction(symbol);
         }
+        
+        private Set<Action> getActions(final Symbol symbol) {
+            return state.getActions(symbol);
+        }
 
         private void pushData(final Object datum) {
             dataStack = new LinkedNode<>(new DataStackElement(datum), dataStack);
@@ -141,6 +145,9 @@ public class Parser<T extends TerminalSymbol> {
             final T lookaheadSymbol = token.getSymbol();
             boolean readyForShift;
             do {
+                final Set<Action> actions = parserData.getActions(lookaheadSymbol);
+                assert actions != null;
+                
                 final Action action = parserData.getAction(lookaheadSymbol);
                 readyForShift = action.perform();
             } while ( !parserData.isDone() && !readyForShift);
@@ -203,6 +210,9 @@ public class Parser<T extends TerminalSymbol> {
         parserData.setState(parserData.peekState());
         final Action gotoAction = parserData.getAction(targetNonTerminal);
         assert gotoAction instanceof Goto;
+        
+        assert parserData.getActions(targetNonTerminal).size() == 1;
+        
         gotoAction.perform();
         parserData.pushState();
         parserData.pushData(newDatum);
