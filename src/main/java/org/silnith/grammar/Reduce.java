@@ -24,7 +24,7 @@ class Reduce<T extends TerminalSymbol> implements Action<T> {
     }
     
     @Override
-    public boolean perform(final ParserData<T> data) {
+    public ParserData<T> perform(final ParserData<T> data) {
         final Item item = reduceItem.getItem();
         final NonTerminalSymbol targetNonTerminal = item.getTarget();
         final Production production = item.getProduction();
@@ -46,7 +46,7 @@ class Reduce<T extends TerminalSymbol> implements Action<T> {
         gotoAction.perform(data);
         data.pushState();
         data.pushData(newDatum);
-        return false;
+        return data;
     }
 
     @Override
